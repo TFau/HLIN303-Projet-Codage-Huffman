@@ -1,6 +1,8 @@
 #ifndef DEC_FUNCTIONS_SET
 #define DEC_FUNCTIONS_SET
 
+#include <stdbool.h>
+
 struct node 
 {
 	char symbol;
@@ -12,7 +14,7 @@ struct node
 
 bool oned(unsigned char);
 
-unsigned char* extractCode(struct node*, int);
+unsigned char* extractCode(struct node*, int); //Also in Com_Functions.h
 
 unsigned char decodeSingle(unsigned char, int*);
 
