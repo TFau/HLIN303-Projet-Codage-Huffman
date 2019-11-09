@@ -122,7 +122,7 @@ int codeGen(struct node* T, unsigned char** Table, int unique_char)
 		Table[counter]=extractCode(T,i);
 		if(Table[counter] == NULL) {
 			puts("Erreur: mémoire insuffisante.");
-			return 2;
+			return 1;
 		}
 	}
 	return 0;
@@ -182,10 +182,9 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 	}
 }
 
-void writeChar(FILE* writer, unsigned char X, unsigned char* carrier, int* fill, int* bits)
+void writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
-	X=*carrier; //Loads carrier into buffer
-	fputc(X,writer); //Writes buffer to file
+	fputc(*carrier,writer); //Writes full carrier byte to file
 	*bits+=8;
 	*fill=0;
 }
@@ -197,7 +196,6 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 	unsigned char buf1[1]={unique_char};	//1 byte storage !NO NULLCHAR!
 	*bits+=40;
 	unsigned char buf2[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
-	unsigned char Xchar='\0';
 	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	fwrite(buf1,sizeof(buf1),1,writer); //Write number of distinct characters (0-255)
@@ -218,14 +216,14 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 					buf2[0]='1';
 					encode(carrier,fill,buf2,&code_read); //Sets bit to 1
 					if(*fill == 8) {
-						writeChar(writer,Xchar,carrier,fill,bits);
+						writeChar(writer,carrier,fill,bits);
 					}
 					code_read=0; //Only 1 bit set, doesn't need comparison with code length
 					symbol=binarychar(Tr[search].symbol); //Converts 1-byte char into 8-byte char array of the char's binary value
 					while(code_read < 8) {
 						encode(carrier,fill,symbol,&code_read); //Bit-encodes the previous array onto the carrier byte
 						if(*fill == 8) {
-							writeChar(writer,Xchar,carrier,fill,bits);
+							writeChar(writer,carrier,fill,bits);
 						}
 					}
 					free(symbol);
@@ -235,7 +233,7 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 					buf2[0]='0';
 					encode(carrier,fill,buf2,&code_read); //Sets bit to 0
 					if(*fill == 8) {
-						writeChar(writer,Xchar,carrier,fill,bits);
+						writeChar(writer,carrier,fill,bits);
 					}
 					code_read=0; //Only 1 bit set
 					//"Deleting" node
@@ -274,9 +272,7 @@ void encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char*
 		while(code_read < length) {
 			encode(carrier,fill,buftemp,&code_read);
 			if(*fill == 8) {
-				fputc(*carrier,writer);
-				*bits+=8;
-				*fill=0;
+				writeChar(writer,carrier,fill,bits);
 			}
 		}
 		code_read=0;

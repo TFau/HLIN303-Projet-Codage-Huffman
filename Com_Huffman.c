@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
 	if(argc != 2) {
-		printf("Erreur: le fichier à lire et compresser doit être passé en paramètre.");
+		printf("Erreur: le fichier à lire et compresser doit être passé en paramètre.\n");
 		return 1;
 	}
 
@@ -64,9 +64,9 @@ int main(int argc, char** argv)
 	/////////////////
 	unsigned char CarrierByte='\0';
 	int fill=0, bits=0;
-	//When carrier is full, load it into char buffer and fwrite buffer, reset carrier fill to 0 and write next code bits
+	//When carrier is full, write it to the file with fputc, reset carrier fill to 0 and set next code bits
 	//When code fully read, reset code_read to 0 and read next character
-	//When code only partially read and carrier full, write the remainder of the code onto the next carrier
+	//When code only partially read and carrier full, set the remainder of the code onto the next carrier
 
 	/* Index size
 	For n  distinct characters, 2n-1 bits for the tree nodes, 8n bits for the characters themselves,
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 	huffwrite=fopen("huff_compressed.txt", "wb");
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
-		return 3;
+		return 2;
 	}
 	encodeIDX(huffwrite,Tree,treesize,&CarrierByte,&fill,&bits,nonzero_count,sum);
 	/* The carrier with the last part of the index may not be full, and may also hold some of the coded message itself. This is not
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 	FILE* huff=fopen(argv[1], "r");
 	if(!huff) {
 		perror("Echec de la lecture");
-		return 4;
+		return 3;
 	}
 	//CarrierByte and fill are NOT reset: start from last written bit of current carrier byte
 	encodeMSG(huffwrite,huff,CodeTable,&CarrierByte,&fill,&bits,sum);
@@ -104,8 +104,11 @@ int main(int argc, char** argv)
 		fputc(CarrierByte,huffwrite);
 		bits+=8;	//All 8 bits sent, even if the last part of the code is only written on the most significant ones
 	}
+	fclose(huffwrite);
+	fclose(huff);
 	for(int i=0; i < 256; i++)
 		free(CodeTable[i]);
+
 	puts("Message codé...");
 	printf("%d bits.\n", bits);
 	puts("");
@@ -114,8 +117,6 @@ int main(int argc, char** argv)
 	puts("");
 	puts("Compression terminée avec succès.");
 	puts("#################################");
-	fclose(huffwrite);
-	fclose(huff);
 
 	return 0;
 }

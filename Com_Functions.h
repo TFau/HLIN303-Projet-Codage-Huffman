@@ -30,7 +30,7 @@ unsigned char* binarychar(char);
 
 void encode(unsigned char*, int*, unsigned char*, int*);
 
-void writeChar(FILE*, unsigned char, unsigned char*, int*, int*);
+void writeChar(FILE*, unsigned char*, int*, int*);
 
 void encodeIDX(FILE*, struct node*, int, unsigned char*, int*, int*, int, int);
 
