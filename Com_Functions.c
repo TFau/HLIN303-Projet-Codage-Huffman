@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include "Com_Functions.h"
 
 int freqCalc(int* T, char* textfile)
@@ -14,10 +15,10 @@ int freqCalc(int* T, char* textfile)
 		return 1;
 	}
 	int counter;	//int needed for EOF
-	while((counter=fgetc(huff)) != EOF)		//fgetc equivalent to getc
+	while((counter=fgetc(huff)) != EOF)
 		T[counter]++;
 	if(ferror(huff)) {
-		puts("Erreur durant la lecture.");		//writes to stdout and adds a newline to the string, fputs does not
+		puts("Erreur durant la lecture.");
 		return 2;
 	}
 	else if(feof(huff))
@@ -66,7 +67,7 @@ void buildTree(struct node* T, int counter)
 			}
 		}
 		for(int i=0; i <= counter; i++) {
-			if(T[i].parent == -1 && T[i].freq > 0 && T[i].freq != lowfreqA && T[i].freq < lowfreqB) {
+			if(T[i].parent == -1 && T[i].freq > 0 && i != minA && T[i].freq < lowfreqB) {
 				lowfreqB=T[i].freq;
 				minB=i;
 			}
@@ -83,9 +84,9 @@ void buildTree(struct node* T, int counter)
 	while(minA != -1 && minB != -1);
 }
 
-unsigned char* extractCode(struct node* T, int x)
+unsigned char* extractCode(struct node* T, int i)
 {
-	int i=x, j, k;
+	int j, k;
 	unsigned char* code=malloc(256*sizeof(unsigned char));
 	code[0]='\0';
 	while(T[i].parent != -1) {
@@ -140,7 +141,7 @@ bool leftmost(int* T, int size, int n)
 	return true;
 }
 
-unsigned char* binarychar(char n)
+unsigned char* binaryChar(char n)
 {
 	//Convert char numerical value to binary value held in 8-char array
 	unsigned char *T=malloc(9*sizeof(unsigned char));	//Array with null terminator cell
@@ -182,14 +183,19 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 	}
 }
 
-void writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
+int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
 	fputc(*carrier,writer); //Writes full carrier byte to file
+	if(ferror(writer)) {
+		puts("Erreur durant l'écriture.");
+		return 1;
+	}
 	*bits+=8;
 	*fill=0;
+	return 0;
 }
 
-void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
+int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
 {
 	int code_read=0;
 	unsigned int buf0[1]={total_char};	//4 byte storage
@@ -198,7 +204,15 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 	unsigned char buf2[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
 	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
+	if(ferror(writer)) {
+		puts("Erreur durant l'écriture.");
+		return 1;
+	}
 	fwrite(buf1,sizeof(buf1),1,writer); //Write number of distinct characters (0-255)
+	if(ferror(writer)) {
+		puts("Erreur durant l'écriture.");
+		return 2;
+	}
 	//Tree is encoded by depth level, from top to bottom, and from left to right on each level
 	int counter=size; //Total nodes in tree
 	int search=size-1, child_pos=1, nodes_next=1, nodes_work;
@@ -216,14 +230,18 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 					buf2[0]='1';
 					encode(carrier,fill,buf2,&code_read); //Sets bit to 1
 					if(*fill == 8) {
-						writeChar(writer,carrier,fill,bits);
+						if(writeChar(writer,carrier,fill,bits)) {
+							return 3;	//Error message printed by writeChar
+						}
 					}
 					code_read=0; //Only 1 bit set, doesn't need comparison with code length
-					symbol=binarychar(Tr[search].symbol); //Converts 1-byte char into 8-byte char array of the char's binary value
+					symbol=binaryChar(Tr[search].symbol); //Converts 1-byte char into 8-byte char array of the char's binary value
 					while(code_read < 8) {
 						encode(carrier,fill,symbol,&code_read); //Bit-encodes the previous array onto the carrier byte
 						if(*fill == 8) {
-							writeChar(writer,carrier,fill,bits);
+							if(writeChar(writer,carrier,fill,bits)) {
+								return 4;
+							}
 						}
 					}
 					free(symbol);
@@ -233,7 +251,9 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 					buf2[0]='0';
 					encode(carrier,fill,buf2,&code_read); //Sets bit to 0
 					if(*fill == 8) {
-						writeChar(writer,carrier,fill,bits);
+						if(writeChar(writer,carrier,fill,bits)) {
+							return 5;
+						}
 					}
 					code_read=0; //Only 1 bit set
 					//"Deleting" node
@@ -255,9 +275,10 @@ void encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, 
 			search--;	//Loop counter
 		}
 	}
+	return 0;
 }
 
-void encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
+int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
 {
 	int counter=0, code_read=0;
 	*bits=0-*fill;
@@ -266,17 +287,24 @@ void encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char*
 	unsigned char* buftemp;
 	while(counter < total_char) {	//total_char==total characters
 		Xchar=fgetc(reader);
+		if(ferror(reader)) {
+			puts("Erreur durant la lecture.");
+			return 1;
+		}
 		buftemp=malloc((strlen(Table[Xchar])+1)*sizeof(unsigned char));	//Allocate size of code+nullchar
 		strcpy(buftemp,Table[Xchar]);	//strcpy copies the nullchar
 		length=strlen(buftemp);
 		while(code_read < length) {
 			encode(carrier,fill,buftemp,&code_read);
 			if(*fill == 8) {
-				writeChar(writer,carrier,fill,bits);
+				if(writeChar(writer,carrier,fill,bits)) {
+					return 2;	//Error message printed by writeChar
+				}
 			}
 		}
 		code_read=0;
 		counter++;
 		free(buftemp);
 	}
+	return 0;
 }

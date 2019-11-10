@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include "Dec_Functions.h"
 
 int main(int argc, char** argv)
@@ -145,11 +146,14 @@ int main(int argc, char** argv)
 		temp_pos=0;
 		char_found=-1;
 	}
-	puts("Message décodé...");
-	puts("");
 	fclose(huff);
 	fclose(huffwrite);
 	for(int i=0; i < de_treesize; i++)
 		free(DecodeTable[i]);
+
+	puts("Message décodé...");
+	puts("");
+	puts("Décompression terminée avec succès.");
+	puts("###################################");
 	return 0;
 }

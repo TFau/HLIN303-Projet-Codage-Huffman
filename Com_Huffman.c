@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
 	if(argc != 2) {
-		printf("Erreur: le fichier à lire et compresser doit être passé en paramètre.\n");
+		puts("Erreur: le fichier à lire et compresser doit être passé en paramètre."); //writes to stdout and adds a newline, fputs does not
 		return 1;
 	}
 
@@ -46,7 +46,9 @@ int main(int argc, char** argv)
 	unsigned char* CodeTable[256];	//To position characters at index values equal to their numerical values, for easier message encoding later
 	for(int i=0; i < 256; i++)
 		CodeTable[i]=NULL;	//Otherwise free() causes segfault
-	codeGen(Tree,CodeTable,nonzero_count); //Generates the code for each character by traversing the tree
+	//Generates the code for each character by traversing the tree
+	if(codeGen(Tree,CodeTable,nonzero_count)) //Returns 0 on success, 1 in case of failed realloc
+		return 2; //Error message printed by codeGen
 	puts("Codes générés...");
 	puts("");
 	//Print the code array
@@ -78,9 +80,10 @@ int main(int argc, char** argv)
 	huffwrite=fopen("huff_compressed.txt", "wb");
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
-		return 2;
+		return 3;
 	}
-	encodeIDX(huffwrite,Tree,treesize,&CarrierByte,&fill,&bits,nonzero_count,sum);
+	if(encodeIDX(huffwrite,Tree,treesize,&CarrierByte,&fill,&bits,nonzero_count,sum)) //0 on success, 1 in case of failure
+		return 4; //Error message printed by encodeIDX
 	/* The carrier with the last part of the index may not be full, and may also hold some of the coded message itself. This is not
 	a problem as long as it is properly written to the file. The decoder will be able to read the carrier up to the last bit of the index,
 	stop reading, rebuild the tree and generate the codes, then resume reading. */
@@ -95,10 +98,11 @@ int main(int argc, char** argv)
 	FILE* huff=fopen(argv[1], "r");
 	if(!huff) {
 		perror("Echec de la lecture");
-		return 3;
+		return 5;
 	}
 	//CarrierByte and fill are NOT reset: start from last written bit of current carrier byte
-	encodeMSG(huffwrite,huff,CodeTable,&CarrierByte,&fill,&bits,sum);
+	if(encodeMSG(huffwrite,huff,CodeTable,&CarrierByte,&fill,&bits,sum)) //0 on success, 1 in case of failure
+		return 6; //Error message printed by encodeMSG
 	//End of message
 	if(fill) {
 		fputc(CarrierByte,huffwrite);

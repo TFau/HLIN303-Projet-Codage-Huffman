@@ -26,15 +26,15 @@ int codeGen(struct node*, unsigned char**, int); //Also in Dec_Functions.h
 
 bool leftmost(int*, int, int);
 
-unsigned char* binarychar(char);
+unsigned char* binaryChar(char);
 
 void encode(unsigned char*, int*, unsigned char*, int*);
 
-void writeChar(FILE*, unsigned char*, int*, int*);
+int writeChar(FILE*, unsigned char*, int*, int*);
 
-void encodeIDX(FILE*, struct node*, int, unsigned char*, int*, int*, int, int);
+int encodeIDX(FILE*, struct node*, int, unsigned char*, int*, int*, int, int);
 
-void encodeMSG(FILE*, FILE*, unsigned char**, unsigned char*, int*, int*, int);
+int encodeMSG(FILE*, FILE*, unsigned char**, unsigned char*, int*, int*, int);
 
 #endif
 
