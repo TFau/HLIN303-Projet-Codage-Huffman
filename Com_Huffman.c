@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
 	if(argc != 2) {
-		puts("Erreur: le fichier à lire et compresser doit être passé en paramètre."); //writes to stdout and adds a newline, fputs does not
+		puts("Erreur: le fichier à lire et à compresser doit être passé en paramètre."); //writes to stdout and adds a newline, fputs does not
 		return 1;
 	}
 
@@ -26,8 +26,7 @@ int main(int argc, char** argv)
 		}
 	}
 	printf("%d caractères: %d bits.\n", sum, sum*8);
-	printf("%d caractères distincts.\n", nonzero_count);
-	puts("");
+	printf("%d caractères distincts.\n\n", nonzero_count);
 
 	/* Tree construction */
 	int treesize=2*nonzero_count-1;
@@ -39,8 +38,7 @@ int main(int argc, char** argv)
 	puts("Arbre initialisé...");
 	int counter=nonzero_count-1;
 	buildTree(Tree,counter); //Linking tree nodes via lowest frequencies
-	puts("Arbre construit...");
-	puts("");
+	puts("Arbre construit...\n");
 
 	/* Code generation */
 	unsigned char* CodeTable[256];	//To position characters at index values equal to their numerical values, for easier message encoding later
@@ -49,8 +47,7 @@ int main(int argc, char** argv)
 	//Generates the code for each character by traversing the tree
 	if(codeGen(Tree,CodeTable,nonzero_count)) //Returns 0 on success, 1 in case of failed realloc
 		return 2; //Error message printed by codeGen
-	puts("Codes générés...");
-	puts("");
+	puts("Codes générés...\n");
 	//Print the code array
 	counter=0; //Reuse
 	for(int i=0; i < 256; i++) {
@@ -76,8 +73,7 @@ int main(int argc, char** argv)
 	Total: 10n + 39 bits, 1.25n + 4.875 bytes */
 
 	/* Encode the tree */
-	FILE* huffwrite;
-	huffwrite=fopen("huff_compressed.txt", "wb");
+	FILE* huffwrite=tmpfile();
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
 		return 3;
@@ -91,8 +87,7 @@ int main(int argc, char** argv)
 		bits+=fill;
 	int index_b=bits;
 	puts("Arbre codé...");
-	printf("%d bits.\n", bits);
-	puts("");
+	printf("%d bits.\n\n", bits);
 
 	/* Encode the message */
 	FILE* huff=fopen(argv[1], "r");
@@ -108,17 +103,20 @@ int main(int argc, char** argv)
 		fputc(CarrierByte,huffwrite);
 		bits+=8;	//All 8 bits sent, even if the last part of the code is only written on the most significant ones
 	}
-	fclose(huffwrite);
+
+	/* Write the encoded message */
 	fclose(huff);
+	if(encodeWrite(huffwrite,huff,argv[1])) //0 on success, 1 in case of failure
+		return 7; //Error message in encodeWrite
+	fclose(huff);
+	fclose(huffwrite);
 	for(int i=0; i < 256; i++)
 		free(CodeTable[i]);
 
 	puts("Message codé...");
-	printf("%d bits.\n", bits);
-	puts("");
+	printf("%d bits.\n\n", bits);
 	printf("Total: %d bits.\n", index_b+bits);
-	printf("Réduction taille: %.3lf%\n", 100.0-(double)(index_b+bits)/(sum*8)*100);
-	puts("");
+	printf("Réduction taille: %.3lf%\n\n", 100.0-(double)(index_b+bits)/(sum*8)*100);
 	puts("Compression terminée avec succès.");
 	puts("#################################");
 

@@ -185,7 +185,7 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 
 int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
-	fputc(*carrier,writer); //Writes full carrier byte to file
+	fputc(*carrier,writer);
 	if(ferror(writer)) {
 		puts("Erreur durant l'écriture.");
 		return 1;
@@ -305,6 +305,29 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 		code_read=0;
 		counter++;
 		free(buftemp);
+	}
+	return 0;
+}
+
+int encodeWrite(FILE* temp, FILE* writer, char* textfile)
+{
+	rewind(temp); //Changes to read mode in tmpfile
+	writer=fopen(textfile, "wb");
+	if(!writer) {
+		perror("Echec de la lecture");
+		return 1;
+	}
+	//Must use a special int buffer and fread/fwrite to properly transfer int value
+	unsigned int buf0[1];
+	fread(buf0,sizeof(buf0),1,temp);
+	fwrite(buf0,sizeof(buf0),1,writer);
+	int counter;
+	while((counter=fgetc(temp)) != EOF) {
+		fputc(counter,writer);
+		if(ferror(writer)) {
+			puts("Erreur durant l'écriture.");
+			return 2;
+		}
 	}
 	return 0;
 }
