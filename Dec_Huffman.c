@@ -78,5 +78,6 @@ int main(int argc, char** argv)
 	puts("Message décodé...\n");
 	puts("Décompression terminée avec succès.");
 	puts("###################################");
+	
 	return 0;
 }
