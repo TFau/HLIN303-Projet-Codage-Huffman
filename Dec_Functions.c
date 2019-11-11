@@ -5,16 +5,6 @@
 
 #include "Dec_Functions.h"
 
-void initTree(struct node* T, int size)
-{
-	for(int i = 0; i < size; i++) {
-		T[i].symbol=-1;
-		T[i].parent=-1;
-		T[i].child_left=-1;
-		T[i].child_right=-1;
-	}
-}
-
 int readStart(FILE* reader, int* total_char, int* unique_char)
 {
 	unsigned int buf[1]; //4 byte storage
@@ -30,6 +20,16 @@ int readStart(FILE* reader, int* total_char, int* unique_char)
 		return 2;
 	}
 	return 0;
+}
+
+void initTree(struct node* T, int size)
+{
+	for(int i = 0; i < size; i++) {
+		T[i].symbol=-1;
+		T[i].parent=-1;
+		T[i].child_left=-1;
+		T[i].child_right=-1;
+	}
 }
 
 bool oned(unsigned char byte)
@@ -294,7 +294,7 @@ int decodeWrite(FILE* temp, FILE* writer, char* textfile)
 	rewind(temp); //Changes to read mode in tmpfile
 	writer=fopen(textfile, "w");
 	if(!writer) {
-		perror("Echec de la lecture");
+		perror("Echec de l'écriture");
 		return 1;
 	}
 	int counter;
@@ -305,5 +305,6 @@ int decodeWrite(FILE* temp, FILE* writer, char* textfile)
 			return 2;
 		}
 	}
+	fclose(writer);
 	return 0;
 }

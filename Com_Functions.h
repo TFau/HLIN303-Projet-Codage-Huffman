@@ -22,7 +22,7 @@ void buildTree(struct node*, int);
 
 unsigned char* extractCode(struct node*, int); //Also in Dec_Functions.h
 
-int codeGen(struct node*, unsigned char**, int); //Also in Dec_Functions.h
+int codeGen(struct node*, unsigned char**, int); //Not the same as Dec_Functions.h deCodeGen
 
 bool leftmost(int*, int, int);
 

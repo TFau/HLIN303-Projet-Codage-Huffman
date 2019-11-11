@@ -199,16 +199,15 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 {
 	int code_read=0;
 	unsigned int buf0[1]={total_char};	//4 byte storage
-	unsigned char buf1[1]={unique_char};	//1 byte storage !NO NULLCHAR!
 	*bits+=40;
-	unsigned char buf2[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
+	unsigned char buf1[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
 	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	if(ferror(writer)) {
 		puts("Erreur durant l'écriture.");
 		return 1;
 	}
-	fwrite(buf1,sizeof(buf1),1,writer); //Write number of distinct characters (0-255)
+	fputc(unique_char,writer); //Write number of distinct characters (0-255)
 	if(ferror(writer)) {
 		puts("Erreur durant l'écriture.");
 		return 2;
@@ -227,8 +226,8 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 		while(search >= 0 && nodes_work > 0) {
 			if(Tr[search].parent == -1 && Tr[search].freq != 0 && leftmost(T,size,search)) {
 				if(Tr[search].child_left == -1 && Tr[search].child_right == -1) {		//Leaf
-					buf2[0]='1';
-					encode(carrier,fill,buf2,&code_read); //Sets bit to 1
+					buf1[0]='1';
+					encode(carrier,fill,buf1,&code_read); //Sets bit to 1
 					if(*fill == 8) {
 						if(writeChar(writer,carrier,fill,bits)) {
 							return 3;	//Error message printed by writeChar
@@ -248,8 +247,8 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 					code_read=0;
 				}
 				else {	//Internal node
-					buf2[0]='0';
-					encode(carrier,fill,buf2,&code_read); //Sets bit to 0
+					buf1[0]='0';
+					encode(carrier,fill,buf1,&code_read); //Sets bit to 0
 					if(*fill == 8) {
 						if(writeChar(writer,carrier,fill,bits)) {
 							return 5;
@@ -314,7 +313,7 @@ int encodeWrite(FILE* temp, FILE* writer, char* textfile)
 	rewind(temp); //Changes to read mode in tmpfile
 	writer=fopen(textfile, "wb");
 	if(!writer) {
-		perror("Echec de la lecture");
+		perror("Echec de l'écriture");
 		return 1;
 	}
 	//Must use a special int buffer and fread/fwrite to properly transfer int value
@@ -329,5 +328,6 @@ int encodeWrite(FILE* temp, FILE* writer, char* textfile)
 			return 2;
 		}
 	}
+	fclose(writer);
 	return 0;
 }

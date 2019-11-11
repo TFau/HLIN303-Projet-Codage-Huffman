@@ -12,9 +12,9 @@ struct node
 	//No frequency attribute in decoder
 };
 
-void initTree(struct node*, int);
-
 int readStart(FILE*, int*, int*);
+
+void initTree(struct node*, int);
 
 bool oned(unsigned char);
 
