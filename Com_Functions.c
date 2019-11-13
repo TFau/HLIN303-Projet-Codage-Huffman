@@ -89,20 +89,26 @@ unsigned char* extractCode(struct node* T, int i)
 	int j, k;
 	unsigned char* code=malloc(256*sizeof(unsigned char));
 	code[0]='\0';
-	while(T[i].parent != -1) {
-		j=i;
-		i=T[i].parent;
-		k=strlen(code);	//when used as array indice returns null character
-		while(k >= 0) {
-			code[k+1]=code[k];
-			k--;
+	if(T[i].parent != -1) {
+		while(T[i].parent != -1) {
+			j=i;
+			i=T[i].parent;
+			k=strlen(code);	//when used as array indice returns null character
+			while(k >= 0) {
+				code[k+1]=code[k];
+				k--;
+			}
+			if(T[i].child_left == j) {
+				code[0]='0';
+			}
+			else {
+				code[0]='1';
+			}
 		}
-		if(T[i].child_left == j) {
-			code[0]='0';
-		}
-		else {
-			code[0]='1';
-		}
+	}
+	else {	//When the message contains only 1 character that will be the root
+		code[0]='1';
+		code[1]='\0';
 	}
 	//Optimization: reduce string size
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
@@ -248,6 +254,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 				}
 				else {	//Internal node
 					buf1[0]='0';
+					puts("check leaf");
 					encode(carrier,fill,buf1,&code_read); //Sets bit to 0
 					if(*fill == 8) {
 						if(writeChar(writer,carrier,fill,bits)) {
