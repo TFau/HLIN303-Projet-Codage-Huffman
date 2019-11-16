@@ -22,7 +22,7 @@ unsigned char decodeSingle(unsigned char*, int*);
 
 void decodeIDX(unsigned char*, int*, int*, unsigned char*, int*);
 
-unsigned char stringBuild(unsigned char*, int);
+unsigned char charBuild(unsigned char*, int);
 
 int readChar(FILE*, unsigned char*, int*);
 

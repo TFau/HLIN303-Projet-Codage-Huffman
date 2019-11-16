@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "Com_Functions.h"
 
 int freqCalc(int* T, char* textfile)
 {
-	for(int i=0; i < 256; i++)
+	for(int i=0; i <= UCHAR_MAX; i++)
 		T[i]=0;
 	FILE* huff=fopen(textfile, "r");
 	if(!huff) {
@@ -33,7 +34,7 @@ int freqCalc(int* T, char* textfile)
 
 int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 {
-	for(int i=0; i < 256; i++) {
+	for(int i=0; i <= UCHAR_MAX; i++) {
 		if(T[i] != 0) {
 			(*unique_char)++;
 			*total_char+=T[i];
@@ -72,7 +73,7 @@ void freqTree(struct node* T, int* Table, int unique_char, int total_char)
 {
 	int outer=0, inner=0;
 	while(outer < unique_char) {
-		while(inner < 256) {
+		while(inner <= UCHAR_MAX) {
 			if(Table[inner] != 0) {
 				T[outer].symbol=(unsigned char)inner;
 				T[outer].freq=(double)Table[inner]/total_char;
@@ -117,7 +118,7 @@ void buildTree(struct node* T, int counter)
 unsigned char* extractCode(struct node* T, int i)
 {
 	int j, k;
-	unsigned char* code=malloc(256*sizeof(unsigned char));
+	unsigned char* code=malloc((UCHAR_MAX+1)*sizeof(unsigned char));
 	code[0]='\0';
 	while(T[i].parent != -1) {
 		j=i;
@@ -199,13 +200,13 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 {
 	int size=strlen(code)-*code_read;	//Code to write, without null terminator
 	//8 encodeable bits
-	while(size > 0 && *fill < 8) {	//While there is still code to write and the carrier byte isn't full
+	while(size > 0 && *fill < CHAR_BIT) {	//While there is still code to write and the carrier byte isn't full
 		//Starts reading code array after already written code
 		if(code[*code_read] & 1) {	//'1' is coded as 49, odd number with least significant bit 1
-			*carrier|=(1<<(7-*fill));
+			*carrier|=(1<<(CHAR_BIT-1-*fill));
 		}
 		else {
-			*carrier&=(~(1<<(7-*fill)));
+			*carrier&=(~(1<<(CHAR_BIT-1-*fill)));
 		}
 		size--;
 		(*fill)++;	//Without parentheses, ++ increments the pointer itself (operator has higher priority than *)
@@ -220,7 +221,7 @@ int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 		puts("Erreur durant l'écriture.");
 		return 1;
 	}
-	*bits+=8;
+	*bits+=CHAR_BIT;
 	*fill=0;
 	return 0;
 }
@@ -229,7 +230,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 {
 	int code_read=0;
 	unsigned int buf0[1]={total_char};	//4 byte storage
-	*bits+=40;
+	*bits+=32+CHAR_BIT;
 	unsigned char buf1[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
 	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
@@ -258,16 +259,16 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 				if(Tr[search].child_left == -1 && Tr[search].child_right == -1) {		//Leaf
 					buf1[0]='1';
 					encode(carrier,fill,buf1,&code_read); //Sets bit to 1
-					if(*fill == 8) {
+					if(*fill == CHAR_BIT) {
 						if(writeChar(writer,carrier,fill,bits)) {
 							return 3;	//Error message printed by writeChar
 						}
 					}
 					code_read=0; //Only 1 bit set, doesn't need comparison with code length
 					symbol=binaryChar(Tr[search].symbol); //Converts 1-byte char into 8-byte char array of the char's binary value
-					while(code_read < 8) {
+					while(code_read < CHAR_BIT) {
 						encode(carrier,fill,symbol,&code_read); //Bit-encodes the previous array onto the carrier byte
-						if(*fill == 8) {
+						if(*fill == CHAR_BIT) {
 							if(writeChar(writer,carrier,fill,bits)) {
 								return 4;
 							}
@@ -279,7 +280,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 				else {	//Internal node
 					buf1[0]='0';
 					encode(carrier,fill,buf1,&code_read); //Sets bit to 0
-					if(*fill == 8) {
+					if(*fill == CHAR_BIT) {
 						if(writeChar(writer,carrier,fill,bits)) {
 							return 5;
 						}
@@ -325,7 +326,7 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 		length=strlen(buftemp);
 		while(code_read < length) {
 			encode(carrier,fill,buftemp,&code_read);
-			if(*fill == 8) {
+			if(*fill == CHAR_BIT) {
 				if(writeChar(writer,carrier,fill,bits)) {
 					return 2;	//Error message printed by writeChar
 				}

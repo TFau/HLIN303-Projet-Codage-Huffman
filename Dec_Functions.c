@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "Dec_Functions.h"
 
@@ -33,25 +34,24 @@ void initTree(struct node* T, int size)
 }
 
 bool oned(unsigned char byte)
+//Pro solution: return byte && !(byte & (b-1)); (returns is_power_of_two)
 {
 	bool bit;
-	for(int i=7; i > 0; i--) {
+	for(int i=CHAR_BIT-1; i > 0; i--) {
 		bit=byte&(1<<i);
 		if(bit) {
 			return false;
 		}
 	}
 	bit=byte&(1<<0);
-	if(bit)
-		return true;
-	else return false;
+	return bit;
 }
 
 unsigned char decodeSingle(unsigned char* carrier, int* fill)
 {
 	unsigned char decode='\0';
-	if(*carrier & 1<<(7-*fill))	//if 1 is read at the position
-		decode|=(1<<0); //decode set to 00000001
+	if(*carrier & 1<<(CHAR_BIT-1-*fill))	//if 1 is read at the position
+		decode|=(1<<0); //decode set to 0x01
 	//else decode is still a nullchar
 	(*fill)++;
 	return decode;
@@ -59,8 +59,8 @@ unsigned char decodeSingle(unsigned char* carrier, int* fill)
 
 void decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char* T, int* pos)
 {
-	while(*code_read < 8 && *fill < 8) {	//To the end of the symbol byte or to the end of the carrier byte
-		if(*carrier & (1<<(7-*fill))) {
+	while(*code_read < CHAR_BIT && *fill < CHAR_BIT) {	//To the end of the symbol byte or to the end of the carrier byte
+		if(*carrier & (1<<(CHAR_BIT-1-*fill))) {
 			T[*pos]='1';
 		}
 		else {
@@ -72,21 +72,21 @@ void decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char*
 	}	
 }
 
-unsigned char stringBuild(unsigned char* buffer, int pos)
+unsigned char charBuild(unsigned char* buffer, int pos)
 {
 	//Function always finds 8 bits, no special checks needed
-	unsigned char string='\0';
+	unsigned char char_str='\0';
 	int string_pos=0;
 	for(int i=0; i <= pos; i++) {
 		if(buffer[i] & 1) {	//Character '1'
-			string|=(1<<(7-string_pos));
+			char_str|=(1<<(CHAR_BIT-1-string_pos));
 		}
 		else {	//Character '0'
-			string&=(~(1<<(7-string_pos)));
+			char_str&=(~(1<<(CHAR_BIT-1-string_pos)));
 		}
 		string_pos++;
 	}
-	return string;
+	return char_str;
 }
 
 int readChar(FILE* reader, unsigned char* carrier, int* fill)
@@ -103,7 +103,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, int* fill, int size, int unique_char)
 {
 	int counter=0, temp_pos=0, code_read=0;
-	unsigned char buftemp[256]; //Char array to hold bits for decoding
+	unsigned char buftemp[UCHAR_MAX+1]; //Char array to hold bits for decoding
 	//The decoder must extract the node and symbol bits, and place each node or symbol into a byte of the buffer for easier processing
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
@@ -112,7 +112,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 	}
 	while(counter < size+unique_char) {
 		treeArray[counter]=decodeSingle(carrier,fill);	//Node code, single bit (0 or 1)
-		if(*fill == 8) {
+		if(*fill == CHAR_BIT) {
 			if(readChar(reader,carrier,fill)) {
 				return 2;
 			}
@@ -121,7 +121,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 			while(code_read < 8) {
 				//Temp array for piece of character byte
 				decodeIDX(carrier,fill,&code_read,buftemp,&temp_pos);
-				if(*fill == 8) {
+				if(*fill == CHAR_BIT) {
 					if(readChar(reader,carrier,fill)) {
 						return 3;
 					}
@@ -129,7 +129,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 			}
 			code_read=0;
 			counter++; //To place leaf character 1 cell after the leaf code
-			treeArray[counter]=stringBuild(buftemp,temp_pos);
+			treeArray[counter]=charBuild(buftemp,temp_pos);
 		}
 		temp_pos=0;
 		counter++;
@@ -180,7 +180,7 @@ void buildTree(struct node* T, int size)
 unsigned char* extractCode(struct node* T, int i)
 {
 	int j, k;
-	unsigned char* code=malloc(256*sizeof(unsigned char));
+	unsigned char* code=malloc((UCHAR_MAX+1)*sizeof(unsigned char));
 	code[0]='\0';
 	while(T[i].parent != -1) {
 		j=i;
@@ -244,8 +244,8 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 {
 	//No code_read variable: no advance knowledge of the length of the code
 	int character;
-	while(*fill < 8) {
-		if(*carrier & (1<<(7-*fill))) {
+	while(*fill < CHAR_BIT) {
+		if(*carrier & (1<<(CHAR_BIT-1-*fill))) {
 			T[*pos]='1';
 		}
 		else {
@@ -267,11 +267,11 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, int* fill, int size, int total_char)
 {
 	int counter=0, temp_pos=0, char_found=-1;
-	unsigned char buftemp[256];
+	unsigned char buftemp[UCHAR_MAX+1];
 	while(counter < total_char) {
 		while(char_found == -1) {
 			char_found=decodeMSG(carrier,fill,buftemp,&temp_pos,Table,size);
-			if(*fill == 8) {
+			if(*fill == CHAR_BIT) {
 				if(readChar(reader,carrier,fill)) {
 					return 2;
 				}

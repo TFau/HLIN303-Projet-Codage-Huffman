@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "Com_Functions.h"
 
@@ -13,7 +14,7 @@ int main(int argc, char** argv)
 	}
 
 	/* Frequency Calc Function */
-	int ProcTable[256]; //Extended ASCII
+	int ProcTable[UCHAR_MAX+1]; //Extended ASCII
 	//File character parsing
 	if(freqCalc(ProcTable,argv[1])) //Returns 0 on success, 1 in case of failed realloc
 		return 2;
@@ -35,8 +36,8 @@ int main(int argc, char** argv)
 	puts("Arbre initialisé...\nArbre construit...\n");
 
 	/* Code generation */
-	unsigned char* CodeTable[256];	//To position characters at index values equal to their numerical values, for easier message encoding later
-	for(int i=0; i < 256; i++)
+	unsigned char* CodeTable[UCHAR_MAX+1];	//To position characters at index values equal to their numerical values, for easier message encoding later
+	for(int i=0; i <= UCHAR_MAX; i++)
 		CodeTable[i]=NULL;	//Otherwise free() causes segfault
 	//Generates the code for each character by traversing the tree
 	if(codeGen(Tree,CodeTable,nonzero_count)) //0 on success, 1 in case of failed realloc
@@ -45,7 +46,7 @@ int main(int argc, char** argv)
 	//Print the code array if -p option used
 	if(argc == 3 && argv[2][1] == 'p') {
 		counter=0; //Reuse
-		for(int i=0; i < 256; i++) {
+		for(int i=0; i <= UCHAR_MAX; i++) {
 			if(Tree[counter].symbol == i) {
 				printf("%d. %c\t%s\n", i, Tree[counter].symbol, CodeTable[i]);
 				counter++;
@@ -97,9 +98,9 @@ int main(int argc, char** argv)
 	//End of message
 	if(fill) {
 		fputc(CarrierByte,huffwrite);
-		bits+=8;	//All 8 bits sent, even if the last part of the code is only written on the most significant ones
+		bits+=CHAR_BIT;	//All 8 bits sent, even if the last part of the code is only written on the most significant ones
 	}
-	for(int i=0; i < 256; i++)
+	for(int i=0; i <= UCHAR_MAX; i++)
 		free(CodeTable[i]);
 
 	/* Write the encoded message */
