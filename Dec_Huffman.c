@@ -50,10 +50,11 @@ int main(int argc, char** argv)
 	//Print the code array if -p option used
 	if(argc == 3 && argv[2][1] == 'p') {
 		for(size_t i=0; i < treesize; i++) {
-			if(Tree[i].symbol != -1) {
+			if(Tree[i].symbol != 0) {
 				printf("%ld. %c\t%s\n", i, Tree[i].symbol, DecodeTable[i]);
 			}
 		}
+		puts("");
 	}
 	else puts("Utilisez l'option -p pour afficher les caractères et leurs codes respectifs.\n");
 

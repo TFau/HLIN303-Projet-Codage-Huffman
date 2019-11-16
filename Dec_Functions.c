@@ -25,7 +25,7 @@ int readStart(FILE* reader, int* total_char, int* unique_char)
 void initTree(struct node* T, int size)
 {
 	for(int i = 0; i < size; i++) {
-		T[i].symbol=-1;
+		T[i].symbol=0;
 		T[i].parent=-1;
 		T[i].child_left=-1;
 		T[i].child_right=-1;
@@ -160,7 +160,7 @@ void buildTree(struct node* T, int size)
 		nodes_work=0;
 		nodes_next=0;
 		while(nodes_work < nodes_work_fix) {
-			if(T[counter].symbol == -1) {
+			if(T[counter].symbol == 0) {
 				T[counter].child_left=counter+nodes_next+(nodes_work_fix-nodes_work);
 				T[T[counter].child_left].parent=counter;
 				nodes_next++;
@@ -182,26 +182,20 @@ unsigned char* extractCode(struct node* T, int i)
 	int j, k;
 	unsigned char* code=malloc(256*sizeof(unsigned char));
 	code[0]='\0';
-	if(T[i].parent != -1) {
-		while(T[i].parent != -1) {
-			j=i;
-			i=T[i].parent;
-			k=strlen(code);	//when used as array indice returns null character
-			while(k >= 0) {
-				code[k+1]=code[k];
-				k--;
-			}
-			if(T[i].child_left == j) {
-				code[0]='0';
-			}
-			else {
-				code[0]='1';
-			}
+	while(T[i].parent != -1) {
+		j=i;
+		i=T[i].parent;
+		k=strlen(code);	//when used as array indice returns null character
+		while(k >= 0) {
+			code[k+1]=code[k];
+			k--;
 		}
-	}
-	else {	//When the message contains only 1 character that will be the root
-		code[0]='1';
-		code[1]='\0';
+		if(T[i].child_left == j) {
+			code[0]='0';
+		}
+		else {
+			code[0]='1';
+		}
 	}
 	//Optimization: reduce string size
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
@@ -217,7 +211,7 @@ unsigned char* extractCode(struct node* T, int i)
 int deCodeGen(struct node* T, unsigned char** Table, int size)
 {
 	for(int i=0; i < size; i++) {	//Leaves throughout tree, unlike in encoder tree
-		if(T[i].symbol != -1) {
+		if(T[i].symbol != 0) {
 			Table[i]=extractCode(T,i);
 			if(Table[i] == NULL) {
 				puts("Erreur: mémoire insuffisante.");

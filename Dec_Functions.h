@@ -5,7 +5,7 @@
 
 struct node 
 {
-	char symbol;
+	unsigned char symbol;
 	int parent;
 	int child_left;
 	int child_right;

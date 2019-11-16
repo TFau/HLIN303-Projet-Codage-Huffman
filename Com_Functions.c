@@ -14,9 +14,13 @@ int freqCalc(int* T, char* textfile)
 		perror("Echec de la lecture");
 		return 1;
 	}
-	int counter;	//int needed for EOF
-	while((counter=fgetc(huff)) != EOF)
+	unsigned int counter;	//int needed for EOF
+	/* the fgetc function obtains that character as an unsigned char converted to
+	an int and advances the associated file position indicator (C11 standard) */
+	while((counter=fgetc(huff)) != EOF) {
+		//"undechaque" file prints 239,191,189 repeatedly: UTF8 3-byte character �
 		T[counter]++;
+	}
 	if(ferror(huff)) {
 		puts("Erreur durant la lecture.");
 		return 2;
@@ -27,10 +31,36 @@ int freqCalc(int* T, char* textfile)
 	return 0;
 }
 
+int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
+{
+	for(int i=0; i < 256; i++) {
+		if(T[i] != 0) {
+			(*unique_char)++;
+			*total_char+=T[i];
+		}
+	}
+	//Adds a newline if the file contains only one character
+	if(*unique_char == 1) {
+		T[10]++;
+		(*unique_char)++;
+		(*total_char)++;
+		//Reopens file and adds newline at the end
+		FILE* huff=fopen(textfile, "w");
+		if(!huff) {
+			perror("Echec de la lecture");
+			return 1;
+		}
+		fseek(huff,(long)*total_char,SEEK_SET);	//SEEK_SET offsets from the beginning of the file
+		fputc('\n',huff);
+		fclose(huff);
+	}
+	return 0;
+}
+
 void initTree(struct node* T, int size)
 {
 	for(int i = 0; i < size; i++) {
-		T[i].symbol=-1;
+		T[i].symbol=0;
 		T[i].parent=-1;
 		T[i].child_left=-1;
 		T[i].child_right=-1;
@@ -44,7 +74,7 @@ void freqTree(struct node* T, int* Table, int unique_char, int total_char)
 	while(outer < unique_char) {
 		while(inner < 256) {
 			if(Table[inner] != 0) {
-				T[outer].symbol=(char)inner;
+				T[outer].symbol=(unsigned char)inner;
 				T[outer].freq=(double)Table[inner]/total_char;
 				outer++;
 			}
@@ -89,26 +119,20 @@ unsigned char* extractCode(struct node* T, int i)
 	int j, k;
 	unsigned char* code=malloc(256*sizeof(unsigned char));
 	code[0]='\0';
-	if(T[i].parent != -1) {
-		while(T[i].parent != -1) {
-			j=i;
-			i=T[i].parent;
-			k=strlen(code);	//when used as array indice returns null character
-			while(k >= 0) {
-				code[k+1]=code[k];
-				k--;
-			}
-			if(T[i].child_left == j) {
-				code[0]='0';
-			}
-			else {
-				code[0]='1';
-			}
+	while(T[i].parent != -1) {
+		j=i;
+		i=T[i].parent;
+		k=strlen(code);	//when used as array indice returns null character
+		while(k >= 0) {
+			code[k+1]=code[k];
+			k--;
 		}
-	}
-	else {	//When the message contains only 1 character that will be the root
-		code[0]='1';
-		code[1]='\0';
+		if(T[i].child_left == j) {
+			code[0]='0';
+		}
+		else {
+			code[0]='1';
+		}
 	}
 	//Optimization: reduce string size
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
@@ -147,7 +171,7 @@ bool leftmost(int* T, int size, int n)
 	return true;
 }
 
-unsigned char* binaryChar(char n)
+unsigned char* binaryChar(unsigned char n)
 {
 	//Convert char numerical value to binary value held in 8-char array
 	unsigned char *T=malloc(9*sizeof(unsigned char));	//Array with null terminator cell
@@ -254,7 +278,6 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 				}
 				else {	//Internal node
 					buf1[0]='0';
-					puts("check leaf");
 					encode(carrier,fill,buf1,&code_read); //Sets bit to 0
 					if(*fill == 8) {
 						if(writeChar(writer,carrier,fill,bits)) {

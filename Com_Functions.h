@@ -5,7 +5,7 @@
 
 struct node 
 {
-	char symbol;
+	unsigned char symbol;
 	int parent;
 	int child_left;
 	int child_right;
@@ -13,6 +13,8 @@ struct node
 };
 
 int freqCalc(int*, char*);
+
+int distinctCalc(int*, char*, int*, int*);
 
 void initTree(struct node*, int);
 
@@ -26,7 +28,7 @@ int codeGen(struct node*, unsigned char**, int); //Not the same as Dec_Functions
 
 bool leftmost(int*, int, int);
 
-unsigned char* binaryChar(char);
+unsigned char* binaryChar(unsigned char);
 
 void encode(unsigned char*, int*, unsigned char*, int*);
 

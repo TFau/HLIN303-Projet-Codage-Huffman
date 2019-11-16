@@ -14,16 +14,13 @@ int main(int argc, char** argv)
 
 	/* Frequency Calc Function */
 	int ProcTable[256]; //Extended ASCII
-	freqCalc(ProcTable,argv[1]); //File character parsing
+	//File character parsing
+	if(freqCalc(ProcTable,argv[1])) //Returns 0 on success, 1 in case of failed realloc
+		return 2;
 	//Distinct character count and total character count
-	int nonzero_count=0;
-	int sum=0;
-	for(int i=0; i < 256; i++) {
-		if(ProcTable[i] != 0) {
-			nonzero_count++;
-			sum+=ProcTable[i];
-		}
-	}
+	int nonzero_count=0, sum=0;
+	if(distinctCalc(ProcTable,argv[1],&nonzero_count,&sum)) //0 on success, 1 in case of failed realloc
+		return 3; //Error message printed by distinctCalc
 	printf("%d caractères: %d bits.\n%d caractères distincts.\n\n", sum, sum*8, nonzero_count);
 
 	/* Tree construction */
@@ -42,8 +39,8 @@ int main(int argc, char** argv)
 	for(int i=0; i < 256; i++)
 		CodeTable[i]=NULL;	//Otherwise free() causes segfault
 	//Generates the code for each character by traversing the tree
-	if(codeGen(Tree,CodeTable,nonzero_count)) //Returns 0 on success, 1 in case of failed realloc
-		return 2; //Error message printed by codeGen
+	if(codeGen(Tree,CodeTable,nonzero_count)) //0 on success, 1 in case of failed realloc
+		return 4; //Error message printed by codeGen
 	puts("Codes générés...\n");
 	//Print the code array if -p option used
 	if(argc == 3 && argv[2][1] == 'p') {
@@ -54,6 +51,7 @@ int main(int argc, char** argv)
 				counter++;
 			}
 		}
+		puts("");
 	}
 	else puts("Utilisez l'option -p pour afficher les caractères et leurs codes respectifs.\n");
 
@@ -75,10 +73,10 @@ int main(int argc, char** argv)
 	FILE* huffwrite=tmpfile();
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
-		return 3;
+		return 5;
 	}
 	if(encodeIDX(huffwrite,Tree,treesize,&CarrierByte,&fill,&bits,nonzero_count,sum)) //0 on success, 1 or more in case of failure
-		return 4; //Error message printed by encodeIDX
+		return 6; //Error message printed by encodeIDX
 	/* The carrier with the last part of the index may not be full, and may also hold some of the coded message itself. This is not
 	a problem as long as it is properly written to the file. The decoder will be able to read the carrier up to the last bit of the index,
 	stop reading, rebuild the tree and generate the codes, then resume reading. */
@@ -91,11 +89,11 @@ int main(int argc, char** argv)
 	FILE* huff=fopen(argv[1], "r");
 	if(!huff) {
 		perror("Echec de la lecture");
-		return 5;
+		return 7;
 	}
 	//CarrierByte and fill are NOT reset: start from last written bit of current carrier byte
 	if(encodeMSG(huffwrite,huff,CodeTable,&CarrierByte,&fill,&bits,sum)) //0 on success, 1 or more in case of failure
-		return 6; //Error message printed by encodeMSG
+		return 8; //Error message printed by encodeMSG
 	//End of message
 	if(fill) {
 		fputc(CarrierByte,huffwrite);
@@ -107,7 +105,7 @@ int main(int argc, char** argv)
 	/* Write the encoded message */
 	fclose(huff);
 	if(encodeWrite(huffwrite,huff,argv[1])) //0 on success, 1 or more in case of failure
-		return 7; //Error message in encodeWrite
+		return 9; //Error message in encodeWrite
 	fclose(huffwrite);
 
 	printf("Message codé...\n%d bits.\n%.3f bits par caractère.\n\n", bits, (float)bits/sum);
