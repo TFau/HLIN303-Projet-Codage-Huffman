@@ -9,7 +9,7 @@
 int main(int argc, char** argv)
 {
 	if(argc < 2) {
-		puts("Erreur: le fichier à lire et à compresser doit être passé en paramètre."); //writes to stdout and adds a newline, fputs does not
+		fputs("Erreur: le fichier à lire et à compresser doit être passé en paramètre.", stderr); //writes to stdout and adds a newline, fputs does not
 		return 1;
 	}
 
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	//Tree node array. Max possible size 511 (2*256 - 1).
 	struct node Tree[treesize];
 	initTree(Tree,treesize); //Tree initialization with base values
-	freqTree(Tree,ProcTable,nonzero_count,sum); //Set character frequencies
+	freqTree(Tree,ProcTable,sum); //Set character frequencies
 	int counter=nonzero_count-1;
 	buildTree(Tree,counter); //Linking tree nodes via lowest frequencies
 	puts("Arbre initialisé...\nArbre construit...\n");
@@ -61,9 +61,9 @@ int main(int argc, char** argv)
 	/////////////////
 	unsigned char CarrierByte='\0';
 	int fill=0, bits=0;
-	//When carrier is full, write it to the file with fputc, reset carrier fill to 0 and set next code bits
-	//When code fully read, reset code_read to 0 and read next character
-	//When code only partially read and carrier full, set the remainder of the code onto the next carrier
+	//When the carrier is full, write it to the file with fputc, reset carrier fill to 0 and set next code bits
+	//When the code is fully read, reset code_read to 0 and read next character
+	//When the code is only partially read and the carrier is full, set the remainder of the code onto the next carrier
 
 	/* Index size
 	For n  distinct characters, 2n-1 bits for the tree nodes, 8n bits for the characters themselves,
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 		perror("Echec de la lecture");
 		return 7;
 	}
-	//CarrierByte and fill are NOT reset: start from last written bit of current carrier byte
+	//CarrierByte and fill are NOT reset; start from last written bit of current carrier byte
 	if(encodeMSG(huffwrite,huff,CodeTable,&CarrierByte,&fill,&bits,sum)) //0 on success, 1 or more in case of failure
 		return 8; //Error message printed by encodeMSG
 	//End of message

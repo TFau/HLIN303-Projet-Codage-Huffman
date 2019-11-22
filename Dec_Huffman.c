@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
 	if(argc < 2) {
-		puts("Erreur: le fichier à lire et à décompresser doit être passé en paramètre.");
+		fputs("Erreur: le fichier à lire et à décompresser doit être passé en paramètre.", stderr);
 		return 1;
 	}
 
@@ -17,6 +17,7 @@ int main(int argc, char** argv)
 		perror("Echec de la lecture");
 		return 2;
 	}
+	
 	/* Get message size */
 	int sum, nonzero_count;
 	if(readStart(huff,&sum,&nonzero_count)) //Returns 0 on success, 1 in case of failure
@@ -64,7 +65,7 @@ int main(int argc, char** argv)
 		perror("Echec de l'écriture");
 		return 6;
 	}
-	//CarrierByte and fill NOT reset, start from last written bit of current carrier byte
+	//CarrierByte and fill are NOT reset; start from last written bit of current carrier byte
 	if(decMSGmain(huff,huffwrite,DecodeTable,Tree,&CarrierByte,&fill,treesize,sum)) //0 on success, 1 or more in case of failure
 		return 7; //Error message printed by decMSGmain
 	for(int i=0; i < treesize; i++)

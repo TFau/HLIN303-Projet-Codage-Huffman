@@ -12,12 +12,12 @@ int readStart(FILE* reader, int* total_char, int* unique_char)
 	fread(buf,sizeof(buf),1,reader);
 	*total_char=buf[0];
 	if(ferror(reader)) {
-		puts("Erreur durant la lecture.");
+		fputs("Erreur durant la lecture.", stderr);
 		return 1;
 	}
 	*unique_char=fgetc(reader);
 	if(ferror(reader)) {
-		puts("Erreur durant la lecture.");
+		fputs("Erreur durant la lecture.", stderr);
 		return 2;
 	}
 	return 0;
@@ -93,7 +93,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 {
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
-		puts("Erreur durant la lecture.");
+		fputs("Erreur durant la lecture.", stderr);
 		return 1;
 	}
 	*fill=0;
@@ -107,7 +107,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 	//The decoder must extract the node and symbol bits, and place each node or symbol into a byte of the buffer for easier processing
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
-		puts("Erreur durant la lecture.");
+		fputs("Erreur durant la lecture.", stderr);
 		return 1;
 	}
 	while(counter < size+unique_char) {
@@ -118,7 +118,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 			}
 		}
 		if(oned(treeArray[counter])) {	//Leaf code
-			while(code_read < 8) {
+			while(code_read < CHAR_BIT) {
 				//Temp array for piece of character byte
 				decodeIDX(carrier,fill,&code_read,buftemp,&temp_pos);
 				if(*fill == CHAR_BIT) {
@@ -201,7 +201,7 @@ unsigned char* extractCode(struct node* T, int i)
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
 	//No need to free(code), realloc frees code itself
 	//"Causes double free or corruption (out)" error and crash
-	if(!(codeOpt))
+	if(!codeOpt)
 		free(code);
 	else
 		code=NULL;
@@ -214,7 +214,7 @@ int deCodeGen(struct node* T, unsigned char** Table, int size)
 		if(T[i].symbol != 0) {
 			Table[i]=extractCode(T,i);
 			if(Table[i] == NULL) {
-				puts("Erreur: mémoire insuffisante.");
+				fputs("Erreur: mémoire insuffisante.", stderr);
 				return 1;
 			}
 		}
@@ -279,7 +279,7 @@ int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T
 		}
 		fputc(T[char_found].symbol,writer);
 		if(ferror(writer)) {
-			puts("Erreur durant l'écriture.");
+			fputs("Erreur durant l'écriture.", stderr);
 			return 3;
 		}
 		counter++;
@@ -301,7 +301,7 @@ int decodeWrite(FILE* temp, FILE* writer, char* textfile)
 	while((counter=fgetc(temp)) != EOF) {
 		fputc(counter,writer);
 		if(ferror(writer)) {
-			puts("Erreur durant l'écriture.");
+			fputs("Erreur durant l'écriture.", stderr);
 			return 2;
 		}
 	}

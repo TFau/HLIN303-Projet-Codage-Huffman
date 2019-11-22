@@ -18,7 +18,7 @@ int distinctCalc(int*, char*, int*, int*);
 
 void initTree(struct node*, int);
 
-void freqTree(struct node*, int*, int, int);
+void freqTree(struct node*, int*, int);
 
 void buildTree(struct node*, int);
 

@@ -19,11 +19,10 @@ int freqCalc(int* T, char* textfile)
 	/* the fgetc function obtains that character as an unsigned char converted to
 	an int and advances the associated file position indicator (C11 standard) */
 	while((counter=fgetc(huff)) != EOF) {
-		//"undechaque" file prints 239,191,189 repeatedly: UTF8 3-byte character �
-		T[counter]++;
+		T[counter]++; //"undechaque" file prints 239,191,189 repeatedly: UTF8 3-byte character �
 	}
 	if(ferror(huff)) {
-		puts("Erreur durant la lecture.");
+		fputs("Erreur durant la lecture.", stderr);
 		return 2;
 	}
 	else if(feof(huff))
@@ -60,7 +59,7 @@ int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 
 void initTree(struct node* T, int size)
 {
-	for(int i = 0; i < size; i++) {
+	for(int i=0; i < size; i++) {
 		T[i].symbol=0;
 		T[i].parent=-1;
 		T[i].child_left=-1;
@@ -69,17 +68,14 @@ void initTree(struct node* T, int size)
 	}
 }
 
-void freqTree(struct node* T, int* Table, int unique_char, int total_char)
+void freqTree(struct node* T, int* Table, int total_char)
 {
-	int outer=0, inner=0;
-	while(outer < unique_char) {
-		while(inner <= UCHAR_MAX) {
-			if(Table[inner] != 0) {
-				T[outer].symbol=(unsigned char)inner;
-				T[outer].freq=(double)Table[inner]/total_char;
-				outer++;
-			}
-			inner++;
+	int j=0;
+	for(int i=0; i <= UCHAR_MAX; i++) {
+		if(Table[i] != 0) {
+			T[j].symbol=(unsigned char)i;
+			T[j].freq=(double)Table[i]/total_char;
+			j++;
 		}
 	}
 }
@@ -139,7 +135,7 @@ unsigned char* extractCode(struct node* T, int i)
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
 	//No need to free(code), realloc frees code itself
 	//"Causes double free or corruption (out)" error and crash
-	if(!(codeOpt))
+	if(!codeOpt)
 		free(code);
 	else
 		code=NULL;
@@ -153,7 +149,7 @@ int codeGen(struct node* T, unsigned char** Table, int unique_char)
 		counter=T[i].symbol;	//To get numerical value
 		Table[counter]=extractCode(T,i);
 		if(Table[counter] == NULL) {
-			puts("Erreur: mémoire insuffisante.");
+			fputs("Erreur: mémoire insuffisante.", stderr);
 			return 1;
 		}
 	}
@@ -218,7 +214,7 @@ int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
 	fputc(*carrier,writer);
 	if(ferror(writer)) {
-		puts("Erreur durant l'écriture.");
+		fputs("Erreur durant l'écriture.", stderr);
 		return 1;
 	}
 	*bits+=CHAR_BIT;
@@ -235,12 +231,12 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	if(ferror(writer)) {
-		puts("Erreur durant l'écriture.");
+		fputs("Erreur durant l'écriture.", stderr);
 		return 1;
 	}
 	fputc(unique_char,writer); //Write number of distinct characters (0-255)
 	if(ferror(writer)) {
-		puts("Erreur durant l'écriture.");
+		fputs("Erreur durant l'écriture.", stderr);
 		return 2;
 	}
 	//Tree is encoded by depth level, from top to bottom, and from left to right on each level
@@ -318,7 +314,7 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 	while(counter < total_char) {	//total_char==total characters
 		Xchar=fgetc(reader);
 		if(ferror(reader)) {
-			puts("Erreur durant la lecture.");
+			fputs("Erreur durant la lecture.", stderr);
 			return 1;
 		}
 		buftemp=malloc((strlen(Table[Xchar])+1)*sizeof(unsigned char));	//Allocate size of code+nullchar
@@ -355,7 +351,7 @@ int encodeWrite(FILE* temp, FILE* writer, char* textfile)
 	while((counter=fgetc(temp)) != EOF) {
 		fputc(counter,writer);
 		if(ferror(writer)) {
-			puts("Erreur durant l'écriture.");
+			fputs("Erreur durant l'écriture.", stderr);
 			return 2;
 		}
 	}
