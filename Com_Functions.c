@@ -16,8 +16,8 @@ int freqCalc(int* T, char* textfile)
 		return 1;
 	}
 	unsigned int counter;	//int needed for EOF
-	/* the fgetc function obtains that character as an unsigned char converted to
-	an int and advances the associated file position indicator (C11 standard) */
+	/* "the fgetc function obtains that character as an unsigned char converted to
+	an int and advances the associated file position indicator" (C11 standard) */
 	while((counter=fgetc(huff)) != EOF) {
 		T[counter]++; //"undechaque" file prints 239,191,189 repeatedly: UTF8 3-byte character �
 	}

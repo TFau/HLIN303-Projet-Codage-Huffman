@@ -3,7 +3,7 @@
 
 import os, re
 
-#srcdir to keep track of where to copy the files; created by the program
+
 def traversal(srcdir, dirpath) :
 	dirlist=os.listdir(dirpath)
 	for fil in dirlist:
@@ -14,6 +14,8 @@ def traversal(srcdir, dirpath) :
 					os.system("chmod 754 "+dirpath+"/"+fil)
 					os.system("cp "+dirpath+"/"+fil+" "+srcdir+"/Huff_Files_To_Compress")
 					os.system("echo '&!FILE&!"+fil+"&!ADR&!"+dirpath+"&!SEP&!' >> Huff_Files_To_Compress/"+fil)
+					os.system("cat Huff_Files_To_Compress/"+fil+" >> Huff_Files_To_Compress/Huff_To_Compress.txt")
+					os.system("rm -f Huff_Files_To_Compress/"+fil)
 			else:
 				traversal(srcdir,dirpath+"/"+fil) #Recursive
 

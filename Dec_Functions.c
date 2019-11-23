@@ -33,20 +33,6 @@ void initTree(struct node* T, int size)
 	}
 }
 
-bool oned(unsigned char byte)
-//Pro solution: return byte && !(byte & (b-1)); (returns is_power_of_two)
-{
-	bool bit;
-	for(int i=CHAR_BIT-1; i > 0; i--) {
-		bit=byte&(1<<i);
-		if(bit) {
-			return false;
-		}
-	}
-	bit=byte&(1<<0);
-	return bit;
-}
-
 unsigned char decodeSingle(unsigned char* carrier, int* fill)
 {
 	unsigned char decode='\0';
@@ -117,7 +103,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 				return 2;
 			}
 		}
-		if(oned(treeArray[counter])) {	//Leaf code
+		if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) { //Power of two (i.e single bit) check
 			while(code_read < CHAR_BIT) {
 				//Temp array for piece of character byte
 				decodeIDX(carrier,fill,&code_read,buftemp,&temp_pos);
@@ -144,7 +130,7 @@ void arraytoTree(unsigned char* treeArray, struct node* T, int size, int unique_
 		if(treeArray[counter] == '\0') {
 			nodes_count++;
 		}
-		else if(oned(treeArray[counter])) {
+		else if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) {
 			T[nodes_count].symbol=treeArray[counter+1];
 			nodes_count++;
 		}

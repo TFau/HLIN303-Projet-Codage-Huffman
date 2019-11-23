@@ -16,8 +16,6 @@ int readStart(FILE*, int*, int*);
 
 void initTree(struct node*, int);
 
-bool oned(unsigned char);
-
 unsigned char decodeSingle(unsigned char*, int*);
 
 void decodeIDX(unsigned char*, int*, int*, unsigned char*, int*);

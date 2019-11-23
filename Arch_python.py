@@ -4,9 +4,6 @@
 import os, sys
 from Arch_python_func import traversal, user_input, genesis
 
-###########
-# PROGRAM #
-###########
 
 #Program launch parameter check
 if len(sys.argv) < 2:
@@ -30,28 +27,21 @@ if os.path.isfile(sys.argv[1]):
 
 #The program's parameter is a directory
 else:
-	os.system("mkdir Huff_Files_To_Compress")	#Directory in which the files to compress are copied before concatenation
+	os.system("mkdir Huff_Files_To_Compress; touch Huff_Files_To_Compress/Huff_To_Compress.txt") #Temporary directory for concatenation file
+	os.system("chmod 754 Huff_Files_To_Compress/Huff_To_Compress.txt")
 	traversal(os.getcwd(),sys.argv[1]) #getcwd() returns current working directory
-
-	dirlist=os.listdir("Huff_Files_To_Compress")
 	#Check if the collected .txt files are actually in plain text
-	for fil in dirlist:
-		try:
-			with open("Huff_Files_To_Compress/"+fil, "r") as testfil:
-				for line in testfil.readlines():
-					pass
-		except UnicodeDecodeError:	#The file is a binary file--remove it
-			os.system("rm -f Huff_Files_To_Compress/"+fil)
-		else:
-			pass
-
-	#Build command line string from the file list
-	string=""
-	for f in dirlist:
-		string+=f+" "
-	os.system("touch Huff_Files_To_Compress/Huff_To_Compress.txt; chmod 754 Huff_Files_To_Compress/Huff_To_Compress.txt") #Create concatenation file
-	os.system("cd Huff_Files_To_Compress; cat "+string+" > Huff_To_Compress.txt") #Concatenate all files into the main file
-	os.system("cd Huff_Files_To_Compress; rm -f "+string) #Delete copied files
+	try:
+		with open("Huff_Files_To_Compress/Huff_To_Compress.txt", "r") as fil:
+			for line in fil:
+				pass
+	except UnicodeDecodeError:
+		sys.stderr.write("Erreur: le fichier à compresser contient du code binaire. Opération interrompue.")
+		sys.stderr.write("Veuillez modifier l'extension .txt du ou des fichiers binaires présents dans vos dossiers.")
+		os.system("mv Huff_Files_To_Compress/Huff_To_Compress.txt .; rm -d Huff_Files_To_Compress")
+		exit()
+	else:
+		pass
 	os.system("mv Huff_Files_To_Compress/Huff_To_Compress.txt .; rm -d Huff_Files_To_Compress")
 
 	#Call encoder
