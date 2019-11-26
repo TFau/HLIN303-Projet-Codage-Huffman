@@ -173,7 +173,7 @@ unsigned char* binaryChar(unsigned char n)
 	//Convert char numerical value to binary value held in 8-char array
 	unsigned char *T=malloc(9*sizeof(unsigned char));	//Array with null terminator cell
 	int r;
-	for(int i=7; i >=0; i--) {
+	for(int i=CHAR_BIT-1; i >=0; i--) {
 		if(n > 0) {
 			r=n%2;
 			if(r & 1) {
@@ -188,7 +188,7 @@ unsigned char* binaryChar(unsigned char n)
 			T[i]='0';	//Fill out most significant bits with 0's if needed
 		}
 	}
-	T[8]='\0';
+	T[CHAR_BIT]='\0';
 	return T;
 }
 

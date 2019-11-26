@@ -133,6 +133,7 @@ void arraytoTree(unsigned char* treeArray, struct node* T, int size, int unique_
 		else if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) {
 			T[nodes_count].symbol=treeArray[counter+1];
 			nodes_count++;
+			counter++;	//To skip character treeArray's next cell
 		}
 		counter++;
 	}

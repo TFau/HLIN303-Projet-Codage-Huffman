@@ -13,7 +13,7 @@ def traversal(srcdir, dirpath) :
 				if len(ext) > 1 and ext[-1] == "txt":
 					os.system("chmod 754 "+dirpath+"/"+fil)
 					os.system("cp "+dirpath+"/"+fil+" "+srcdir+"/Huff_Files_To_Compress")
-					os.system("echo '&!FILE&!"+fil+"&!ADR&!"+dirpath+"&!SEP&!' >> Huff_Files_To_Compress/"+fil)
+					os.system("echo '\n&!FILE&!"+fil+"&!ADR&!"+dirpath+"&!SEP&!' >> Huff_Files_To_Compress/"+fil) #Newline required
 					os.system("cat Huff_Files_To_Compress/"+fil+" >> Huff_Files_To_Compress/Huff_To_Compress.txt")
 					os.system("rm -f Huff_Files_To_Compress/"+fil)
 			else:
