@@ -1,8 +1,37 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-import os, re
+import os, re, sys
 
+
+def arg_parse(arg_list) :
+	f=""
+	for arg in sys.argv:
+		if os.path.exists(arg) and arg != arg_list[0]:
+			f=arg
+	if f == "":
+		sys.stderr.write("Erreur: dossier ou fichier inexistent.\n")
+		exit()
+	arg_list.remove(f)
+	return f
+
+def option_parse(opt_list) :
+	param=[] #Selected options list
+	optionByte=0
+	for opt in opt_list:
+		firstchar=opt.find('-')
+		if firstchar == 0:	#'-'' is the first character of the string, i.e. the string is an option
+			for i in opt:
+				if i != '-' and i in ('c', 'n'): #Add future options
+					param.append(i)
+	for initial in param:
+		if initial == 'n':	#Option new file
+			optionByte|=(1<<0)
+		if initial == 'd': #Option delete folder
+			optionByte|=(1<<1)
+		if initial == 'c':	#Option print codes
+			optionByte|=(1<<2)
+	return optionByte
 
 def traversal(srcdir, dirpath) :
 	dirlist=os.listdir(dirpath)
@@ -19,7 +48,7 @@ def traversal(srcdir, dirpath) :
 			else:
 				traversal(srcdir,dirpath+"/"+fil) #Recursive
 
-def user_input(string) :
+def user_input(string,optionCode) :
 	while True:
 		cont=input("Voulez-vous décompresser le fichier? y/n\n")
 		if cont not in ('y', 'Y', 'n', 'N'):
@@ -30,7 +59,7 @@ def user_input(string) :
 		print("Lancez le programme avec le fichier encodé en paramètre pour le décompresser.")
 		exit()
 	else:
-		os.system("./Decmpr_Huffman "+string)
+		os.system("./Decmpr_Huffman "+string+" "+str(optionCode))
 
 def genesis(bigfile) :
 	newfile=open("Huff_Temp_Name.txt", "w")	#New file to write the first original file
