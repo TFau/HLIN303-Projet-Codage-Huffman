@@ -10,7 +10,7 @@
 int main(int argc, char** argv)
 {
 	if(argc < 2) {
-		fputs("Erreur: le fichier à lire et à compresser doit être passé en paramètre.", stderr); //writes to stdout and adds a newline, fputs does not
+		fputs("Erreur: le fichier à lire et à compresser doit être passé en paramètre.\n", stderr); //writes to stdout and adds a newline, fputs does not
 		return 1;
 	}
 	unsigned char optByte;

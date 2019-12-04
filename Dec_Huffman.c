@@ -9,7 +9,7 @@
 int main(int argc, char** argv)
 {
 	if(argc < 2) {
-		fputs("Erreur: le fichier à lire et à décompresser doit être passé en paramètre.", stderr);
+		fputs("Erreur: le fichier à lire et à décompresser doit être passé en paramètre.\n", stderr);
 		return 1;
 	}
 	unsigned char optByte;

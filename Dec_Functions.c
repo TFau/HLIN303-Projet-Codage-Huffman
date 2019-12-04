@@ -12,12 +12,12 @@ int readStart(FILE* reader, int* total_char, int* unique_char)
 	fread(buf,sizeof(buf),1,reader);
 	*total_char=buf[0];
 	if(ferror(reader)) {
-		fputs("Erreur durant la lecture.", stderr);
+		fputs("Erreur durant la lecture.\n", stderr);
 		return 1;
 	}
 	*unique_char=fgetc(reader);
 	if(ferror(reader)) {
-		fputs("Erreur durant la lecture.", stderr);
+		fputs("Erreur durant la lecture.\n", stderr);
 		return 2;
 	}
 	return 0;
@@ -79,7 +79,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 {
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
-		fputs("Erreur durant la lecture.", stderr);
+		fputs("Erreur durant la lecture.\n", stderr);
 		return 1;
 	}
 	*fill=0;
@@ -93,7 +93,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 	//The decoder must extract the node and symbol bits, and place each node or symbol into a byte of the buffer for easier processing
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
-		fputs("Erreur durant la lecture.", stderr);
+		fputs("Erreur durant la lecture.\n", stderr);
 		return 1;
 	}
 	while(counter < size+unique_char) {
@@ -201,7 +201,7 @@ int deCodeGen(struct node* T, unsigned char** Table, int size)
 		if(T[i].symbol != 0) {
 			Table[i]=extractCode(T,i);
 			if(Table[i] == NULL) {
-				fputs("Erreur: mémoire insuffisante.", stderr);
+				fputs("Erreur: mémoire insuffisante.\n", stderr);
 				return 1;
 			}
 		}
@@ -266,7 +266,7 @@ int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T
 		}
 		fputc(T[char_found].symbol,writer);
 		if(ferror(writer)) {
-			fputs("Erreur durant l'écriture.", stderr);
+			fputs("Erreur durant l'écriture.\n", stderr);
 			return 3;
 		}
 		counter++;
@@ -288,7 +288,7 @@ int decodeWrite(FILE* temp, FILE* writer, char* textfile)
 	while((counter=fgetc(temp)) != EOF) {
 		fputc(counter,writer);
 		if(ferror(writer)) {
-			fputs("Erreur durant l'écriture.", stderr);
+			fputs("Erreur durant l'écriture.\n", stderr);
 			return 2;
 		}
 	}

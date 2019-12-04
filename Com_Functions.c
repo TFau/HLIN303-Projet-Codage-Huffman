@@ -22,7 +22,7 @@ int freqCalc(int* T, char* textfile)
 		T[counter]++; //"undechaque" file prints 239,191,189 repeatedly: UTF8 3-byte character �
 	}
 	if(ferror(huff)) {
-		fputs("Erreur durant la lecture.", stderr);
+		fputs("Erreur durant la lecture.\n", stderr);
 		return 2;
 	}
 	else if(feof(huff))
@@ -149,7 +149,7 @@ int codeGen(struct node* T, unsigned char** Table, int unique_char)
 		counter=T[i].symbol;	//To get numerical value
 		Table[counter]=extractCode(T,i);
 		if(Table[counter] == NULL) {
-			fputs("Erreur: mémoire insuffisante.", stderr);
+			fputs("Erreur: mémoire insuffisante.\n", stderr);
 			return 1;
 		}
 	}
@@ -214,7 +214,7 @@ int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
 	fputc(*carrier,writer);
 	if(ferror(writer)) {
-		fputs("Erreur durant l'écriture.", stderr);
+		fputs("Erreur durant l'écriture.\n", stderr);
 		return 1;
 	}
 	*bits+=CHAR_BIT;
@@ -231,12 +231,12 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	if(ferror(writer)) {
-		fputs("Erreur durant l'écriture.", stderr);
+		fputs("Erreur durant l'écriture.\n", stderr);
 		return 1;
 	}
 	fputc(unique_char,writer); //Write number of distinct characters (0-255)
 	if(ferror(writer)) {
-		fputs("Erreur durant l'écriture.", stderr);
+		fputs("Erreur durant l'écriture.\n", stderr);
 		return 2;
 	}
 	//Tree is encoded by depth level, from top to bottom, and from left to right on each level
@@ -314,7 +314,7 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 	while(counter < total_char) {	//total_char==total characters
 		Xchar=fgetc(reader);
 		if(ferror(reader)) {
-			fputs("Erreur durant la lecture.", stderr);
+			fputs("Erreur durant la lecture.\n", stderr);
 			return 1;
 		}
 		buftemp=malloc((strlen(Table[Xchar])+1)*sizeof(unsigned char));	//Allocate size of code+nullchar
@@ -351,7 +351,7 @@ int encodeWrite(FILE* temp, FILE* writer, char* textfile)
 	while((counter=fgetc(temp)) != EOF) {
 		fputc(counter,writer);
 		if(ferror(writer)) {
-			fputs("Erreur durant l'écriture.", stderr);
+			fputs("Erreur durant l'écriture.\n", stderr);
 			return 2;
 		}
 	}

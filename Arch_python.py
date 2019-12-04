@@ -49,7 +49,7 @@ else:
 	#Call encoder
 	os.system("./Cmpr_Huffman Huff_To_Compress.txt "+str(optionCode))
 	if optionCode & (1<<1):
-		os.system("rm -rf "+file_to_proc)
+		os.system("rm -r "+file_to_proc)
 		wasdir=True
 	user_input("Huff_To_Compress.txt",optionCode)
 

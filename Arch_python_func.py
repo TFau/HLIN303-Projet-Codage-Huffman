@@ -22,12 +22,12 @@ def option_parse(opt_list) :
 		firstchar=opt.find('-')
 		if firstchar == 0:	#'-'' is the first character of the string, i.e. the string is an option
 			for i in opt:
-				if i != '-' and i in ('c', 'n'): #Add future options
+				if i != '-' and i in ('c', 'n', 'r'): #Add future options
 					param.append(i)
 	for initial in param:
 		if initial == 'n':	#Option new file
 			optionByte|=(1<<0)
-		if initial == 'd': #Option delete folder
+		if initial == 'r': #Option delete folder
 			optionByte|=(1<<1)
 		if initial == 'c':	#Option print codes
 			optionByte|=(1<<2)
