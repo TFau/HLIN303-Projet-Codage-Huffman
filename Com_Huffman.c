@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 	if(codeGen(Tree,CodeTable,nonzero_count)) //0 on success, 1 in case of failed realloc
 		return 4; //Error message printed by codeGen
 	puts("Codes générés...\n");
-	//Print the code array if -p option used
+	//Print the code array if -c option used
 	if(argc == 3 && (optByte & (1<<2))) {
 		counter=0; //Reuse
 		for(int i=0; i <= UCHAR_MAX; i++) {

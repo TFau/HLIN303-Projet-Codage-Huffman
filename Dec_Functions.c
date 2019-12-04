@@ -200,7 +200,7 @@ int deCodeGen(struct node* T, unsigned char** Table, int size)
 	for(int i=0; i < size; i++) {	//Leaves throughout tree, unlike in encoder tree
 		if(T[i].symbol != 0) {
 			Table[i]=extractCode(T,i);
-			if(Table[i] == NULL) {
+			if(!Table[i]) {
 				fputs("Erreur: mémoire insuffisante.\n", stderr);
 				return 1;
 			}

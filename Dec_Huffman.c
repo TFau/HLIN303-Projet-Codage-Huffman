@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	if(deCodeGen(Tree,DecodeTable,treesize)) //0 on success, 1 in case of failed realloc
 		return 5; //Error message printed by codeGen
 	puts("Codes régénérés...\n");
-	//Print the code array if -p option used
+	//Print the code array if -c option used
 	if(argc == 3 && (optByte & (1<<2))) {
 		for(size_t i=0; i < treesize; i++) {
 			if(Tree[i].symbol != 0) {

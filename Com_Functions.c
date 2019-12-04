@@ -148,7 +148,7 @@ int codeGen(struct node* T, unsigned char** Table, int unique_char)
 	for(int i=0; i < unique_char; i++) {	//All leaves
 		counter=T[i].symbol;	//To get numerical value
 		Table[counter]=extractCode(T,i);
-		if(Table[counter] == NULL) {
+		if(!Table[counter]) {
 			fputs("Erreur: mémoire insuffisante.\n", stderr);
 			return 1;
 		}
@@ -286,11 +286,10 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 					Tr[Tr[search].child_left].parent=-1;
 					T[Tr[search].child_left]=child_pos;	//Leftmost, smaller number in auxiliary table
 					child_pos++;
-					nodes_next++;
 					Tr[Tr[search].child_right].parent=-1;
 					T[Tr[search].child_right]=child_pos;
 					child_pos++;
-					nodes_next++;
+					nodes_next+=2;
 				}
 				Tr[search].freq=0;	//Neutralizes node in if condition, even with parent==-1
 				T[search]=-1; //Neutralizes node in auxiliary table, will not be considered by leftmost algorithm
