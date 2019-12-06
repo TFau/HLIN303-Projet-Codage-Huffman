@@ -10,6 +10,7 @@ if len(sys.argv) < 2:
 	sys.stderr.write("Erreur: indiquez en paramètre du programme le fichier ou dossier à traiter.\n")
 	exit()
 file_to_proc=arg_parse(sys.argv) #Exits if file or folder doesn't exist
+sys.argv.remove(file_to_proc)
 
 #Retrieving options as integer from argv
 optionCode=option_parse(sys.argv)

@@ -12,7 +12,6 @@ def arg_parse(arg_list) :
 	if f == "":
 		sys.stderr.write("Erreur: dossier ou fichier inexistent.\n")
 		exit()
-	arg_list.remove(f)
 	return f
 
 def option_parse(opt_list) :
@@ -20,7 +19,7 @@ def option_parse(opt_list) :
 	optionByte=0
 	for opt in opt_list:
 		firstchar=opt.find('-')
-		if firstchar == 0:	#'-'' is the first character of the string, i.e. the string is an option
+		if firstchar == 0:	#'-' is the first character of the string, i.e. the string is an option
 			for i in opt:
 				if i != '-' and i in ('c', 'n', 'r'): #Add future options
 					param.append(i)
@@ -69,6 +68,9 @@ def genesis(bigfile) :
 			if "&!FILE&!" in line:
 				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
 				newfile.close()
+				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator
+					eraser.seek(-1, os.SEEK_END)
+					eraser.truncate()
 				os.system("mv Huff_Temp_Name.txt "+file_and_path.group(1))
 				#Moving the original files to their original positions, creating directories if necessary
 				path_list=file_and_path.group(2).split("/")
