@@ -171,7 +171,7 @@ bool leftmost(int* T, int size, int n)
 unsigned char* binaryChar(unsigned char n)
 {
 	//Convert char numerical value to binary value held in 8-char array
-	unsigned char *T=malloc(9*sizeof(unsigned char));	//Array with null terminator cell
+	unsigned char *T=malloc((CHAR_BIT+1)*sizeof(unsigned char));	//Array with null terminator cell
 	int r;
 	for(int i=CHAR_BIT-1; i >=0; i--) {
 		if(n > 0) {
@@ -316,6 +316,7 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 			fputs("Erreur durant la lecture.\n", stderr);
 			return 1;
 		}
+		printf("character read: %c\n", Xchar);
 		buftemp=malloc((strlen(Table[Xchar])+1)*sizeof(unsigned char));	//Allocate size of code+nullchar
 		strcpy(buftemp,Table[Xchar]);	//strcpy copies the nullchar
 		length=strlen(buftemp);

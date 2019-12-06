@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 		optByte=atoi(argv[2]);
 
 	/* Frequency Calc Function */
-	int ProcTable[UCHAR_MAX+1]; //Extended ASCII
+	int ProcTable[UCHAR_MAX+1];
 	//File character parsing
 	if(freqCalc(ProcTable,argv[1])) //Returns 0 on success, 1 in case of failed realloc
 		return 2;
