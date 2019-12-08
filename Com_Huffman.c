@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 	/* Write the encoded message */
 	fclose(huff);
 	if(encodeWrite(huffwrite,huff,argv[1])) //0 on success, 1 or more in case of failure
-		return 9; //Error message in encodeWrite
+			return 9; //Error message in encodeWrite
 	fclose(huffwrite);
 
 	printf("Message codé...\n%d bits.\n%.3f bits par caractère.\n\n", bits, (float)bits/sum);

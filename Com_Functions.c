@@ -196,7 +196,7 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 {
 	int size=strlen(code)-*code_read;	//Code to write, without null terminator
 	//8 encodeable bits
-	while(size > 0 && *fill < CHAR_BIT) {	//While there is still code to write and the carrier byte isn't full
+	while(size-- > 0 && *fill < CHAR_BIT) {	//While there is still code to write and the carrier byte isn't full
 		//Starts reading code array after already written code
 		if(code[*code_read] & 1) {	//'1' is coded as 49, odd number with least significant bit 1
 			*carrier|=(1<<(CHAR_BIT-1-*fill));
@@ -204,7 +204,6 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 		else {
 			*carrier&=(~(1<<(CHAR_BIT-1-*fill)));
 		}
-		size--;
 		(*fill)++;	//Without parentheses, ++ increments the pointer itself (operator has higher priority than *)
 		(*code_read)++;
 	}
@@ -228,7 +227,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 	unsigned int buf0[1]={total_char};	//4 byte storage
 	*bits+=32+CHAR_BIT;
 	unsigned char buf1[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
-	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
+	unsigned char *symbol=NULL; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	if(ferror(writer)) {
 		fputs("Erreur durant l'écriture.\n", stderr);
@@ -270,7 +269,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 							}
 						}
 					}
-					free(symbol);
+					free(symbol); symbol=NULL;
 					code_read=0;
 				}
 				else {	//Internal node
@@ -309,8 +308,8 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 	*bits=0-*fill;
 	int length;
 	unsigned char Xchar='\0';
-	unsigned char* buftemp;
-	while(counter < total_char) {	//total_char==total characters
+	unsigned char* buftemp=NULL;
+	while(counter++ < total_char) {	//total_char==total characters
 		Xchar=fgetc(reader);
 		if(ferror(reader)) {
 			fputs("Erreur durant la lecture.\n", stderr);
@@ -328,8 +327,7 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 			}
 		}
 		code_read=0;
-		counter++;
-		free(buftemp);
+		free(buftemp); buftemp=NULL;
 	}
 	return 0;
 }

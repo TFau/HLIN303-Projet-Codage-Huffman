@@ -53,8 +53,8 @@ void decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char*
 			T[*pos]='0';
 		}
 		(*pos)++;
-		(*fill)++;
 		(*code_read)++;
+		(*fill)++;
 	}	
 }
 
@@ -255,7 +255,7 @@ int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T
 {
 	int counter=0, temp_pos=0, char_found=-1;
 	unsigned char buftemp[UCHAR_MAX+1];
-	while(counter < total_char) {
+	while(counter++ < total_char) {
 		while(char_found == -1) {
 			char_found=decodeMSG(carrier,fill,buftemp,&temp_pos,Table,size);
 			if(*fill == CHAR_BIT) {
@@ -269,7 +269,6 @@ int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T
 			fputs("Erreur durant l'écriture.\n", stderr);
 			return 3;
 		}
-		counter++;
 		temp_pos=0;
 		char_found=-1;
 	}
