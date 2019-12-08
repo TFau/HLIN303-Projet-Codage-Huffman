@@ -64,7 +64,8 @@ int main(int argc, char** argv)
 	else puts("Utilisez l'option -c pour afficher les caractères et leurs codes respectifs.\n");
 
 	/* Decode message */
-	FILE* huffwrite=tmpfile();
+	char* filename=newFilename(argv[1]);
+	FILE* huffwrite=fopen(filename, "w");
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
 		return 6;
@@ -72,14 +73,12 @@ int main(int argc, char** argv)
 	//CarrierByte and fill are NOT reset; start from last written bit of current carrier byte
 	if(decMSGmain(huff,huffwrite,DecodeTable,Tree,&CarrierByte,&fill,treesize,sum)) //0 on success, 1 or more in case of failure
 		return 7; //Error message printed by decMSGmain
+
+	fclose(huff);
+	fclose(huffwrite);
 	for(int i=0; i < treesize; i++)
 		free(DecodeTable[i]);
-
-	/* Write the decoded message */
-	fclose(huff);
-	if(decodeWrite(huffwrite,huff,argv[1])) //0 on success, 1 in case of failure
-		return 8; //Error message printed by decodeWrite
-	fclose(huffwrite);
+	free(filename);
 
 	puts("Message décodé...\n");
 	puts("Décompression terminée avec succès.\n###################################");

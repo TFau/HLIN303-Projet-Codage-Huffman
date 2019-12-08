@@ -75,7 +75,8 @@ int main(int argc, char** argv)
 	Total: 10n + 39 bits, 1.25n + 4.875 bytes */
 
 	/* Encode the tree */
-	FILE* huffwrite=tmpfile();
+	char* filename=newFilename(argv[1]);
+	FILE* huffwrite=fopen(filename, "wb");
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
 		return 5;
@@ -104,14 +105,11 @@ int main(int argc, char** argv)
 		fputc(CarrierByte,huffwrite);
 		bits+=CHAR_BIT;	//All 8 bits sent, even if the last part of the code is only written on the most significant ones
 	}
+	fclose(huff);
+	fclose(huffwrite);
 	for(int i=0; i <= UCHAR_MAX; i++)
 		free(CodeTable[i]);
-
-	/* Write the encoded message */
-	fclose(huff);
-	if(encodeWrite(huffwrite,huff,argv[1])) //0 on success, 1 or more in case of failure
-			return 9; //Error message in encodeWrite
-	fclose(huffwrite);
+	free(filename);
 
 	printf("Message codé...\n%d bits.\n%.3f bits par caractère.\n\n", bits, (float)bits/sum);
 	printf("Total: %d bits.\n", index_b+bits);

@@ -32,7 +32,7 @@ def option_parse(opt_list) :
 			optionByte|=(1<<2)
 	return optionByte
 
-def traversal(srcdir, dirpath) :
+def traversal(srcdir, dirpath, destfile) :
 	dirlist=os.listdir(dirpath)
 	for fil in dirlist:
 		if os.access(dirpath+"/"+fil,os.R_OK):	#Path readability
@@ -42,10 +42,10 @@ def traversal(srcdir, dirpath) :
 					os.system("chmod 754 "+dirpath+"/"+fil)
 					os.system("cp "+dirpath+"/"+fil+" "+srcdir+"/Huff_Files_To_Compress")
 					os.system("echo '\n&!FILE&!"+fil+"&!ADR&!"+dirpath+"&!SEP&!' >> Huff_Files_To_Compress/"+fil) #Newline required
-					os.system("cat Huff_Files_To_Compress/"+fil+" >> Huff_Files_To_Compress/Huff_To_Compress.txt")
+					os.system("cat Huff_Files_To_Compress/"+fil+" >> Huff_Files_To_Compress/"+destfile)
 					os.system("rm -f Huff_Files_To_Compress/"+fil)
 			else:
-				traversal(srcdir,dirpath+"/"+fil) #Recursive
+				traversal(srcdir,dirpath+"/"+fil,destfile) #Recursive
 
 def user_input(string,optionCode) :
 	while True:
@@ -64,11 +64,11 @@ def genesis(bigfile) :
 	newfile=open("Huff_Temp_Name.txt", "w")	#New file to write the first original file
 	with open(bigfile, "r+") as fil:
 		for line in fil:
-			#The newfile will be "split off" with its original name when the terminating character is read
+			#The newfile will be "split off" with its original name when a separator is read
 			if "&!FILE&!" in line:
 				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
 				newfile.close()
-				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator, b required for seek method
+				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator, "b" required for seek method
 					eraser.seek(-1, os.SEEK_END)
 					eraser.truncate()
 				os.system("mv Huff_Temp_Name.txt "+file_and_path.group(1))

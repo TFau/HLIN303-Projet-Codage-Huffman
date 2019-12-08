@@ -26,6 +26,8 @@ unsigned char* extractCode(struct node*, int); //Also in Dec_Functions.h
 
 int codeGen(struct node*, unsigned char**, int); //Not the same as Dec_Functions.h deCodeGen
 
+char* newFilename(char*); //Prefixes file name with "ENCODED_"
+
 bool leftmost(int*, int, int);
 
 unsigned char* binaryChar(unsigned char);

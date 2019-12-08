@@ -209,6 +209,15 @@ int deCodeGen(struct node* T, unsigned char** Table, int size)
 	return 0;
 }
 
+char* newFilename(char* oldFilename)
+{
+	char* new_name=malloc((strlen(oldFilename)+9)*sizeof(char));
+	new_name[0]='D'; new_name[1]='E'; new_name[2]='C'; new_name[3]='O';
+	new_name[4]='D'; new_name[5]='E'; new_name[6]='D'; new_name[7]='_';
+	new_name[8]='\0';	//"DECODED_"
+	return strcat(new_name,oldFilename);
+}
+
 int codeCheck(unsigned char* T, int pos, unsigned char** DT, int size)
 {
 	int j, length;
