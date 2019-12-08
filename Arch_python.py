@@ -24,9 +24,14 @@ if os.path.isfile(file_to_proc):
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
 		os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode))
+		if optionCode & (1<<1):
+			os.system("rm -f "+file_to_proc)
 	else:	#The file is plain text--encode it
+		newfile="ENCODED_"+file_to_proc
 		os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode))
-		user_input("ENCODED_"+file_to_proc,optionCode)	#Decode now or later
+		if optionCode & (1<<1):
+			os.system("rm -f "+file_to_proc)
+		user_input(newfile,optionCode)	#Decode now or later
 
 #The program's parameter is a directory
 else:
@@ -54,13 +59,14 @@ else:
 		os.system("rm -r "+file_to_proc)
 		wasdir=True
 	E_file_to_proc="ENCODED_"+A_file_to_proc
+	os.system("rm -f "+A_file_to_proc)
 	user_input(E_file_to_proc,optionCode)
 
 #Deconcatenation and directory rebuilding
 if os.path.isdir(file_to_proc) or wasdir == True:
 	concat_file="DECODED_"+E_file_to_proc
 else:
-	concat_file=file_to_proc
+	concat_file="DECODED_"+file_to_proc
 #Check if the file is made from concatenated files
 detect=os.popen("tail -n 1 "+concat_file).read(8) #Check for separator characters in the first 8 bytes of the file's last line
 if "&!FILE&!" in detect:

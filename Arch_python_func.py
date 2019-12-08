@@ -24,7 +24,7 @@ def option_parse(opt_list) :
 				if i != '-' and i in ('c', 'n', 'r'): #Add future options
 					param.append(i)
 	for initial in param:
-		if initial == 'n':	#Option new file
+		if initial == 'n':	#Option new name
 			optionByte|=(1<<0)
 		if initial == 'r': #Option delete folder
 			optionByte|=(1<<1)
