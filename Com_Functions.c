@@ -340,27 +340,3 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 	}
 	return 0;
 }
-
-int encodeWrite(FILE* temp, FILE* writer, char* textfile)
-{
-	rewind(temp); //Changes to read mode in tmpfile
-	writer=fopen(textfile, "wb");
-	if(!writer) {
-		perror("Echec de l'écriture");
-		return 1;
-	}
-	//Must use a special int buffer and fread/fwrite to properly transfer int value
-	unsigned int buf0[1];
-	fread(buf0,sizeof(buf0),1,temp);
-	fwrite(buf0,sizeof(buf0),1,writer);
-	int counter;
-	while((counter=fgetc(temp)) != EOF) {
-		fputc(counter,writer);
-		if(ferror(writer)) {
-			fputs("Erreur durant l'écriture.\n", stderr);
-			return 2;
-		}
-	}
-	fclose(writer);
-	return 0;
-}

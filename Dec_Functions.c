@@ -283,23 +283,3 @@ int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T
 	}
 	return 0;
 }
-
-int decodeWrite(FILE* temp, FILE* writer, char* textfile)
-{
-	rewind(temp); //Changes to read mode in tmpfile
-	writer=fopen(textfile, "w");
-	if(!writer) {
-		perror("Echec de l'écriture");
-		return 1;
-	}
-	int counter;
-	while((counter=fgetc(temp)) != EOF) {
-		fputc(counter,writer);
-		if(ferror(writer)) {
-			fputs("Erreur durant l'écriture.\n", stderr);
-			return 2;
-		}
-	}
-	fclose(writer);
-	return 0;
-}

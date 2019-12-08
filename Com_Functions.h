@@ -40,7 +40,5 @@ int encodeIDX(FILE*, struct node*, int, unsigned char*, int*, int*, int, int);
 
 int encodeMSG(FILE*, FILE*, unsigned char**, unsigned char*, int*, int*, int);
 
-int encodeWrite(FILE*, FILE*, char*);
-
 #endif
 

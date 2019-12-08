@@ -30,7 +30,7 @@ if os.path.isfile(file_to_proc):
 
 #The program's parameter is a directory
 else:
-	A_file_to_proc="Arch_"+file_to_proc+".txt"
+	A_file_to_proc="Arch_"+file_to_proc+".huf"
 	os.system("mkdir Huff_Files_To_Compress; touch Huff_Files_To_Compress/"+A_file_to_proc) #Temporary directory for concatenation file
 	os.system("chmod 754 Huff_Files_To_Compress/"+A_file_to_proc)
 	traversal(os.getcwd(),file_to_proc,A_file_to_proc) #getcwd() returns current working directory

@@ -42,6 +42,4 @@ int decodeMSG(unsigned char*, int*, unsigned char*, int*, unsigned char**, int);
 
 int decMSGmain(FILE*, FILE*, unsigned char**, struct node*, unsigned char*, int*, int, int);
 
-int decodeWrite(FILE*, FILE*, char*);
-
 #endif
