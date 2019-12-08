@@ -316,7 +316,6 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 			fputs("Erreur durant la lecture.\n", stderr);
 			return 1;
 		}
-		printf("character read: %c\n", Xchar);
 		buftemp=malloc((strlen(Table[Xchar])+1)*sizeof(unsigned char));	//Allocate size of code+nullchar
 		strcpy(buftemp,Table[Xchar]);	//strcpy copies the nullchar
 		length=strlen(buftemp);

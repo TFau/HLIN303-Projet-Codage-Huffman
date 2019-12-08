@@ -68,7 +68,7 @@ def genesis(bigfile) :
 			if "&!FILE&!" in line:
 				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
 				newfile.close()
-				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator
+				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator, b required for seek method
 					eraser.seek(-1, os.SEEK_END)
 					eraser.truncate()
 				os.system("mv Huff_Temp_Name.txt "+file_and_path.group(1))
