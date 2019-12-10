@@ -5,14 +5,9 @@ import os, sys
 from Arch_python_func import arg_parse, option_parse, traversal, user_input, genesis
 
 
-#Program launch parameter check
-if len(sys.argv) < 2:
-	sys.stderr.write("Erreur: indiquez en paramètre du programme le fichier ou dossier à traiter.\n")
-	exit()
-file_to_proc=arg_parse(sys.argv) #Exits if file or folder doesn't exist
+#Program launch parameter and option check
+file_to_proc=arg_parse(sys.argv) #Exits if no file/folder or >1 file/folder
 sys.argv.remove(file_to_proc)
-
-#Retrieving options as integer from argv
 optionCode=option_parse(sys.argv)
 
 wasdir=False
@@ -65,6 +60,8 @@ else:
 #Deconcatenation and directory rebuilding
 if os.path.isdir(file_to_proc) or wasdir == True:
 	concat_file="DECODED_"+E_file_to_proc
+elif os.path.exists("DECODED_"+newfile):
+	concat_file="DECODED_"+newfile
 else:
 	concat_file="DECODED_"+file_to_proc
 #Check if the file is made from concatenated files

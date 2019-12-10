@@ -5,24 +5,29 @@ import os, re, sys
 
 
 def arg_parse(arg_list) :
-	f=""
-	for arg in sys.argv:
-		if os.path.exists(arg) and arg != arg_list[0]:
-			f=arg
-	if f == "":
-		sys.stderr.write("Erreur: dossier ou fichier inexistent.\n")
+	arg=[a for a in arg_list if os.path.exists(a) and a != arg_list[0]]
+	if len(arg) < 1:
+		sys.stderr.write("Erreur: veuillez indiquer en paramètre du programme un fichier ou dossier existant.\n")
 		exit()
-	return f
+	elif len(arg) > 1:
+		sys.stderr.write("Erreur: veuillez n'indiquer qu'un fichier ou dossier à traiter.\n")
+		exit()
+	else:
+		return arg[0]
 
 def option_parse(opt_list) :
+	valid_opt=['c', 'n', 'r']
 	param=[] #Selected options list
 	optionByte=0
 	for opt in opt_list:
 		firstchar=opt.find('-')
 		if firstchar == 0:	#'-' is the first character of the string, i.e. the string is an option
 			for i in opt:
-				if i != '-' and i in ('c', 'n', 'r'): #Add future options
+				if i != '-' and i in valid_opt and i not in param: #Add future options
 					param.append(i)
+				elif i != '-' and i not in valid_opt:
+					sys.stderr.write("Erreur: option non reconnue.\n")
+					exit()
 	for initial in param:
 		if initial == 'n':	#Option new name
 			optionByte|=(1<<0)
@@ -59,6 +64,8 @@ def user_input(string,optionCode) :
 		exit()
 	else:
 		os.system("./Decmpr_Huffman "+string+" "+str(optionCode))
+		if optionCode & (1<<1):
+			os.system("rm -f "+string)
 
 def genesis(bigfile) :
 	newfile=open("Huff_Temp_Name.txt", "w")	#New file to write the first original file
