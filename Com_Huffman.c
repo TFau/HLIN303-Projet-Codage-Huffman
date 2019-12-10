@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	Total: 10n + 39 bits, 1.25n + 4.875 bytes */
 
 	/* Encode the tree */
-	char* filename=newFilename(argv[1]);
+	char* filename=newFile(argv[1]);
 	FILE* huffwrite=fopen(filename, "wb");
 	if(!huffwrite) {
 		perror("Echec de l'écriture");

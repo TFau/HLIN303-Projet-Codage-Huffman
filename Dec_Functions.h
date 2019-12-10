@@ -34,7 +34,7 @@ unsigned char* extractCode(struct node*, int); //Also in Com_Functions.h
 
 int deCodeGen(struct node*, unsigned char**, int); //Not the same as Com_Functions.h codeGen
 
-char* newFilename(char*); //Prefixes file name with "DECODED_"
+char* newFile(char*); //Prefixes file name with "DECODED_"
 
 int codeCheck(unsigned char*, int, unsigned char**, int);
 

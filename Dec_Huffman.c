@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	else puts("Utilisez l'option -c pour afficher les caractères et leurs codes respectifs.\n");
 
 	/* Decode message */
-	char* filename=newFilename(argv[1]);
+	char* filename=newFile(argv[1]);
 	FILE* huffwrite=fopen(filename, "w");
 	if(!huffwrite) {
 		perror("Echec de l'écriture");
