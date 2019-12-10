@@ -44,13 +44,13 @@ int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 		T[10]++;
 		(*unique_char)++;
 		(*total_char)++;
-		//Reopens file and adds newline at the end
-		FILE* huff=fopen(textfile, "w");
+		//Reopens file in append mode and adds newline at the end
+		FILE* huff=fopen(textfile, "a+");
 		if(!huff) {
 			perror("Echec de la lecture");
 			return 1;
 		}
-		fseek(huff,(long)*total_char,SEEK_SET);	//SEEK_SET offsets from the beginning of the file
+		fseek(huff,0,SEEK_END);	//SEEK_END offsets from the end of the file, offset must be 0 for text stream
 		fputc('\n',huff);
 		fclose(huff);
 	}
