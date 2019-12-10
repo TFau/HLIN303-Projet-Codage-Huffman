@@ -63,7 +63,8 @@ def user_input(string,optionCode) :
 		print("Lancez le programme avec le fichier encodé en paramètre pour le décompresser.")
 		exit()
 	else:
-		os.system("./Decmpr_Huffman "+string+" "+str(optionCode))
+		if os.system("./Decmpr_Huffman "+string+" "+str(optionCode)):
+			exit()
 		if optionCode & (1<<1):
 			os.system("rm -f "+string)
 

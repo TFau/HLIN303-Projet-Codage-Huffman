@@ -17,12 +17,14 @@ if os.path.isfile(file_to_proc):
 			for line in fil:
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
-		os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode))
+		if os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode)): #Returns >0 in case of error
+			exit()
 		if optionCode & (1<<1):
 			os.system("rm -f "+file_to_proc)
 	else:	#The file is plain text--encode it
 		newfile="ENCODED_"+file_to_proc
-		os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode))
+		if os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode)):
+			exit()
 		if optionCode & (1<<1):
 			os.system("rm -f "+file_to_proc)
 		user_input(newfile,optionCode)	#Decode now or later
@@ -48,7 +50,8 @@ else:
 	os.system("mv Huff_Files_To_Compress/"+A_file_to_proc+" .; rm -d Huff_Files_To_Compress")
 
 	#Call encoder
-	os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode))
+	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
+		exit()
 	if optionCode & (1<<1):
 		os.system("rm -r "+file_to_proc)
 	E_file_to_proc="ENCODED_"+A_file_to_proc
