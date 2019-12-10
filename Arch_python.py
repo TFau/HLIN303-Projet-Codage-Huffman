@@ -10,7 +10,6 @@ file_to_proc=arg_parse(sys.argv) #Exits if no file/folder or >1 file/folder
 sys.argv.remove(file_to_proc)
 optionCode=option_parse(sys.argv)
 
-wasdir=False
 #If the program's parameter is a file, detect whether it is encoded or not
 if os.path.isfile(file_to_proc):
 	try:
@@ -52,15 +51,14 @@ else:
 	os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode))
 	if optionCode & (1<<1):
 		os.system("rm -r "+file_to_proc)
-		wasdir=True
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	os.system("rm -f "+A_file_to_proc)
 	user_input(E_file_to_proc,optionCode)
 
 #Deconcatenation and directory rebuilding
-if os.path.isdir(file_to_proc) or wasdir == True:
+if "E_file_to_proc" in locals():
 	concat_file="DECODED_"+E_file_to_proc
-elif os.path.exists("DECODED_"+newfile):
+elif "newfile" in locals():
 	concat_file="DECODED_"+newfile
 else:
 	concat_file="DECODED_"+file_to_proc
