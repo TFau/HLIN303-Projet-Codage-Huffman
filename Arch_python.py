@@ -18,13 +18,13 @@ if os.path.isfile(file_to_proc):
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
 		if os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode)): #Returns >0 in case of error
-			sys.exit(4)
+			sys.exit("Echec de la décompression.")
 		if optionCode & (1<<1):
 			os.remove(file_to_proc)
 	else:	#The file is plain text--encode it
 		newfile="ENCODED_"+file_to_proc
 		if os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode)):
-			sys.exit(5)
+			sys.exit("Echec de la compression.")
 		if optionCode & (1<<0):
 			newfile=user_rename(newfile,0)
 		if optionCode & (1<<1):
@@ -43,7 +43,7 @@ else:
 
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
-		sys.exit(6)
+		sys.exit("Echec de la compression.")
 	if optionCode & (1<<1):
 		shutil.rmtree(file_to_proc)
 	E_file_to_proc="ENCODED_"+A_file_to_proc

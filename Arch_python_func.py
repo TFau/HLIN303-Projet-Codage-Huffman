@@ -7,11 +7,9 @@ import os, re, shutil, sys
 def arg_parse(arg_list) :
 	arg=[a for a in arg_list if os.path.exists(a) and a != arg_list[0]]
 	if len(arg) < 1:
-		sys.stderr.write("Erreur: veuillez indiquer en paramètre du programme un fichier ou dossier existant.\n")
-		sys.exit(1)
+		sys.exit("Erreur: veuillez indiquer en paramètre du programme un fichier ou dossier existant.") #Written to stderr
 	elif len(arg) > 1:
-		sys.stderr.write("Erreur: veuillez n'indiquer qu'un fichier ou dossier à traiter.\n")
-		sys.exit(2)
+		sys.exit("Erreur: veuillez n'indiquer qu'un fichier ou dossier à traiter.")
 	else:
 		return arg[0]
 
@@ -120,7 +118,7 @@ def user_input(string,optCode) :
 		sys.exit(0)
 	else:
 		if os.system("./Decmpr_Huffman "+string+" "+str(optCode)):
-			sys.exit()
+			sys.exit("Echec de la décompression.")
 		if optCode & (1<<1):
 			os.system("rm -f "+string)
 
