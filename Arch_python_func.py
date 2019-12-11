@@ -8,32 +8,51 @@ def arg_parse(arg_list) :
 	arg=[a for a in arg_list if os.path.exists(a) and a != arg_list[0]]
 	if len(arg) < 1:
 		sys.stderr.write("Erreur: veuillez indiquer en paramètre du programme un fichier ou dossier existant.\n")
-		exit()
+		sys.exit(1)
 	elif len(arg) > 1:
 		sys.stderr.write("Erreur: veuillez n'indiquer qu'un fichier ou dossier à traiter.\n")
-		exit()
+		sys.exit(2)
 	else:
 		return arg[0]
+
+def user_help() :
+	print("Options disponibles. Appuyez sur c pour sortir de l'aide et continuer le programme, ou sur q pour terminer l'exécution du programme.\n")
+	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Un fichier concaténé
+	ne sera pas renommé à la décompression.""")		#Triple quotes for printing on multiple lines
+	print("""\033[1m-r\033[0m\tEffacer le fichier ou dossier passé en paramètre. Si le programme est
+	lancé en compression et que l'utilisateur choisit de décompresser
+	pendant la même exécution, le fichier compressé sera également effacé.""")
+	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.\n")
+	while True:
+		cont=input()
+		if cont == 'c':
+			return
+		elif cont == 'q':
+			sys.exit(0)
+		else:
+			print("Appuyez sur c pour sortir de l'aide et continuer le programme, ou sur q pour terminer l'exécution du programme.")
 
 def option_parse(opt_list) :
 	valid_opt=['c', 'n', 'r']
 	param=[] #Selected options list
 	optionByte=0
 	for opt in opt_list:
+		if opt == "--help":
+			user_help()
 		firstchar=opt.find('-')
-		if firstchar == 0:	#'-' is the first character of the string, i.e. the string is an option
+		if firstchar == 0 and len(opt) > 1 and opt[1] != '-':	#'-' is the first character of the string; lazy evaluation for 3rd clause
 			for i in opt:
 				if i != '-' and i in valid_opt and i not in param: #Add future options
 					param.append(i)
 				elif i != '-' and i not in valid_opt:
 					sys.stderr.write("Erreur: option non reconnue.\n")
-					exit()
+					sys.exit(3)
 	for initial in param:
-		if initial == 'n':	#Option new name
+		if initial == 'n':	#New name
 			optionByte|=(1<<0)
-		if initial == 'r': #Option delete folder
+		if initial == 'r': #Delete file/folder
 			optionByte|=(1<<1)
-		if initial == 'c':	#Option print codes
+		if initial == 'c':	#Print codes
 			optionByte|=(1<<2)
 	return optionByte
 
@@ -52,7 +71,22 @@ def traversal(srcdir, dirpath, destfile) :
 			else:
 				traversal(srcdir,dirpath+"/"+fil,destfile) #Recursive
 
-def user_input(string,optionCode) :
+def user_rename(old_name,intgr) :
+	while True:
+		if intgr == 0:
+			new_name=input("Entrez un nom pour le fichier compressé:\n")
+		else:
+			new_name=input("Entrez un nom pour le fichier décompressé:\n")
+		if new_name == "":
+			print("Le nom du fichier doit contenir au moins un caractère.")
+		elif os.path.exists(new_name):
+			print("Un fichier ou dossier porte déjà ce nom.")
+		else:
+			break
+	os.rename(old_name,new_name)
+	return new_name	#To update variable in main program
+
+def user_input(string,optCode) :
 	while True:
 		cont=input("Voulez-vous décompresser le fichier? y/n\n")
 		if cont not in ('y', 'Y', 'n', 'N'):
@@ -61,11 +95,11 @@ def user_input(string,optionCode) :
 			break
 	if cont in ('n', 'N'):
 		print("Lancez le programme avec le fichier encodé en paramètre pour le décompresser.")
-		exit()
+		sys.exit(0)
 	else:
-		if os.system("./Decmpr_Huffman "+string+" "+str(optionCode)):
-			exit()
-		if optionCode & (1<<1):
+		if os.system("./Decmpr_Huffman "+string+" "+str(optCode)):
+			sys.exit()
+		if optCode & (1<<1):
 			os.system("rm -f "+string)
 
 def genesis(bigfile) :

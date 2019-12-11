@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import os, sys
-from Arch_python_func import arg_parse, option_parse, traversal, user_input, genesis
+from Arch_python_func import arg_parse, option_parse, traversal, user_rename, user_input, genesis
 
 
 #Program launch parameter and option check
@@ -18,13 +18,15 @@ if os.path.isfile(file_to_proc):
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
 		if os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode)): #Returns >0 in case of error
-			exit()
+			sys.exit(1)
 		if optionCode & (1<<1):
 			os.system("rm -f "+file_to_proc)
 	else:	#The file is plain text--encode it
 		newfile="ENCODED_"+file_to_proc
 		if os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode)):
-			exit()
+			sys.exit()
+		if optionCode & (1<<0):
+			newfile=user_rename(newfile,0)
 		if optionCode & (1<<1):
 			os.system("rm -f "+file_to_proc)
 		user_input(newfile,optionCode)	#Decode now or later
@@ -44,17 +46,19 @@ else:
 		sys.stderr.write("Erreur: le fichier à compresser contient du code binaire. Opération interrompue.")
 		sys.stderr.write("Veuillez modifier l'extension .txt du ou des fichiers binaires présents dans vos dossiers.")
 		os.system("mv Huff_Files_To_Compress/"+A_file_to_proc+" .; rm -d Huff_Files_To_Compress")
-		exit()
+		sys.exit(2)
 	else:
 		pass
 	os.system("mv Huff_Files_To_Compress/"+A_file_to_proc+" .; rm -d Huff_Files_To_Compress")
 
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
-		exit()
+		sys.exit(3)
 	if optionCode & (1<<1):
 		os.system("rm -r "+file_to_proc)
 	E_file_to_proc="ENCODED_"+A_file_to_proc
+	if optionCode & (1<<0):
+		E_file_to_proc=user_rename(E_file_to_proc,0)
 	os.system("rm -f "+A_file_to_proc)
 	user_input(E_file_to_proc,optionCode)
 
@@ -69,3 +73,5 @@ else:
 detect=os.popen("tail -n 1 "+concat_file).read(8) #Check for separator characters in the first 8 bytes of the file's last line
 if "&!FILE&!" in detect:
 	genesis(concat_file)
+elif optionCode & (1<<0):
+	concat_file=user_rename(concat_file,1)
