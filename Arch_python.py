@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-import os, sys
+import os, shutil, sys
 from Arch_python_func import arg_parse, option_parse, traversal, user_rename, user_input, genesis
 
 
@@ -18,48 +18,38 @@ if os.path.isfile(file_to_proc):
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
 		if os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode)): #Returns >0 in case of error
-			sys.exit(1)
+			sys.exit(4)
 		if optionCode & (1<<1):
-			os.system("rm -f "+file_to_proc)
+			os.remove(file_to_proc)
 	else:	#The file is plain text--encode it
 		newfile="ENCODED_"+file_to_proc
 		if os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode)):
-			sys.exit()
+			sys.exit(5)
 		if optionCode & (1<<0):
 			newfile=user_rename(newfile,0)
 		if optionCode & (1<<1):
-			os.system("rm -f "+file_to_proc)
+			os.remove(file_to_proc)
 		user_input(newfile,optionCode)	#Decode now or later
 
 #The program's parameter is a directory
 else:
 	A_file_to_proc="Arch_"+file_to_proc+".huf"
-	os.system("mkdir Huff_Files_To_Compress; touch Huff_Files_To_Compress/"+A_file_to_proc) #Temporary directory for concatenation file
-	os.system("chmod 754 Huff_Files_To_Compress/"+A_file_to_proc)
+	os.mkdir("Huff_Files_To_Compress",0o755) #Octal notation using 0o
+	open("Huff_Files_To_Compress/"+A_file_to_proc,"a").close()#Create concatenation file
+	os.chmod("Huff_Files_To_Compress/"+A_file_to_proc,0o755)
 	traversal(os.getcwd(),file_to_proc,A_file_to_proc) #getcwd() returns current working directory
-	#Check if the collected .txt files are actually in plain text
-	try:
-		with open("Huff_Files_To_Compress/"+A_file_to_proc, "r") as fil:
-			for line in fil:
-				pass
-	except UnicodeDecodeError:
-		sys.stderr.write("Erreur: le fichier à compresser contient du code binaire. Opération interrompue.")
-		sys.stderr.write("Veuillez modifier l'extension .txt du ou des fichiers binaires présents dans vos dossiers.")
-		os.system("mv Huff_Files_To_Compress/"+A_file_to_proc+" .; rm -d Huff_Files_To_Compress")
-		sys.exit(2)
-	else:
-		pass
-	os.system("mv Huff_Files_To_Compress/"+A_file_to_proc+" .; rm -d Huff_Files_To_Compress")
+	shutil.move("Huff_Files_To_Compress/"+A_file_to_proc,os.getcwd())
+	os.rmdir("Huff_Files_To_Compress") #Empty
 
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
-		sys.exit(3)
+		sys.exit(6)
 	if optionCode & (1<<1):
-		os.system("rm -r "+file_to_proc)
+		shutil.rmtree(file_to_proc)
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	if optionCode & (1<<0):
 		E_file_to_proc=user_rename(E_file_to_proc,0)
-	os.system("rm -f "+A_file_to_proc)
+	os.remove(A_file_to_proc)
 	user_input(E_file_to_proc,optionCode)
 
 #Deconcatenation and directory rebuilding

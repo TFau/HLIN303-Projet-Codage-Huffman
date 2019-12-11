@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-import os, re, sys
+import os, re, shutil, sys
 
 
 def arg_parse(arg_list) :
@@ -16,7 +16,7 @@ def arg_parse(arg_list) :
 		return arg[0]
 
 def user_help() :
-	print("Options disponibles. Appuyez sur c pour sortir de l'aide et continuer le programme, ou sur q pour terminer l'exécution du programme.\n")
+	print("Options disponibles. Entrez le caractère 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour terminer l'exécution du programme.\n")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
 	print("""\033[1m-r\033[0m\tEffacer le fichier ou dossier passé en paramètre. Si le programme est
@@ -30,7 +30,7 @@ def user_help() :
 		elif cont == 'q':
 			sys.exit(0)
 		else:
-			print("Appuyez sur c pour sortir de l'aide et continuer le programme, ou sur q pour terminer l'exécution du programme.")
+			print("Entrez le caractère 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour terminer l'exécution du programme.")
 
 def option_parse(opt_list) :
 	valid_opt=['c', 'n', 'r']
@@ -56,20 +56,42 @@ def option_parse(opt_list) :
 			optionByte|=(1<<2)
 	return optionByte
 
-def traversal(srcdir, dirpath, destfile) :
-	dirlist=os.listdir(dirpath)
-	for fil in dirlist:
-		if os.access(dirpath+"/"+fil,os.R_OK):	#Path readability
-			if not os.path.isdir(dirpath+"/"+fil):	#Don't check file extensions on directories
-				ext=fil.split(".")
-				if len(ext) > 1 and ext[-1] == "txt":
-					os.system("chmod 754 "+dirpath+"/"+fil)
-					os.system("cp "+dirpath+"/"+fil+" "+srcdir+"/Huff_Files_To_Compress")
-					os.system("echo '\n&!FILE&!"+fil+"&!ADR&!"+dirpath+"&!SEP&!' >> Huff_Files_To_Compress/"+fil) #Newline required
-					os.system("cat Huff_Files_To_Compress/"+fil+" >> Huff_Files_To_Compress/"+destfile)
-					os.system("rm -f Huff_Files_To_Compress/"+fil)
+def text_check(file) :
+	try:
+		with open(file, "r") as test:
+			for line in test:
+				pass
+	except UnicodeDecodeError:
+		sys.stderr.write("Attention: Le fichier '"+file+"' contient du code binaire. Il ne sera pas compressé.\n")
+		while True:
+			cont=input("Souhaitez-vous continuer l'exécution du programme? y/n\n")
+			if cont not in ('y', 'Y', 'n', 'N'):
+				print("Entrez le caractère 'y' pour continuer ou 'n' pour quitter le programme.")
 			else:
-				traversal(srcdir,dirpath+"/"+fil,destfile) #Recursive
+				break
+		if cont in ('n', 'N'):
+			print("Veuillez modifier l'extension .txt du ou des fichiers binaries contenus dans vos dossiers.")
+			sys.exit(0)
+		else:
+			return 1
+	else:
+		return 0
+
+def traversal(basedir,srcdir,destfile) :
+	for dirpath, subdirs, files in os.walk(srcdir): #Traverses directory tree automatically!
+		for f in files:
+			if f.endswith(".txt"):
+				full_f=os.path.join(dirpath,f)
+				if not text_check(full_f): #Check if the file is actually in plain text
+					os.chmod(full_f,0o755)
+					shutil.copy2(full_f,basedir+"/Huff_Files_To_Compress") #Copy with metadata
+					with open("Huff_Files_To_Compress/"+f,"a") as tempfile: #Append mode
+						tempfile.write("\n&!FILE&!"+f+"&!ADR&!"+dirpath+"&!SEP&!\n") #Newline required for deconcatenation
+					with open("Huff_Files_To_Compress/"+destfile,"a") as catfile:
+						with open("Huff_Files_To_Compress/"+f,"r") as tempfile:
+							for line in tempfile:
+								catfile.write(line)
+					os.remove("Huff_Files_To_Compress/"+f)
 
 def user_rename(old_name,intgr) :
 	while True:
@@ -90,7 +112,7 @@ def user_input(string,optCode) :
 	while True:
 		cont=input("Voulez-vous décompresser le fichier? y/n\n")
 		if cont not in ('y', 'Y', 'n', 'N'):
-			print("Entrez le caractère \'y\' pour décompresser ou \'n\' pour quitter le programme.")
+			print("Entrez le caractère 'y' pour décompresser ou 'n' pour quitter le programme.")
 		else:
 			break
 	if cont in ('n', 'N'):
@@ -104,8 +126,8 @@ def user_input(string,optCode) :
 
 def genesis(bigfile) :
 	newfile=open("Huff_Temp_Name.txt", "w")	#New file to write the first original file
-	with open(bigfile, "r+") as fil:
-		for line in fil:
+	with open(bigfile, "r+") as file:
+		for line in file:
 			#The newfile will be "split off" with its original name when a separator is read
 			if "&!FILE&!" in line:
 				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
@@ -113,7 +135,7 @@ def genesis(bigfile) :
 				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator, "b" required for seek method
 					eraser.seek(-1, os.SEEK_END)
 					eraser.truncate()
-				os.system("mv Huff_Temp_Name.txt "+file_and_path.group(1))
+				os.rename("Huff_Temp_Name.txt",file_and_path.group(1))
 				#Moving the original files to their original positions, creating directories if necessary
 				path_list=file_and_path.group(2).split("/")
 				string=""
