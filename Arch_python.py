@@ -70,8 +70,7 @@ elif "newfile" in locals():
 else:
 	concat_file="DECODED_"+file_to_proc
 #Check if the file is made from concatenated files
-detect=os.popen("tail -n 1 "+concat_file).read(8) #Check for separator characters in the first 8 bytes of the file's last line
-if "&!FILE&!" in detect:
+if "&!FILE&!" in os.popen("tail -n 1 "+concat_file).read(8): #Check for separator characters in the first 8 bytes of the file's last line:
 	genesis(concat_file)
 elif optionCode & (1<<0):
 	concat_file=user_rename(concat_file,1)
