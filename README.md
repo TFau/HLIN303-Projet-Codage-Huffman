@@ -198,11 +198,11 @@ Fonction d'encodage appelée par encodeIDX et encodeMSG. carrier est l'octet por
 
 int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 
-Fonction d'écriture appelée par encodeIDX et encodeMSG. L'octet carrier est écrit sur le flux writer, fill est remis à zero et bits est incrémenté de 8.
+Fonction d'écriture appelée par encodeIDX et encodeMSG. L'octet carrier est écrit sur le flux writer, fill est remis à zero et bits est incrémenté de CHAR_BIT.
 
 int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
 
-Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur un octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Tous les encodages se font par appel à la fonction encode. Les noeuds sont encodés sur un bit: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les 8 bits du caractère correspondant, après conversion du caractère en chaîne par binaryChar. Lorsque fill=8, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
+Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur un octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Tous les encodages se font par appel à la fonction encode. Les noeuds sont encodés sur un bit: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les CHAR_BIT bits du caractère correspondant, après conversion du caractère en chaîne par binaryChar. Lorsque fill=CHAR_BIT, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
 
 int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
 
