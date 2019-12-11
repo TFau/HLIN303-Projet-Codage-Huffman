@@ -17,8 +17,8 @@ def arg_parse(arg_list) :
 
 def user_help() :
 	print("Options disponibles. Appuyez sur c pour sortir de l'aide et continuer le programme, ou sur q pour terminer l'exécution du programme.\n")
-	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Un fichier concaténé
-	ne sera pas renommé à la décompression.""")		#Triple quotes for printing on multiple lines
+	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
+	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
 	print("""\033[1m-r\033[0m\tEffacer le fichier ou dossier passé en paramètre. Si le programme est
 	lancé en compression et que l'utilisateur choisit de décompresser
 	pendant la même exécution, le fichier compressé sera également effacé.""")
@@ -42,7 +42,7 @@ def option_parse(opt_list) :
 		firstchar=opt.find('-')
 		if firstchar == 0 and len(opt) > 1 and opt[1] != '-':	#'-' is the first character of the string; lazy evaluation for 3rd clause
 			for i in opt:
-				if i != '-' and i in valid_opt and i not in param: #Add future options
+				if i != '-' and i in valid_opt and i not in param:
 					param.append(i)
 				elif i != '-' and i not in valid_opt:
 					sys.stderr.write("Erreur: option non reconnue.\n")
