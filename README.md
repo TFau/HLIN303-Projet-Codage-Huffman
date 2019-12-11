@@ -2,8 +2,8 @@
 
 I.    INTERFACE & ARCHIVEUR PYTHON
   1. Fonctionnement du programme
-  2. Les fonctions
-  3. Les options
+  2. Les options
+  3. Les fonctions
   
 II.   COMPRESSEUR C
   1. Fonctionnement du programme
@@ -53,8 +53,30 @@ replace dans l'arborescence de dossiers, celle-ci étant recréée si nécessair
 ###############
 
 
- 2. Les fonctions
-#Modules importés: os, re, shutil, sys
+ 2. Les options
+ 
+ --help
+
+Afficher les options disponibles.
+
+-n
+
+Renommer le fichier compressé ou décompressé. Les fichiers issus de la déconcaténation d'un fichier-archive décompressé ne peuvent pas être renommés.
+
+-r
+
+Supprimer le fichier ou dossier d'origine. Si la décompression est faite en suivant la compression, le fichier compressé sera également effacé. Le fichier de concaténation est toujours supprimé après déconcaténation.
+
+-c
+
+Afficher les caractères distincts du fichiers et leurs codes respectifs.
+
+###############
+
+
+ 3. Les fonctions
+ 
+ #Modules importés: os, re, shutil, sys
 
 arg_parse(arg_list)
 
@@ -95,27 +117,6 @@ genesis(bigfile)
 
 La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant les dossiers s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
 
-###############
-
-
- 3. Les options
-
---help
-
-Afficher les options disponibles.
-
--n
-
-Renommer le fichier compressé ou décompressé. Les fichiers issus de la déconcaténation d'un fichier-archive décompressé ne peuvent pas être renommés.
-
--r
-
-Supprimer le fichier ou dossier d'origine. Si la décompression est faite en suivant la compression, le fichier compressé sera également effacé. Le fichier de concaténation est toujours supprimé après déconcaténation.
-
--c
-
-Afficher les caractères distincts du fichiers et leurs codes respectifs.
-
 
 
 #####################COMPRESSEUR: CMPR_HUFFMAN#####################
@@ -123,6 +124,7 @@ Afficher les caractères distincts du fichiers et leurs codes respectifs.
 #Fichiers sources: Com_Functions.h, Com_Functions.c, Com_Huffman.c
 
 #Compilation avec 'make com'
+
 
  1. Fonctionnement du programme
 
@@ -216,6 +218,7 @@ Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader,
 #Fichiers sources: Dec_Functions.h, Dec_Functions.c, Dec_Huffman.c
 
 #Compilation avec 'make dec'
+
 
  1. Fonctionnement du programme
 
