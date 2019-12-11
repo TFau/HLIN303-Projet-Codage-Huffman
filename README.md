@@ -54,67 +54,59 @@ Modules importés: os, re, shutil, sys
 
 arg_parse(arg_list)
 
-##############
-
 La fonction crée une liste contenant les éléments de arg_list qui sont des chemins existant dans le dossier courant. La liste
 doit contenir exactement un élément--le fichier ou dossier à traiter--pour être validée et son contenu renvoyé, sinon une
 erreur est signalée et la sortie du programme est déclenchée.
 
-user_help()
+######
 
-#########
+user_help()
 
 Sous-fonction de option_parse. Affiche les options disponibles.
 
-option_parse(opt_list)
+######
 
-############
+option_parse(opt_list)
 
 La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages
 déclenchent une erreur et l'arrêt prématuré du programme. option_parse appelle user_help si l'utilisateur en a fait la demande.
 A chaque option correspond un des bits de poids faibles d'un entier. Ceux-ci sont mis à 1 si l'option correspondante a été
 sélectionnée, et l'entier ainsi encodé est renvoyé.
 
+######
+
 text_check(file)
 
-###########
+Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le fichier ne sera pas concaténé dans le fichier destiné à la compression et offre d'interrompre le programme ou non.
 
-Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si
-file contient du code binaire, la fonction signale à l'utilisateur que le fichier ne sera pas concaténé dans le fichier destiné
-à la compression et offre d'interrompre le programme ou non.
+######
 
 traversal(srcdir,destfile)
-
-################
 
 La fonction utilise os.walk(srcdir) pour obtenir tous les chemins d'accès, sous-dossiers et fichiers de l'arborescence de
 dossiers ayant srcdir comme racine. Tous les fichiers munis de l'extension ".txt" sont alors vérifiés par text_check; si ce
 sont bien des fichiers texte leur contenu est copié dans destfile, avec rajout de la ligne séparatrice spéciale contenant le
 nom d'origine du fichier et son chemin d'accès.
 
-user_rename(old_name,intgr)
+######
 
-###############
+user_rename(old_name,intgr)
 
 Si l'utilisateur a sélectionné l'option -n, cette fonction lui propose de renommer le fichier compressé (si intgr=0) ou
 décompressé (si intgr=1). Un nom vide ou déjà existant n'est pas accepté. Un nom valide est renvoyé.
 
-user_input(string,optCode)
+######
 
-###############
+user_input(string,optCode)
 
 Demande à l'utilisateur s'il veut décompresser le fichier. Si l'utilisateur répond par la négative, le programme est arrêté.
 Sinon la fonction lance le décompresseur avec string et optCode comme arguments.
 
+######
+
 genesis(bigfile)
 
-#############
-
-La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères
-séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette
-ligne. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant les
-dossiers s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque
-la lecture de bigfile est terminé, il est supprimé.
+La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant les dossiers s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminé, il est supprimé.
 
 ###############
 
