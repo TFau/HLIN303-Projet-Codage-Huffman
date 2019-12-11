@@ -51,6 +51,9 @@ int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 			return 1;
 		}
 		fseek(huff,0,SEEK_END);	//SEEK_END offsets from the end of the file, offset must be 0 for text stream
+		/* From POSIX.1-2017 3.Definitions
+		3.206 Line
+		A sequence of zero or more non-<newline> characters plus a terminating <newline> character. */
 		fputc('\n',huff);
 		fclose(huff);
 	}
@@ -235,7 +238,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 	unsigned int buf0[1]={total_char};	//4 byte storage
 	*bits+=32+CHAR_BIT;
 	unsigned char buf1[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
-	unsigned char *symbol=NULL; //Char array to hold 8-bit char as 8-char array and null terminator
+	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	if(ferror(writer)) {
 		fputs("Erreur durant l'écriture.\n", stderr);
@@ -316,7 +319,7 @@ int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* 
 	*bits=0-*fill;
 	int length;
 	unsigned char Xchar='\0';
-	unsigned char* buftemp=NULL;
+	unsigned char* buftemp;
 	while(counter++ < total_char) {	//total_char==total characters
 		Xchar=fgetc(reader);
 		if(ferror(reader)) {

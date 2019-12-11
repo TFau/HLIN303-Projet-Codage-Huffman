@@ -17,9 +17,9 @@ def user_help() :
 	print("Options disponibles. Tapez 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.\n")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
-	print("""\033[1m-r\033[0m\tEffacer le fichier ou dossier passé en paramètre. Si le programme est
+	print("""\033[1m-r\033[0m\tSupprimer le fichier ou dossier passé en paramètre. Si le programme est
 	lancé en compression et que l'utilisateur choisit de décompresser
-	pendant la même exécution, le fichier compressé sera également effacé.""")
+	pendant la même exécution, le fichier compressé sera également supprimé.""")
 	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.\n")
 	while True:
 		cont=input()
@@ -47,6 +47,8 @@ def option_parse(opt_list) :
 						param.append(i)
 					elif i != '-' and i not in valid_opt:
 						sys.exit("Erreur: option non reconnue. Utilisez --help pour afficher les options disponibles.")
+		else:
+			sys.exit("Erreur: caractères non reconnus. Utilisez --help pour afficher les options disponibles.")
 	for initial in param:
 		if initial == 'n':	#New name
 			optionByte|=(1<<0)
@@ -82,7 +84,7 @@ def traversal(srcdir,destfile) :
 		for f in files:
 			if f.endswith(".txt"):
 				full_f=os.path.join(dirpath,f)
-				if not text_check(full_f): #Check if the file is actually in plain text
+				if not text_check(full_f) and os.stat(full_f).st_size != 0: #Check if the file is actually in plain text and not empty
 					os.chmod(full_f,0o755)
 					with open(destfile,"a") as catfile: #Append mode
 						with open(full_f,"r") as tempfile:

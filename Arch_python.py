@@ -7,11 +7,14 @@ from Arch_python_func import arg_parse, option_parse, traversal, user_rename, us
 
 #Program launch parameter and option check
 file_to_proc=arg_parse(sys.argv) #Exits if no file/folder or >1 file/folder
+del sys.argv[0]
 sys.argv.remove(file_to_proc)
 optionCode=option_parse(sys.argv)
 
 #If the program's parameter is a file, detect whether it is encoded or not
 if os.path.isfile(file_to_proc):
+	if os.stat(file_to_proc).st_size == 0:
+		sys.exit("Erreur: Le fichier passé en argument du programme est vide.")
 	try:
 		with open(file_to_proc, "r") as fil:
 			for line in fil:
