@@ -34,18 +34,14 @@ if os.path.isfile(file_to_proc):
 #The program's parameter is a directory
 else:
 	A_file_to_proc="Arch_"+file_to_proc+".huf"
-	os.mkdir("Huff_Files_To_Compress",0o755) #Octal notation using 0o
-	open("Huff_Files_To_Compress/"+A_file_to_proc,"a").close()#Create concatenation file
-	os.chmod("Huff_Files_To_Compress/"+A_file_to_proc,0o755)
-	traversal(os.getcwd(),file_to_proc,A_file_to_proc) #getcwd() returns current working directory
-	shutil.move("Huff_Files_To_Compress/"+A_file_to_proc,os.getcwd())
-	os.rmdir("Huff_Files_To_Compress") #Empty
-
+	open(A_file_to_proc,"a").close()#Create concatenation file
+	os.chmod(A_file_to_proc,0o755) #Octal notation using 0o
+	traversal(file_to_proc,A_file_to_proc)
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
 		sys.exit("Echec de la compression.")
 	if optionCode & (1<<1):
-		shutil.rmtree(file_to_proc)
+		shutil.rmtree(file_to_proc) #Removes directory
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	if optionCode & (1<<0):
 		E_file_to_proc=user_rename(E_file_to_proc,0)
