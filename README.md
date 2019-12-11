@@ -10,10 +10,13 @@ II.   COMPRESSEUR C
 III.  DECOMPRESSEUR C
 
 
+
 ############ARCHIVEUR: ARCH_PYTHON.PY############
 
 #Modules importés: os, shutil, sys
+
 #Fonctions importées de Arch_python_func.py
+
 
 1. Le fonctionnement du programme
 
@@ -21,18 +24,15 @@ Le programme est lancé par le script 'Arch_python.py'. Un utilisateur peut dire
 avec un fichier en paramètre, mais cet usage est déprécié, et ne permet pas d'accéder aux options du programme ou à la
 fonctionnalité d'archivage.
 
-Le script vérifie la validité des arguments passés à la ligne de commande. Il identifie avant toute chose le fichier ou dossier
-qui doit être traité. C'est l'objet de la fonction arg_parse, qui renvoie le fichier ou dossier à compresser.
+Le script vérifie la validité des arguments passés à la ligne de commande. Il identifie avant toute chose le fichier ou dossier qui doit être traité. C'est l'objet de la fonction arg_parse, qui renvoie le fichier ou dossier à compresser.
 
-Le script vérifie ensuite si les potentielles options avec la fonction option_parse, qui signale une erreur et interrompt le
+Le script vérifie ensuite les potentielles options avec la fonction option_parse, qui signale une erreur et interrompt le
 programme si elle lit une option non reconnue, ou renvoie un entier encodant les options sur 3 bits.
 
 Deux cas de figures se présentent ensuite:
 
-CAS 1. Si l'utilisateur a lancé le programme avec un fichier en argument, il faut soit le compresser, soit le décompresser. Le
-script utilise la structure de traitement des exceptions pour identifier la procédure à suivre: le fichier est ouvert et lu en
-mode texte; si la lecture provoque une erreur le fichier contient du code binaire, donc il est encodé et doit être décompressé.
-Sinon c'est un fichier texte que l'utilisateur veut compresser. Le script lance alors le compresseur ou le décompresseur.
+CAS 1. Si l'utilisateur a lancé le programme avec un fichier en argument, il faut soit le compresser, soit le décompresser. Le script utilise la structure de traitement des exceptions pour identifier la procédure à suivre: le fichier est ouvert et
+lu en mode texte; si la lecture provoque une erreur le fichier contient du code binaire, donc il est encodé et doit être décompressé. Sinon c'est un fichier texte que l'utilisateur veut compresser. Le script lance alors le compresseur ou le décompresseur.
 
 CAS 2. Si l'utilisateur a spécifié un dossier en argument, il faut faire appel à la fonction d'archivage, traversal. Celle-ci
 récupère tous les fichiers du dossier et de ses sous-dossiers et les concatène dans un fichier, en les séparant d'une ligne
