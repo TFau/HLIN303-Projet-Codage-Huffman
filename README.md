@@ -1,18 +1,17 @@
 # HLIN303-Projet-Codage-Huffman
 
 I.    INTERFACE & ARCHIVEUR PYTHON
-  1. Le fonctionnement du programme
+  1. Fonctionnement du programme
   2. Les fonctions
   3. Les options
   
 II.   COMPRESSEUR C
-  1. Le fonctionnement du programme
+  1. Fonctionnement du programme
   2. Les fonctions
 
 III.  DECOMPRESSEUR C
-  1. Le fonctionnement du programme
+  1. Fonctionnement du programme
   2. Les fonctions
-
 
 
 
@@ -23,7 +22,7 @@ III.  DECOMPRESSEUR C
 #Fonctions importées de Arch_python_func.py
 
 
-1. Le fonctionnement du programme
+1. Fonctionnement du programme
 
 Le programme est lancé par le script 'Arch_python.py'. Un utilisateur peut directement lancer Cmpr_Huffman ou Decmpr_Huffman
 avec un fichier en paramètre, mais cet usage est déprécié, et ne permet pas d'accéder aux options du programme ou à la
@@ -121,3 +120,32 @@ Afficher les caractères distincts du fichiers et leurs codes respectifs.
 
 ###############COMPRESSEUR: CMPR_HUFFMAN###############
 
+#Bibliothèques utilisées: limits, stdbool, stdio, stdlib, string
+
+
+1. Fonctionnement du programme
+
+Le programme de compression est lancé par le script Python, avec en argument le fichier à traiter et l'entier codant les options.
+
+Le compresseur lit le fichier et compte le nombre d'occurrences de chaque caractère; à partir de cette information se
+calculent le nombre de caractères distincts et le nombre total de caractères dans le fichier.
+
+Pour n caractères distincts, un tableau de 2n-1 cases est créé. Ce tableau représentera l'arbre de Huffman: chaque caractère
+y est inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa
+valeur numérique, son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
+
+A partir de ces caractères-feuilles, un algorithme génère l'arbre de Huffman, liant à chaque itération les deux noeuds de plus basse fréquence à un noeud parent dont la fréquence est la somme de celles de ces enfants. Une fois remplie, un second algorithme génère le code de chaque caractère en remontant de sa feuille jusqu'à la racine. Ces codes sont stockés dans un
+second tableau.
+
+Si l'option -c a été sélectionné à l'exécution du script Python, les caractères et leurs codes respectifs sont affichés.
+
+Commence alors la phase de compression proprement dite, dans un nouveau fichier. L'encodage se fait bit par bit sur un octet, qui est écrit dans le fichier lorsque ses CHAR_BIT (défini par l'implémentation, mais typiquement 8) bits ont été fixés. L'écriture reprend ensuite sur le même octet.
+
+Avant l'encodage du fichier sont encodés: un entier sur 4 octets contenant le nombre total de caractères dans le texte, un entier sur un octet contenant le nombre de caractères distincts, puis l'arbre lui-même, sous la forme d'un bit par noeud et feuille, et pour chaque feuille les 8 bits du caractère associé.
+
+Après encodage de l'index, le contenu du fichier est encodé. Le programme récupère le code de chaque caractère lu dans le fichier d'origine et retranscrit ce code bit par bit sur l'octet porteur. Lorsque tous les caractères ont été lus et encodés, le programme se termine.
+
+###############
+
+
+2. Les fonctions
