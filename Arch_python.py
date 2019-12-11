@@ -40,6 +40,8 @@ else:
 	open(A_file_to_proc,"a").close()#Create concatenation file
 	os.chmod(A_file_to_proc,0o755) #Octal notation using 0o
 	traversal(file_to_proc,A_file_to_proc)
+	if os.stat(A_file_to_proc).st_size == 0: #Final check
+		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers .txt, ou uniquement des fichiers .txt vides.")
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
 		sys.exit("Echec de la compression.")
