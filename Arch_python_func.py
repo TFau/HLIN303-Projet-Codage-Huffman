@@ -14,7 +14,7 @@ def arg_parse(arg_list) :
 		return arg[0]
 
 def user_help() :
-	print("Options disponibles. Entrez le caractère 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.\n")
+	print("Options disponibles. Tapez 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.\n")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
 	print("""\033[1m-r\033[0m\tEffacer le fichier ou dossier passé en paramètre. Si le programme est
@@ -38,13 +38,15 @@ def option_parse(opt_list) :
 		if opt == "--help":
 			user_help()
 		firstchar=opt.find('-')
-		if firstchar == 0 and len(opt) > 1 and opt[1] != '-':	#'-' is the first character of the string; lazy evaluation for 3rd clause
-			for i in opt:
-				if i != '-' and i in valid_opt and i not in param:
-					param.append(i)
-				elif i != '-' and i not in valid_opt:
-					sys.stderr.write("Erreur: option non reconnue.\n")
-					sys.exit(3)
+		if firstchar == 0 and len(opt) > 1:	#'-' is the first character of the string
+			if opt[1] == '-' and opt != "--help":
+				sys.exit("Erreur: option non reconnue. Utilisez --help pour afficher les options disponibles.")
+			elif opt[1] != '-':
+				for i in opt:
+					if i != '-' and i in valid_opt and i not in param:
+						param.append(i)
+					elif i != '-' and i not in valid_opt:
+						sys.exit("Erreur: option non reconnue. Utilisez --help pour afficher les options disponibles.")
 	for initial in param:
 		if initial == 'n':	#New name
 			optionByte|=(1<<0)
