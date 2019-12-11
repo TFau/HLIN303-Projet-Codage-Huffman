@@ -11,7 +11,8 @@ III.  DECOMPRESSEUR C
 
 
 
-############ARCHIVEUR: ARCH_PYTHON.PY############
+
+###############ARCHIVEUR: ARCH_PYTHON.PY###############
 
 #Modules importés: os, shutil, sys
 
@@ -32,9 +33,9 @@ programme si elle lit une option non reconnue, ou renvoie un entier encodant les
 Deux cas de figures se présentent ensuite:
 
 CAS 1. Si l'utilisateur a lancé le programme avec un fichier en argument, il faut soit le compresser, soit le décompresser. Le script utilise la structure de traitement des exceptions pour identifier la procédure à suivre: le fichier est ouvert et
-lu en mode texte; si la lecture provoque une erreur le fichier contient du code binaire, donc il est encodé et doit être décompressé. Sinon c'est un fichier texte que l'utilisateur veut compresser. Le script lance alors le compresseur ou le décompresseur.
+lu en mode texte; si la lecture provoque une erreur, le fichier contient du code binaire, donc il est encodé et doit être décompressé. Sinon c'est un fichier texte que l'utilisateur veut compresser. Le script lance alors le compresseur ou le décompresseur.
 
-CAS 2. Si l'utilisateur a spécifié un dossier en argument, il faut faire appel à la fonction d'archivage, traversal. Celle-ci
+CAS 2. Si l'utilisateur a passé un dossier en argument, il faut faire appel à la fonction d'archivage, traversal. Celle-ci
 récupère tous les fichiers du dossier et de ses sous-dossiers et les concatène dans un fichier, en les séparant d'une ligne
 contenant leur nom et leur chemin d'accès d'origine. Le script lance ensuite le compresseur avec le fichier concaténé comme
 argument.
@@ -50,7 +51,7 @@ replace dans l'arborescence de dossiers, celle-ci étant recréée si nécessair
 
 
 2. Les fonctions
-Modules importés: os, re, shutil, sys
+#Modules importés: os, re, shutil, sys
 
 arg_parse(arg_list)
 
@@ -112,6 +113,22 @@ La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à 
 
 
 3. Les options
+
+--help
+
+Afficher les options disponibles.
+
+-n
+
+Renommer le fichier compressé ou décompressé. Les fichiers issus de la déconcaténation d'un fichier-archive décompressé ne peuvent pas être renommés.
+
+-r
+
+Supprimer le fichier ou dossier d'origine. Si la décompression est faite en suivant la compression, le fichier compressé sera également effacé. Le fichier de concaténation est toujours supprimé après déconcaténation.
+
+-c
+
+Afficher les caractères distincts du fichiers et leurs codes respectifs.
 
 
 
