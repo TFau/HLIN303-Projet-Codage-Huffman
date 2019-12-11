@@ -15,7 +15,7 @@ III.  DECOMPRESSEUR C
 
 
 
-###############ARCHIVEUR: ARCH_PYTHON.PY###############
+#####################ARCHIVEUR: ARCH_PYTHON.PY#####################
 
 #Modules importés: os, shutil, sys
 
@@ -118,7 +118,7 @@ Afficher les caractères distincts du fichiers et leurs codes respectifs.
 
 
 
-###############COMPRESSEUR: CMPR_HUFFMAN###############
+#####################COMPRESSEUR: CMPR_HUFFMAN#####################
 
 #Bibliothèques utilisées: limits, stdbool, stdio, stdlib, string
 
@@ -134,7 +134,7 @@ Pour n caractères distincts, un tableau de 2n-1 cases est créé. Ce tableau re
 y est inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa
 valeur numérique, son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
 
-A partir de ces caractères-feuilles, un algorithme génère l'arbre de Huffman, liant à chaque itération les deux noeuds de plus basse fréquence à un noeud parent dont la fréquence est la somme de celles de ces enfants. Une fois remplie, un second algorithme génère le code de chaque caractère en remontant de sa feuille jusqu'à la racine. Ces codes sont stockés dans un
+A partir de ces caractères-feuilles, un algorithme génère l'arbre de Huffman, liant à chaque itération les deux noeuds de plus basses fréquences à un noeud parent dont la fréquence est la somme de celles de ces enfants. Une fois remplie, un second algorithme génère le code de chaque caractère en remontant de sa feuille jusqu'à la racine. Ces codes sont stockés dans un
 second tableau.
 
 Si l'option -c a été sélectionné à l'exécution du script Python, les caractères et leurs codes respectifs sont affichés.
@@ -149,3 +149,61 @@ Après encodage de l'index, le contenu du fichier est encodé. Le programme réc
 
 
 2. Les fonctions
+
+int freqCalc(int* T, char* textfile)
+
+La fonction ouvre le fichier indiqué par textfile en lecture. A la lecture d'un caractère, la valeur de la case du tableau
+d'occurrences T correspondant au caractère est incrémenté.
+
+int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
+
+La fonction calcule à partir de T le nombre total de caractères, stocké dans total_char, et le nombre de caractères distincts, stocké dans unique_char. Si ce dernier est égal à un, le fichier textfile est ouvert en ajout-écriture et un caractère <newline> est rajouté à la fin (cf. norme POSIX.1-2017 3.206).
+  
+void initTree(struct node* Tree, int size)
+
+Fonction d'initialisation à des valeurs par défaut des attributs de chaque case du tableau Tree. Size sert au comptage.
+
+void freqTree(struct node* T, int* Table, int total_char)
+
+La fonction attribue les premières cases de T aux caractères de Table ayant au moins une occurrence, et calcule la fréquence de ces caractères. total_char sert au comptage.
+
+void buildTree(struct node* T, int counter)
+
+Algorithme de construction de l'arbre de Huffman. Les deux noeuds de plus basses fréquences sont liés à un parent, placé
+dans une case vide de T à partir de l'indice correspondant au nombre de caractères distincts. La fréquence du parent est la somme des fréquences de ces deux enfants. Chaque nouvelle itération prendra en compte le nouveau noeud ainsi créé. Lorsqu'on ne trouve plus deux noeuds n'ayant pas de parent, l'algorithme s'arrête. counter sert au comptage.
+
+unsigned char* extractCode(struct node* T, int i)
+
+Sous-fonction de codeGen. Une chaîne de caractères vide est créée. A partir de la feuille i de l'arbre stocké dans T, l'algorithme remonte jusqu'à la racine. A chaque déplacement d'un noeud x vers un noeud y, si x est l'enfant gauche de y le caractère '0' est ajouté à la chaîne, si x est l'enfant droit le caractère '1' est ajouté. Lorsque la racine a été atteinte, la chaîne est réalloué dans une chaîne de taille adaptée et renvoyée.
+
+int codeGen(struct node* T, unsigned char** Table, int unique_char)
+
+Fonction de génération des codes pour chaque caractère de T, avec un nombre d'appels à extractCode égal à unique_char. Les codes sont stockés dans Table.
+
+char* newFile(char* oldFilename)
+
+La fonction rajoute le préfixe "ENCODED_" à oldFilename et renvoie la chaîne résultante.
+
+bool leftmost(int* T, int size, int n)
+
+Sous-fonction de encodeIDX. Les indices de T correspondent aux noeuds de l'arbre de Huffman. Teste la valeur du noeud n dans T en la comparant à toutes les autres valeurs positives. Si cette valeur est la plus petite de T, n est le noeud le plus à gauche au niveau de profondeur actuel de l'arbre dans encodeIDX, et la fonction renvoie vrai. Sinon la fonction renvoie faux.
+
+unsigned char* binaryChar(unsigned char n)
+
+Sous-fonction de encodeIDX. Convertit le caractère n en chaîne de caractères stockant sa valeur binaire pour qu'il puisse être lu par la fonction d'encodage.
+
+void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_read)
+
+Fonction d'encodage appelée par encodeIDX et encodeMSG. carrier est l'octet porteur sur lequel sont encodés les caractères de la chaîne 'code', bits par bits. fill mesure le taux de remplissage de carrier. code_read indique la taille du code déjà lu et permet de calculer la taille du code restant à encoder en effectuant la différence avec 'code'.
+
+int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
+
+Fonction d'écriture appelée par encodeIDX et encodeMSG. L'octet carrier est écrit sur le flux writer, fill est remis à zero et bits est incrémenté de 8.
+
+int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
+
+Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur un octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Tous les encodages se font par appel à la fonction encode. Les noeuds sont encodés sur un bit: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les 8 bits du caractère correspondant, après conversion du caractère en chaîne par binaryChar. Lorsque fill=8, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
+
+int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
+
+Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader, la fonction récupère le code correspondant dans Table, et fait appel à encode pour écrire ce code bit à bit sur carrier. Lorsque carrier est rempli, la fonction appelle writeChar pour écrire sur le flux writer.
