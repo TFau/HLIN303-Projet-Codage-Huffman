@@ -6,12 +6,11 @@ I.    INTERFACE & ARCHIVEUR PYTHON
   3. Les options
   
 II.   COMPRESSEUR C
+
 III.  DECOMPRESSEUR C
 
 
-###############################
-###ARCHIVEUR: ARCH_PYTHON.PY###
-###############################
+############ARCHIVEUR: ARCH_PYTHON.PY############
 
 #Modules importés: os, shutil, sys
 #Fonctions importées de Arch_python_func.py
