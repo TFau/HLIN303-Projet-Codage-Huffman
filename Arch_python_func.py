@@ -79,7 +79,7 @@ def text_check(file) :
 			else:
 				break
 		if cont in ('n', 'N'):
-			print("Veuillez modifier l'extension .txt du ou des fichiers binaries contenus dans vos dossiers.")
+			print("Veuillez modifier l'extension .txt du ou des fichiers binaires contenus dans vos dossiers.")
 			sys.exit(0)
 		else:
 			return 1
