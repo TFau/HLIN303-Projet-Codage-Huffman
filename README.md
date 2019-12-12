@@ -1,5 +1,14 @@
 # HLIN303-Projet-Codage-Huffman
 
+#Compilation Compresseur: commande 'make com'
+
+#Compilation Décompresseur: commande 'make dec'
+
+#Archiver fichiers sources, fichier make et readme: commande 'make arch'
+
+#####################
+
+
 I.    INTERFACE & ARCHIVEUR PYTHON
   1. Fonctionnement du programme
   2. Les options
@@ -123,8 +132,6 @@ La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à 
 
 #Fichiers sources: Com_Functions.h, Com_Functions.c, Com_Huffman.c
 
-#Compilation avec 'make com'
-
 
  1. Fonctionnement du programme
 
@@ -216,8 +223,6 @@ Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader,
 #####################DECOMPRESSEUR: DECMPR_HUFFMAN#####################
 
 #Fichiers sources: Dec_Functions.h, Dec_Functions.c, Dec_Huffman.c
-
-#Compilation avec 'make dec'
 
 
  1. Fonctionnement du programme
