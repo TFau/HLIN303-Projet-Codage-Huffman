@@ -146,6 +146,10 @@ unsigned char* extractCode(struct node* T, int i)
 			code[0]='1';
 		}
 	}
+	if(code[0] == '\0') {
+		code[1]='\0';
+		code[0]='1';
+	}
 	//Optimization: reduce string size
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
 	//No need to free(code), realloc frees code itself
@@ -213,7 +217,7 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 		//Checks codetable after every added bit
 		character=codeCheck(T,*pos,Dec_T,size);
 		//Returns character linked to code if it exists
-		if(character > 0) {
+		if(character >= 0) {
 			return character;
 		}
 	}

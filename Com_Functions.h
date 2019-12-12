@@ -14,7 +14,7 @@ struct node
 
 int freqCalc(int*, char*);
 
-int distinctCalc(int*, char*, int*, int*);
+void distinctCalc(int*, int*, int*);
 
 void initTree(struct node*, int);
 

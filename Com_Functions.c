@@ -31,7 +31,7 @@ int freqCalc(int* T, char* textfile)
 	return 0;
 }
 
-int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
+void distinctCalc(int* T, int* unique_char, int* total_char)
 {
 	for(int i=0; i <= UCHAR_MAX; i++) {
 		if(T[i] != 0) {
@@ -39,25 +39,6 @@ int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 			*total_char+=T[i];
 		}
 	}
-	//Adds a newline if the file contains only one character
-	if(*unique_char == 1) {
-		T[10]++;
-		(*unique_char)++;
-		(*total_char)++;
-		//Reopens file in append mode and adds newline at the end
-		FILE* huff=fopen(textfile, "a+");
-		if(!huff) {
-			perror("Echec de la lecture");
-			return 1;
-		}
-		fseek(huff,0,SEEK_END);	//SEEK_END offsets from the end of the file, offset must be 0 for text stream
-		/* From POSIX.1-2017 3.Definitions
-		3.206 Line
-		A sequence of zero or more non-<newline> characters plus a terminating <newline> character. */
-		fputc('\n',huff);
-		fclose(huff);
-	}
-	return 0;
 }
 
 void initTree(struct node* T, int size)
@@ -133,6 +114,10 @@ unsigned char* extractCode(struct node* T, int i)
 		else {
 			code[0]='1';
 		}
+	}
+	if(code[0] == '\0') {
+		code[1]='\0';
+		code[0]='1';
 	}
 	//Optimization: reduce string size
 	unsigned char* codeOpt=realloc(code,(strlen(code)+1)*sizeof(unsigned char));
