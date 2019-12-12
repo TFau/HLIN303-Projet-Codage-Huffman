@@ -13,9 +13,7 @@ int main(int argc, char** argv)
 		fputs("Erreur: le fichier à lire et à compresser doit être passé en paramètre.\n", stderr); //writes to stdout and adds a newline, fputs does not
 		return 1;
 	}
-	unsigned char optByte;
-	if(argc == 3)
-		optByte=atoi(argv[2]);
+	unsigned char optByte=atoi(argv[2]);
 
 	/* Frequency Calc Function */
 	int ProcTable[UCHAR_MAX+1];
@@ -47,7 +45,7 @@ int main(int argc, char** argv)
 		return 3; //Error message printed by codeGen
 	puts("Codes générés...\n");
 	//Print the code array if -c option used
-	if(argc == 3 && (optByte & (1<<2))) {
+	if(optByte & (1<<2)) {
 		counter=0; //Reuse
 		for(int i=0; i <= UCHAR_MAX; i++) {
 			if(Tree[counter].symbol == i) {

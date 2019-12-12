@@ -11,9 +11,7 @@ int main(int argc, char** argv)
 		fputs("Erreur: le fichier à lire et à décompresser doit être passé en paramètre.\n", stderr);
 		return 1;
 	}
-	unsigned char optByte;
-	if(argc == 3)
-		optByte=atoi(argv[2]);
+	unsigned char optByte=atoi(argv[2]);
 
 	FILE* huff=fopen(argv[1], "rb");
 	if(!huff) {
@@ -50,7 +48,7 @@ int main(int argc, char** argv)
 		return 5; //Error message printed by codeGen
 	puts("Codes régénérés...\n");
 	//Print the code array if -c option used
-	if(argc == 3 && (optByte & (1<<2))) {
+	if(optByte & (1<<2)) {
 		for(size_t i=0; i < treesize; i++) {
 			if(Tree[i].symbol != 0) {
 				printf("%ld. %c\t%s\n", i, Tree[i].symbol, DecodeTable[i]);
