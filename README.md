@@ -26,7 +26,7 @@ III.  DECOMPRESSEUR C
 
 #####################ARCHIVEUR: ARCH_PYTHON.PY#####################
 
-#Modules importés: os, shutil, sys
+#Modules importés: os, sys
 
 #Fonctions importées de Arch_python_func.py
 
@@ -40,7 +40,7 @@ fonctionnalité d'archivage.
 Le script vérifie la validité des arguments passés à la ligne de commande. Il identifie avant toute chose le fichier ou dossier qui doit être traité. C'est l'objet de la fonction arg_parse, qui renvoie le fichier ou dossier à compresser.
 
 Le script vérifie ensuite les potentielles options avec la fonction option_parse, qui signale une erreur et interrompt le
-programme si elle lit une option non reconnue, ou renvoie un entier encodant les options sur 3 bits.
+programme si elle lit une option non reconnue, ou renvoie un entier encodant les options sur 4 bits.
 
 Deux cas de figures se présentent ensuite:
 
@@ -70,15 +70,19 @@ Afficher les options disponibles.
 
 -n
 
-Renommer le fichier compressé ou décompressé. Les fichiers issus de la déconcaténation d'un fichier-archive décompressé ne peuvent pas être renommés.
+Renommer le fichier compressé et/ou décompressé. Les fichiers issus d'une archive ne seront pas renommés à la décompression.
 
 -r
 
-Supprimer le fichier ou dossier d'origine. Si la décompression est faite en suivant la compression, le fichier compressé sera également effacé. Le fichier de concaténation est toujours supprimé après déconcaténation.
+Supprimer le fichier passé en argument, ou supprimer les fichiers copiés de l'arborescence du dossier passé en argument. Si l'arborescence du dossier a été entièrement vidé, la supprime également. Si le programme est lancé en compression et que l'utilisateur choisit de décompresser pendant la même exécution du programme, le fichier compressé sera également supprimé.
 
 -c
 
 Afficher les caractères distincts du fichiers et leurs codes respectifs.
+
+-p
+
+Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche le contenu du fichier de concaténation.
 
 ###############
 
@@ -110,7 +114,7 @@ traversal(srcdir,destfile)
 La fonction utilise os.walk(srcdir) pour obtenir tous les chemins d'accès, sous-dossiers et fichiers de l'arborescence de
 dossiers ayant srcdir comme racine. Tous les fichiers munis de l'extension ".txt" sont alors vérifiés par text_check; si ce
 sont bien des fichiers texte leur contenu est copié dans destfile, avec rajout d'une ligne séparatrice spéciale contenant le
-nom d'origine du fichier et son chemin d'accès.
+nom d'origine du fichier et son chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé.
 
 user_rename(old_name,intgr)
 
@@ -121,6 +125,10 @@ user_input(string,optCode)
 
 Demande à l'utilisateur s'il veut décompresser le fichier. Si l'utilisateur répond par la négative, le programme est arrêté.
 Sinon la fonction lance le décompresseur avec string et optCode comme arguments.
+
+folder_remove(srcdir)
+
+Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossier passé en argument sont supprimés. Au terme de cette phase, la fonction vérifie récursivement si le dossier et ses sous-dossiers sont vides, et si c'est le cas, les supprime.
 
 genesis(bigfile)
 
