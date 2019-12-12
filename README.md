@@ -1,10 +1,10 @@
 # HLIN303-Projet-Codage-Huffman
 
-#Compilation Compresseur: commande 'make com'
+Compilation Compresseur: commande 'make com'
 
-#Compilation Décompresseur: commande 'make dec'
+Compilation Décompresseur: commande 'make dec'
 
-#Archiver fichiers sources, fichier make et readme: commande 'make arch'
+Exécution du programme: ./Arch_python.py 'fichier ou dossier'
 
 #####################
 
@@ -167,8 +167,8 @@ d'occurrences T correspondant au caractère est incrémenté.
 
 int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 
-La fonction calcule à partir de T le nombre total de caractères, stocké dans total_char, et le nombre de caractères distincts, stocké dans unique_char. Si ce dernier est égal à un, le fichier textfile est ouvert en ajout-écriture et un caractère <newline> est rajouté à la fin (cf. norme POSIX.1-2017 3.206).
-  
+La fonction calcule à partir de T le nombre total de caractères, stocké dans total_char, et le nombre de caractères distincts, stocké dans unique_char.
+
 void initTree(struct node* T, int size)
 
 Fonction d'initialisation à des valeurs par défaut des attributs de chaque case du tableau T. Size sert au comptage.
@@ -184,7 +184,7 @@ dans une case vide de T à partir de l'indice correspondant au nombre de caract�
 
 unsigned char* extractCode(struct node* T, int i)
 
-Sous-fonction de codeGen. Une chaîne de caractères vide est créée. A partir de la feuille i de l'arbre stocké dans T, l'algorithme remonte jusqu'à la racine. A chaque déplacement d'un noeud x vers un noeud y, si x est l'enfant gauche de y le caractère '0' est ajouté à la chaîne, si x est l'enfant droit le caractère '1' est ajouté. Lorsque la racine a été atteinte, la chaîne est réalloué dans une chaîne de taille adaptée et renvoyée.
+Sous-fonction de codeGen. Une chaîne de caractères vide est créée. A partir de la feuille i de l'arbre stocké dans T, l'algorithme remonte jusqu'à la racine. A chaque déplacement d'un noeud x vers un noeud y, si x est l'enfant gauche de y le caractère '0' est ajouté à la chaîne, si x est l'enfant droit le caractère '1' est ajouté. Lorsque la racine a été atteinte, la chaîne est réalloué dans une chaîne de taille adaptée et renvoyée. Attribue le code 1 par défaut si la feuille est racine, dans le cas où le fichier ne contient qu'un caractère distinct.
 
 int codeGen(struct node* T, unsigned char** Table, int unique_char)
 
@@ -198,13 +198,13 @@ bool leftmost(int* T, int size, int n)
 
 Sous-fonction de encodeIDX. Les indices de T correspondent aux noeuds de l'arbre de Huffman. Teste la valeur du noeud n dans T en la comparant à toutes les autres valeurs positives. Si cette valeur est la plus petite de T, n est le noeud le plus à gauche au niveau de profondeur actuel de l'arbre dans encodeIDX, et la fonction renvoie vrai. Sinon la fonction renvoie faux.
 
-unsigned char* binaryChar(unsigned char n)
-
-Sous-fonction de encodeIDX. Convertit le caractère n en chaîne de caractères stockant sa valeur binaire pour qu'il puisse être lu par la fonction d'encodage.
-
 void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_read)
 
-Fonction d'encodage appelée par encodeIDX et encodeMSG. carrier est l'octet porteur sur lequel sont encodés les caractères de la chaîne 'code', bits par bits. fill mesure le taux de remplissage de carrier. code_read indique la taille du code déjà lu et permet de calculer la taille du code restant à encoder en effectuant la différence avec 'code'.
+Fonction d'encodage appelée par encodeIDX et encodeMSG. carrier est l'octet porteur sur lequel sont encodés les caractères de la chaîne 'code', bits par bits. code_read indique la taille du code déjà lu et permet de calculer la taille du code restant à encoder en effectuant la différence avec 'code'. L'encodage s'arrête lorsque carrier est rempli (indiqué par fill) ou lorsqu'il n'y a plus de code à écrire.
+
+void encodeCh(unsigned char* carrier, int* fill, unsigned char* symbol, int* code_read)
+
+Fonction d'encodage appelée par encodeIDX pour encoder les caractères associés à chaque feuille de l'arbre de Huffman. Lit les bits de symbol et les encode sur carrier tant que fill et code_read sont inférieurs à CHAR_BIT.
 
 int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 
@@ -212,11 +212,11 @@ Fonction d'écriture appelée par encodeIDX et encodeMSG. L'octet carrier est é
 
 int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
 
-Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur un octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Tous les encodages se font par appel à la fonction encode. Les noeuds sont encodés sur un bit: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les CHAR_BIT bits du caractère correspondant, après conversion du caractère en chaîne par binaryChar. Lorsque fill=CHAR_BIT, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
+Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur un octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Les noeuds sont encodés sur un bit par la fonction encode: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les CHAR_BIT bits du caractère correspondant par appel à la fonction encodeCh. Lorsque fill=CHAR_BIT, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
 
 int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
 
-Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader, la fonction récupère le code correspondant dans Table, et fait appel à encode pour écrire ce code bit à bit sur carrier. Lorsque carrier est rempli, la fonction appelle writeChar pour écrire sur le flux writer.
+Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader, la fonction récupère le code correspondant dans Table, et appelle la fonction encode pour écrire ce code bit à bit sur carrier. Lorsque carrier est rempli, la fonction appelle writeChar pour écrire sur le flux writer.
 
 
 
@@ -231,7 +231,7 @@ Le programme de decompression est lancé par le script Python, soit à la suite 
 
 Le décompresseur ouvre le fichier encodé en lecture binaire et lit tout d'abord l'entier sur 4 octets qui indique le nombre total de caractères, et l'entier sur un octet indiquant le nombre de caractères distincts. Ces informations lui permettent de recréer un tableau représentant l'arbre de Huffman du texte encodé.
 
-La décompression de l'arbre se fait en plusieurs étapes. Le décompresseur stocke les noeuds, feuilles et caractères associés aux feuilles dans un tableau. Ceci permet tout d'abord de replacer les caractères dans le tableau de l'arbre, ensuite de reconstruire les liens parents-enfants en sachant que l'arbre a été encodé en commençant par la racine et en procédant dans un ordre particulier (cf. partie II).
+L'index est décodé et les caractères récupérés sont mis à leur place dans le tableau. Sachant que l'arbre a été encodé en commençant par la racine et en procédant dans un ordre particulier (cf. partie II), le décompresseur reconstruit alors l'arbre en reconstituant les liens parents-enfants d'origine.
 
 Après avoir reconstitué l'arbre, le décompresseur régénère les codes. Si l'option -c a été sélectionné à l'exécution du script Python, les caractères et leurs codes respectifs sont affichés.
 
@@ -256,29 +256,21 @@ unsigned char decodeSingle(unsigned char* carrier, int* fill)
 
 Sous-fonction de decIDXmain. Fonction simplifiée décodant un bit de carrier.
 
-void decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char* T, int* pos)
+unsigned char decodeIDX(unsigned char* carrier, int* fill, unsigned char* T_byte, int* code_read)
 
-Sous-fonction de decIDXmain. Décode les bits de d'un caractère associé à une feuille et les stocke comme caractères dans T.
-
-unsigned char charBuild(unsigned char* buffer, int pos)
-
-Les caractères dans buffer sont lu et encodé bit à bit sur un octet pour reconstiture le caractère d'origine. pos sert au comptage.
+Sous-fonction de decIDXmain. Lit les bits de carrier et les écrit sur T_byte pour retrouver le caractère associé à une feuille. Renvoie T_byte lorsque carrier a été lu en entier ou T_byte est rempli.
 
 int readChar(FILE* reader, unsigned char* carrier, int* fill)
 
 Fonction de lecture appelée par decIDXmain et decMSGmain. L'octet lu sur le flux reader est stocké dans carrier et fill est remis à zero.
 
-int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, int* fill, int size, int unique_char)
+int decIDXmain(FILE* reader, struct node* T, unsigned char* carrier, int* fill, int size)
 
-Fonction de décodage de l'index. La fonction appelle decodeSingle pour décoder les noeuds de l'arbre et stocker la valeur '0' (correspondant aux noeuds internes) ou '1' (les feuilles) dans treeArray. A la lecture d'une feuille, la case suivante de treeArray reçoit le caractère associé, décodé par des appels à decodeIDX et charBuild. Lorsque fill=CHAR_BIT, l'octet carrier a été entièrement décodé et la fonction appelle readChar pour lire sur le flux reader.
-
-void arraytoTree(unsigned char* treeArray, struct node* T, int size, int unique_char)
-
-Associe les caractères de treeArray aux cases de T. size et unique_char servent au comptage.
+Fonction de décodage de l'index. Les octets lus sur le flux reader sont chargés sur l'octet porteur carrier. Lorsque tous les bits de carrier ont été lus, la fonction appelle readChar pour récupérer un nouvel octet sur reader. La fonction appelle decodeSingle pour décoder les noeuds de l'arbre. La lecture du bit 1 indique une feuille, et la fonction appelle decodeIDX pour lire les CHAR_BIT bits suivants et retrouver le caractère associé à la feuille et le stocker dans le tableau de l'arbre de Huffman.
 
 void buildTree(struct node* T, int size)
 
-Fonction de reconstruction de l'arbre de Huffman. Les arbres de Huffman ne sont pas des arbres complets et donc il n'y a pas une formule unique pour relier parents et enfants. Mais sachant que l'arbre a été encodé de haut en bas et de gauche à droite, à partir d'un niveau de profondeur, on peut connaître le nombre de noeuds à traiter au niveau suivant: 2 pour chaque noeud interne au niveau courant. En tenant compte des noeuds à traiter à un certain niveau, des noeuds déjà traités et des noeuds aux niveau suivant, on peut retrouver les enfants de chaque noeud interne et ainsi reconstituer l'arbre.
+Fonction de reconstruction de l'arbre de Huffman. Les arbres de Huffman ne sont pas des arbres complets et donc il n'y a pas une formule unique pour relier parents et enfants. Mais sachant que l'arbre a été encodé de haut en bas et de gauche à droite, à partir d'un niveau de profondeur, on peut connaître le nombre de noeuds à traiter au niveau suivant: 2 pour chaque noeud interne au niveau courant. En tenant compte des noeuds à traiter à un certain niveau, des noeuds déjà traités et des noeuds aux niveau suivant, la fonction calcule et alloue les enfants de chaque noeud interne et ainsi reconstitue l'arbre.
 
 unsigned char* extractCode(struct node* T, int i)
 
