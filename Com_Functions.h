@@ -30,9 +30,9 @@ char* newFile(char*); //Prefixes file name with "ENCODED_"
 
 bool leftmost(int*, int, int);
 
-unsigned char* binaryChar(unsigned char);
-
 void encode(unsigned char*, int*, unsigned char*, int*);
+
+void encodeCh(unsigned char*, int*, unsigned char*, int*);
 
 int writeChar(FILE*, unsigned char*, int*, int*);
 

@@ -179,30 +179,6 @@ bool leftmost(int* T, int size, int n)
 	return true;
 }
 
-unsigned char* binaryChar(unsigned char n)
-{
-	//Convert char numerical value to binary value held in 8-char array
-	unsigned char *T=malloc((CHAR_BIT+1)*sizeof(unsigned char));	//Array with null terminator cell
-	int r;
-	for(int i=CHAR_BIT-1; i >=0; i--) {
-		if(n > 0) {
-			r=n%2;
-			if(r & 1) {
-				T[i]='1';
-			}
-			else {
-				T[i]='0';
-			}
-			n/=2;
-		}
-		else {
-			T[i]='0';	//Fill out most significant bits with 0's if needed
-		}
-	}
-	T[CHAR_BIT]='\0';
-	return T;
-}
-
 void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_read)
 {
 	int size=strlen(code)-*code_read;	//Code to write, without null terminator
@@ -217,6 +193,20 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 		}
 		(*fill)++;	//Without parentheses, ++ increments the pointer itself (operator has higher priority than *)
 		(*code_read)++;
+	}
+}
+
+void encodeCh(unsigned char* carrier, int* fill, unsigned char* symbol, int* code_read)
+{
+	while(*code_read < CHAR_BIT && *fill < CHAR_BIT) {	//To the end of the symbol byte or to the end of the carrier byte
+		if(*symbol & (1<<(CHAR_BIT-1-*code_read))) {
+			*carrier|=(1<<(CHAR_BIT-1-*fill));
+		}
+		else {
+			*carrier&=(~(1<<(CHAR_BIT-1-*fill)));
+		}
+		(*code_read)++;
+		(*fill)++;
 	}
 }
 
@@ -238,7 +228,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 	unsigned int buf0[1]={total_char};	//4 byte storage
 	*bits+=32+CHAR_BIT;
 	unsigned char buf1[2]={'0','\0'}; //1 random byte and null character--null character needed for proper strlen calc in encoding function
-	unsigned char *symbol; //Char array to hold 8-bit char as 8-char array and null terminator
+	unsigned char leaf_char='\0'; //Character to encode after a leaf code
 	fwrite(buf0,sizeof(buf0),1,writer); //Write total number of characters
 	if(ferror(writer)) {
 		fputs("Erreur durant l'écriture.\n", stderr);
@@ -271,16 +261,15 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 						}
 					}
 					code_read=0; //Only 1 bit set, doesn't need comparison with code length
-					symbol=binaryChar(Tr[search].symbol); //Converts 1-byte char into 8-byte char array of the char's binary value
+					leaf_char=Tr[search].symbol;
 					while(code_read < CHAR_BIT) {
-						encode(carrier,fill,symbol,&code_read); //Bit-encodes the previous array onto the carrier byte
+						encodeCh(carrier,fill,&leaf_char,&code_read); //Bit-encodes the leaf character onto the carrier byte
 						if(*fill == CHAR_BIT) {
 							if(writeChar(writer,carrier,fill,bits)) {
 								return 4;
 							}
 						}
 					}
-					free(symbol); symbol=NULL;
 					code_read=0;
 				}
 				else {	//Internal node
