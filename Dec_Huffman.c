@@ -11,7 +11,9 @@ int main(int argc, char** argv)
 		fputs("Erreur: le fichier à lire et à décompresser doit être passé en paramètre.\n", stderr);
 		return 1;
 	}
-	unsigned char optByte=atoi(argv[2]);
+	unsigned char optByte='\0';
+	if(argc == 3)
+		optByte=atoi(argv[2]);
 
 	FILE* huff=fopen(argv[1], "rb");
 	if(!huff) {
