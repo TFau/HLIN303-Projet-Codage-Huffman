@@ -166,10 +166,10 @@ Après encodage de l'index, le contenu du fichier est encodé. Le programme réc
 
  2. Les fonctions
 
-int freqCalc(int* T, char* textfile)
+int freqCalc(int* T, char* textfile, unsigned char Opt)
 
 La fonction ouvre le fichier indiqué par textfile en lecture. A la lecture d'un caractère, la valeur de la case du tableau
-d'occurrences T correspondant au caractère est incrémenté.
+d'occurrences T correspondant au caractère est incrémenté. Si l'option -p a été sélectionnée, affiche le caractère lu sur stdout.
 
 int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 
@@ -298,9 +298,9 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 
 Sous-fonction de decMSGmain. Stocke les bits lus sur l'octet carrier dans la chaîne de caractères T. A chaque bit lu et convertit, appelle la fonction codeCheck pour effectuer la comparaison entre T et les chaînes de code de Dec_T. Renvoie la valeur renvoyée par codeCheck.
 
-int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, int* fill, int size, int total_char)
+int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, unsigned char Opt, int* fill, int size, int total_char)
 
-Fonction de décodage du message. A la lecture d'un caractère sur le flux reader, appelle la fonction decodeMSG pour convertir les bits de l'octet carrier en chaîne de caractère et comparer celle-ci aux codes de Table. Lorsque decodeMSG renvoie une valeur positive, la fonction écrit le caractère de T correspondant à cette valeur sur le flux writer.
+Fonction de décodage du message. A la lecture d'un caractère sur le flux reader, appelle la fonction decodeMSG pour convertir les bits de l'octet carrier en chaîne de caractère et comparer celle-ci aux codes de Table. Lorsque decodeMSG renvoie une valeur positive, la fonction écrit le caractère de T correspondant à cette valeur sur le flux writer. Si l'option -p a été sélectionnée, affiche aussi le caractère retrouvé sur stdout.
 
 
 
