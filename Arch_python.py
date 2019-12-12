@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-import os, shutil, sys
+import os, sys
 from Arch_python_func import arg_parse, option_parse, traversal, user_rename, user_input, genesis
 
 
@@ -39,14 +39,13 @@ else:
 	A_file_to_proc="Arch_"+file_to_proc+".huf"
 	open(A_file_to_proc,"a").close()#Create concatenation file
 	os.chmod(A_file_to_proc,0o755) #Octal notation using 0o
-	traversal(file_to_proc,A_file_to_proc)
+	traversal(file_to_proc,A_file_to_proc,optionCode)
 	if os.stat(A_file_to_proc).st_size == 0: #Final check
+		os.remove(A_file_to_proc)
 		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers .txt, ou uniquement des fichiers .txt vides.")
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
 		sys.exit("Echec de la compression.")
-	if optionCode & (1<<1):
-		shutil.rmtree(file_to_proc) #Removes directory
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	if optionCode & (1<<0):
 		E_file_to_proc=user_rename(E_file_to_proc,0)

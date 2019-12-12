@@ -17,10 +17,10 @@ def user_help() :
 	print("Options disponibles. Tapez 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.\n")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
-	print("""\033[1m-r\033[0m\tSupprimer le fichier ou dossier passé en paramètre. Si le programme est
-	lancé en compression et que l'utilisateur choisit de décompresser
-	pendant la même exécution du programme, le fichier compressé sera
-	également supprimé.""")
+	print("""\033[1m-r\033[0m\tSupprimer le fichier passé en argument, ou supprimer les fichiers copiés
+	du dossier passé en argument. Si le programme est lancé en compression
+	et que l'utilisateur choisit de décompresser pendant la même exécution
+	du programme, le fichier compressé sera également supprimé.""")
 	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.")
 	print("\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier.\n")
 	while True:
@@ -83,7 +83,7 @@ def text_check(file) :
 	else:
 		return 0
 
-def traversal(srcdir,destfile) :
+def traversal(srcdir,destfile,optCode) :
 	for dirpath, subdirs, files in os.walk(srcdir): #Traverses directory tree automatically!
 		for f in files:
 			if f.endswith(".txt"):
@@ -95,6 +95,8 @@ def traversal(srcdir,destfile) :
 							for line in tempfile:
 								catfile.write(line)
 						catfile.write("\n&!FILE&!"+f+"&!ADR&!"+dirpath+"&!SEP&!\n") #Newline required for deconcatenation
+					if optCode & (1<<1):
+						os.remove(full_f)
 
 def user_rename(old_name,intgr) :
 	while True:
