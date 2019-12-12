@@ -43,36 +43,20 @@ unsigned char decodeSingle(unsigned char* carrier, int* fill)
 	return decode;
 }
 
-void decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char* T, int* pos)
+unsigned char decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char* T_byte, int* pos)
 {
 	while(*code_read < CHAR_BIT && *fill < CHAR_BIT) {	//To the end of the symbol byte or to the end of the carrier byte
 		if(*carrier & (1<<(CHAR_BIT-1-*fill))) {
-			T[*pos]='1';
+			*T_byte|=(1<<(CHAR_BIT-1-*pos));
 		}
 		else {
-			T[*pos]='0';
+			*T_byte&=(~(1<<(CHAR_BIT-1-*pos)));
 		}
-		(*pos)++;
+		(*pos)++;	//No need to check
 		(*code_read)++;
 		(*fill)++;
-	}	
-}
-
-unsigned char charBuild(unsigned char* buffer, int pos)
-{
-	//Function always finds 8 bits, no special checks needed
-	unsigned char char_str='\0';
-	int string_pos=0;
-	for(int i=0; i <= pos; i++) {
-		if(buffer[i] & 1) {	//Character '1'
-			char_str|=(1<<(CHAR_BIT-1-string_pos));
-		}
-		else {	//Character '0'
-			char_str&=(~(1<<(CHAR_BIT-1-string_pos)));
-		}
-		string_pos++;
 	}
-	return char_str;
+	return *T_byte;	
 }
 
 int readChar(FILE* reader, unsigned char* carrier, int* fill)
@@ -89,8 +73,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, int* fill, int size, int unique_char)
 {
 	int counter=0, temp_pos=0, code_read=0;
-	unsigned char buftemp[UCHAR_MAX+1]; //Char array to hold bits for decoding
-	//The decoder must extract the node and symbol bits, and place each node or symbol into a byte of the buffer for easier processing
+	unsigned char character='\0'; //Byte used to hold the character being decoded
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
 		fputs("Erreur durant la lecture.\n", stderr);
@@ -104,9 +87,9 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 			}
 		}
 		if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) { //Power of two (i.e single bit) check
+			counter++;	//To place character in next cell
 			while(code_read < CHAR_BIT) {
-				//Temp array for piece of character byte
-				decodeIDX(carrier,fill,&code_read,buftemp,&temp_pos);
+				treeArray[counter]=decodeIDX(carrier,fill,&code_read,&character,&temp_pos);
 				if(*fill == CHAR_BIT) {
 					if(readChar(reader,carrier,fill)) {
 						return 3;
@@ -114,10 +97,8 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 				}
 			}
 			code_read=0;
-			counter++; //To place leaf character 1 cell after the leaf code
-			treeArray[counter]=charBuild(buftemp,temp_pos);
+			temp_pos=0;
 		}
-		temp_pos=0;
 		counter++;
 	}
 	return 0;
