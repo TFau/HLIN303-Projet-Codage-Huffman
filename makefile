@@ -32,8 +32,8 @@ Decmpr_Huffman : Dec_Functions.o Dec_Huffman.o
 
 #########
 
-Archive_Huffman : $(SOURCE)
-	tar -zcvf Huffman_Archiver.tar.gz $(SOURCE)
+Archive_Huffman : $(SOURCE) Cmpr_Huffman Decmpr_Huffman
+	tar -zcvf Huffman_Archiver.tar.gz $(SOURCE) Cmpr_Huffman Decmpr_Huffman
 
 #########
 
