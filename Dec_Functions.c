@@ -72,7 +72,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 int decIDXmain(FILE* reader, struct node* T, unsigned char* carrier, int* fill, int size)
 {
 	int counter=0, code_read=0;
-	unsigned char node='\0', character='\0'; //Byte used to hold the character being decoded
+	unsigned char node='\0', character='\0'; //Bytes used to hold decoded bit or character
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
 		fputs("Erreur durant la lecture.\n", stderr);
