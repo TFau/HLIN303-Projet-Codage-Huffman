@@ -23,8 +23,9 @@ def user_help() :
 	est lancé en compression et que l'utilisateur choisit de décompresser
 	pendant la même exécution du programme, le fichier compressé sera
 	également supprimé.""")
-	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.")
-	print("\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier.\n")
+	print("\033[1m-c\033[0m\tAfficher les caractères distincts du fichier et leurs codes respectifs.")
+	print("""\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier. Dans le cas d'une archive,
+	affiche le contenu du fichier de concaténation.\n""")
 	while True:
 		cont=input()
 		if cont == 'c':
