@@ -224,7 +224,7 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 	return -1;
 }
 
-int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, int* fill, int size, int total_char)
+int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, unsigned char Opt, int* fill, int size, int total_char)
 {
 	int counter=0, temp_pos=0, char_found=-1;
 	unsigned char buftemp[UCHAR_MAX+1];
@@ -238,6 +238,9 @@ int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T
 			}
 		}
 		fputc(T[char_found].symbol,writer);
+		if(Opt & (1<<3)) {
+			putchar(T[char_found].symbol);
+		}
 		if(ferror(writer)) {
 			fputs("Erreur durant l'écriture.\n", stderr);
 			return 3;

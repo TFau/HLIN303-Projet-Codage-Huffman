@@ -68,8 +68,10 @@ int main(int argc, char** argv)
 		return 6;
 	}
 	//CarrierByte and fill are NOT reset; start from last written bit of current carrier byte
-	if(decMSGmain(huff,huffwrite,DecodeTable,Tree,&CarrierByte,&fill,treesize,sum)) //0 on success, 1 or more in case of failure
+	if(decMSGmain(huff,huffwrite,DecodeTable,Tree,&CarrierByte,optByte,&fill,treesize,sum)) //0 on success, 1 or more in case of failure
 		return 7; //Error message printed by decMSGmain
+	if(optByte & (1<<3))
+		puts("");
 
 	fclose(huff);
 	fclose(huffwrite);

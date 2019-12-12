@@ -34,6 +34,6 @@ int codeCheck(unsigned char*, int, unsigned char**, int);
 
 int decodeMSG(unsigned char*, int*, unsigned char*, int*, unsigned char**, int);
 
-int decMSGmain(FILE*, FILE*, unsigned char**, struct node*, unsigned char*, int*, int, int);
+int decMSGmain(FILE*, FILE*, unsigned char**, struct node*, unsigned char*, unsigned char, int*, int, int);
 
 #endif

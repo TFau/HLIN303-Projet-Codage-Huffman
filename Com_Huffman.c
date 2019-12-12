@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	/* Frequency Calc Function */
 	int ProcTable[UCHAR_MAX+1];
 	//File character parsing
-	if(freqCalc(ProcTable,argv[1])) //Returns 0 on success, 1 in case of failed realloc
+	if(freqCalc(ProcTable,argv[1],optByte)) //Returns 0 on success, 1 in case of failed realloc
 		return 2;
 	//Distinct character count and total character count
 	int nonzero_count=0, sum=0;

@@ -6,7 +6,7 @@
 
 #include "Com_Functions.h"
 
-int freqCalc(int* T, char* textfile)
+int freqCalc(int* T, char* textfile, unsigned char Opt)
 {
 	for(int i=0; i <= UCHAR_MAX; i++)
 		T[i]=0;
@@ -20,13 +20,20 @@ int freqCalc(int* T, char* textfile)
 	an int and advances the associated file position indicator" (C11 standard) */
 	while((counter=fgetc(huff)) != EOF) {
 		T[counter]++; //"undechaque" file prints 239,191,189 repeatedly: UTF8 3-byte character �
+		if(Opt & (1<<3)) {
+			putchar(counter);
+		}
 	}
 	if(ferror(huff)) {
 		fputs("Erreur durant la lecture.\n", stderr);
 		return 2;
 	}
-	else if(feof(huff))
+	else if(feof(huff)) {
+		if(Opt & (1<<3)) {
+			puts("");
+		}
 		puts("Fichier lu.");
+	}
 	fclose(huff);
 	return 0;
 }

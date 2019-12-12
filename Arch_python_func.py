@@ -19,8 +19,10 @@ def user_help() :
 	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
 	print("""\033[1m-r\033[0m\tSupprimer le fichier ou dossier passé en paramètre. Si le programme est
 	lancé en compression et que l'utilisateur choisit de décompresser
-	pendant la même exécution, le fichier compressé sera également supprimé.""")
-	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.\n")
+	pendant la même exécution du programme, le fichier compressé sera
+	également supprimé.""")
+	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.")
+	print("\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier.\n")
 	while True:
 		cont=input()
 		if cont == 'c':
@@ -28,10 +30,10 @@ def user_help() :
 		elif cont == 'q':
 			sys.exit(0)
 		else:
-			print("Entrez le caractère 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.")
+			print("Tapez 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.")
 
 def option_parse(opt_list) :
-	valid_opt=['c', 'n', 'r']
+	valid_opt=['c', 'n', 'p', 'r']
 	param=[] #Selected options list
 	optionByte=0
 	for opt in opt_list:
@@ -56,6 +58,8 @@ def option_parse(opt_list) :
 			optionByte|=(1<<1)
 		if initial == 'c':	#Print codes
 			optionByte|=(1<<2)
+		if initial == 'p':	#Print text
+			optionByte|=(1<<3)
 	return optionByte
 
 def text_check(file) :
@@ -68,7 +72,7 @@ def text_check(file) :
 		while True:
 			cont=input("Souhaitez-vous continuer l'exécution du programme? y/n\n")
 			if cont not in ('y', 'Y', 'n', 'N'):
-				print("Entrez le caractère 'y' pour continuer ou 'n' pour quitter le programme.")
+				print("Tapez 'y' pour continuer ou 'n' pour quitter le programme.")
 			else:
 				break
 		if cont in ('n', 'N'):
@@ -111,7 +115,7 @@ def user_input(string,optCode) :
 	while True:
 		cont=input("Voulez-vous décompresser le fichier? y/n\n")
 		if cont not in ('y', 'Y', 'n', 'N'):
-			print("Entrez le caractère 'y' pour décompresser ou 'n' pour quitter le programme.")
+			print("Tapez 'y' pour décompresser ou 'n' pour quitter le programme.")
 		else:
 			break
 	if cont in ('n', 'N'):

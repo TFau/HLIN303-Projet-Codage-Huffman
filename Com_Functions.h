@@ -12,7 +12,7 @@ struct node
 	double freq;
 };
 
-int freqCalc(int*, char*);
+int freqCalc(int*, char*, unsigned char);
 
 void distinctCalc(int*, int*, int*);
 
