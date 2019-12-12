@@ -93,7 +93,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
 
 arg_parse(arg_list)
 
-La fonction vérifie que seul un fichier ou dossier existant dans le dossier courant a été passé en argument à la fonction. Si c'est le cas, ce paramètre est renvoyé, sinon une erreur est signalée et le programme arrêté.
+La fonction vérifie que seul un fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté.
 
 user_help()
 
@@ -122,15 +122,15 @@ décompressé (si intgr=1). Un nom vide ou déjà existant n'est pas accepté, u
 user_input(string,optCode)
 
 Demande à l'utilisateur s'il veut décompresser le fichier. Si l'utilisateur répond par la négative, le programme est arrêté.
-Sinon la fonction lance le décompresseur avec string et optCode comme arguments.
+Sinon la fonction lance le décompresseur avec string et optCode passés en arguments.
 
 folder_remove(srcdir)
 
-Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossier passé en argument sont supprimés. Au terme de cette phase, la fonction vérifie récursivement si le dossier et ses sous-dossiers sont vides, et si c'est le cas, les supprime.
+Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossier passé en argument sont supprimés par la fonction traversal. Au terme de cette phase, la fonction folder_remove vérifie récursivement si le dossier et ses sous-dossiers sont vides, et si c'est le cas, les supprime.
 
 genesis(bigfile)
 
-La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant les dossiers s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
+La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant le(s) dossier(s) du chemin d'accès s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
 
 
 
