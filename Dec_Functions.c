@@ -43,16 +43,15 @@ unsigned char decodeSingle(unsigned char* carrier, int* fill)
 	return decode;
 }
 
-unsigned char decodeIDX(unsigned char* carrier, int* fill, int* code_read, unsigned char* T_byte, int* pos)
+unsigned char decodeIDX(unsigned char* carrier, int* fill, unsigned char* T_byte, int* code_read)
 {
 	while(*code_read < CHAR_BIT && *fill < CHAR_BIT) {	//To the end of the symbol byte or to the end of the carrier byte
 		if(*carrier & (1<<(CHAR_BIT-1-*fill))) {
-			*T_byte|=(1<<(CHAR_BIT-1-*pos));
+			*T_byte|=(1<<(CHAR_BIT-1-*code_read));
 		}
 		else {
-			*T_byte&=(~(1<<(CHAR_BIT-1-*pos)));
+			*T_byte&=(~(1<<(CHAR_BIT-1-*code_read)));
 		}
-		(*pos)++;	//No need to check
 		(*code_read)++;
 		(*fill)++;
 	}
@@ -72,7 +71,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 
 int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, int* fill, int size, int unique_char)
 {
-	int counter=0, temp_pos=0, code_read=0;
+	int counter=0, code_read=0;
 	unsigned char character='\0'; //Byte used to hold the character being decoded
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
@@ -89,7 +88,7 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 		if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) { //Power of two (i.e single bit) check
 			counter++;	//To place character in next cell
 			while(code_read < CHAR_BIT) {
-				treeArray[counter]=decodeIDX(carrier,fill,&code_read,&character,&temp_pos);
+				treeArray[counter]=decodeIDX(carrier,fill,&character,&code_read);
 				if(*fill == CHAR_BIT) {
 					if(readChar(reader,carrier,fill)) {
 						return 3;
@@ -97,7 +96,6 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 				}
 			}
 			code_read=0;
-			temp_pos=0;
 		}
 		counter++;
 	}

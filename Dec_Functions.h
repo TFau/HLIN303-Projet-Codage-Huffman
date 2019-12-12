@@ -18,7 +18,7 @@ void initTree(struct node*, int);
 
 unsigned char decodeSingle(unsigned char*, int*);
 
-unsigned char decodeIDX(unsigned char*, int*, int*, unsigned char*, int*);
+unsigned char decodeIDX(unsigned char*, int*, unsigned char*, int*);
 
 int readChar(FILE*, unsigned char*, int*);
 
