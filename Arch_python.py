@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import os, sys
-from Arch_python_func import arg_parse, option_parse, traversal, user_rename, user_input, genesis
+from Arch_python_func import arg_parse, option_parse, traversal, user_rename, user_input, folder_remove, genesis
 
 
 #Program launch parameter and option check
@@ -49,6 +49,8 @@ else:
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	if optionCode & (1<<0):
 		E_file_to_proc=user_rename(E_file_to_proc,0)
+	if optionCode & (1<<1):
+		folder_remove(file_to_proc)
 	os.remove(A_file_to_proc)
 	user_input(E_file_to_proc,optionCode)
 

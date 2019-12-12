@@ -18,9 +18,11 @@ def user_help() :
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
 	print("""\033[1m-r\033[0m\tSupprimer le fichier passé en argument, ou supprimer les fichiers copiés
-	du dossier passé en argument. Si le programme est lancé en compression
-	et que l'utilisateur choisit de décompresser pendant la même exécution
-	du programme, le fichier compressé sera également supprimé.""")
+	de l'arborescence du dossier passé en argument. Si l'arborescence du
+	dossier a été entièrement vidé, la supprime également. Si le programme
+	est lancé en compression et que l'utilisateur choisit de décompresser
+	pendant la même exécution du programme, le fichier compressé sera
+	également supprimé.""")
 	print("\033[1m-c\033[0m\tAfficher les caractères du fichier et leurs codes respectifs.")
 	print("\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier.\n")
 	while True:
@@ -128,6 +130,18 @@ def user_input(string,optCode) :
 			sys.exit("Echec de la décompression.")
 		if optCode & (1<<1):
 			os.remove(string)
+
+def folder_remove(srcdir) :
+	if os.path.isfile(srcdir):
+		return False
+	elif not os.listdir(srcdir):
+		os.rmdir(srcdir)
+		return True
+	elif all([folder_remove(os.path.join(srcdir,d)) for d in os.listdir(srcdir)]):
+		os.rmdir(srcdir)
+		return True
+	else:
+		return False
 
 def genesis(bigfile) :
 	newfile=open("Huff_Temp_Name.txt", "w")	#New file to write the first original file
