@@ -69,26 +69,25 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 	return 0;
 }
 
-int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, int* fill, int size, int unique_char)
+int decIDXmain(FILE* reader, struct node* T, unsigned char* carrier, int* fill, int size)
 {
 	int counter=0, code_read=0;
-	unsigned char character='\0'; //Byte used to hold the character being decoded
+	unsigned char node='\0', character='\0'; //Byte used to hold the character being decoded
 	*carrier=fgetc(reader);
 	if(ferror(reader)) {
 		fputs("Erreur durant la lecture.\n", stderr);
 		return 1;
 	}
-	while(counter < size+unique_char) {
-		treeArray[counter]=decodeSingle(carrier,fill);	//Node code, single bit (0 or 1)
+	while(counter < size) {
+		node=decodeSingle(carrier,fill);	//Node code, single bit (0 or 1)
 		if(*fill == CHAR_BIT) {
 			if(readChar(reader,carrier,fill)) {
 				return 2;
 			}
 		}
-		if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) { //Power of two (i.e single bit) check
-			counter++;	//To place character in next cell
+		if(node && !(node & (node-1))) { //Power of two (i.e single bit) check
 			while(code_read < CHAR_BIT) {
-				treeArray[counter]=decodeIDX(carrier,fill,&character,&code_read);
+				T[counter].symbol=decodeIDX(carrier,fill,&character,&code_read);
 				if(*fill == CHAR_BIT) {
 					if(readChar(reader,carrier,fill)) {
 						return 3;
@@ -100,22 +99,6 @@ int decIDXmain(FILE* reader, unsigned char* treeArray, unsigned char* carrier, i
 		counter++;
 	}
 	return 0;
-}
-
-void arraytoTree(unsigned char* treeArray, struct node* T, int size, int unique_char)
-{
-	int counter=0, nodes_count=0;
-	while(counter < size+unique_char) {
-		if(treeArray[counter] == '\0') {
-			nodes_count++;
-		}
-		else if(treeArray[counter] && !(treeArray[counter] & (treeArray[counter]-1))) {
-			T[nodes_count].symbol=treeArray[counter+1];
-			nodes_count++;
-			counter++;	//To skip character treeArray's next cell
-		}
-		counter++;
-	}
 }
 
 void buildTree(struct node* T, int size)

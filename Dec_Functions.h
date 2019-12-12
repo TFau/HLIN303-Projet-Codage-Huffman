@@ -22,9 +22,7 @@ unsigned char decodeIDX(unsigned char*, int*, unsigned char*, int*);
 
 int readChar(FILE*, unsigned char*, int*);
 
-int decIDXmain(FILE*, unsigned char*, unsigned char*, int*, int, int);
-
-void arraytoTree(unsigned char*, struct node*, int, int);
+int decIDXmain(FILE*, struct node*, unsigned char*, int*, int);
 
 void buildTree(struct node*, int);
 

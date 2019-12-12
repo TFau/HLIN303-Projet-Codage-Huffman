@@ -35,11 +35,9 @@ int main(int argc, char** argv)
 	/* Decode index and rebuild tree */
 	int fill=0;
 	unsigned char CarrierByte;
-	unsigned char buftree[treesize+nonzero_count]; //Leaves + symbols + internal nodes, each to a byte
-	if(decIDXmain(huff,buftree,&CarrierByte,&fill,treesize,nonzero_count)) //0 on success, 1 or more in case of failure
+	//Decode characters
+	if(decIDXmain(huff,Tree,&CarrierByte,&fill,treesize)) //0 on success, 1 or more in case of failure
 		return 4; //Error message printed by decIDXmain
-	//Extract nodes from buffer into tree
-	arraytoTree(buftree,Tree,treesize,nonzero_count);
 	//Rebuild tree
 	buildTree(Tree,treesize);
 	puts("Arbre reconstruit...\n");
