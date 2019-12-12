@@ -1,8 +1,6 @@
 #ifndef DEC_FUNCTIONS_SET
 #define DEC_FUNCTIONS_SET
 
-#include <stdbool.h>
-
 struct node 
 {
 	unsigned char symbol;
