@@ -93,9 +93,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
 
 arg_parse(arg_list)
 
-La fonction crée une liste contenant les éléments de arg_list qui sont des chemins existant dans le dossier courant. La liste
-doit contenir exactement un élément--le fichier ou dossier à traiter--pour être validée et son contenu renvoyé, sinon une
-erreur est signalée et la sortie du programme est déclenchée.
+La fonction vérifie que seul un fichier ou dossier existant dans le dossier courant a été passé en argument à la fonction. Si c'est le cas, ce paramètre est renvoyé, sinon une erreur est signalée et le programme arrêté.
 
 user_help()
 
