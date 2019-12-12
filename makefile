@@ -1,6 +1,12 @@
 com : Cmpr_Huffman
 dec : Decmpr_Huffman
+arch : Archive_Huffman
 clean: cls
+
+#########
+
+SOURCE = Com_Functions.h Com_Functions.c Com_Huffman.c Dec_Functions.h Dec_Functions.c Dec_Huffman.c \
+Arch_python.py Arch_python_func.py README.md makefile
 
 #########
 
@@ -23,6 +29,11 @@ Dec_Huffman.o : Dec_Huffman.c
 
 Decmpr_Huffman : Dec_Functions.o Dec_Huffman.o
 	gcc -Wall Dec_Functions.o Dec_Huffman.o -o Decmpr_Huffman
+
+#########
+
+Archive_Huffman : $(SOURCE)
+	tar -zcvf Huffman_Archiver.tar.gz $(SOURCE)
 
 #########
 
