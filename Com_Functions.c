@@ -76,16 +76,16 @@ void buildTree(struct node* T, int counter)
 	int minA, minB;
 	double lowfreqA, lowfreqB;
 	do {
-		minA=-1; minB=-1;
-		lowfreqA=1; lowfreqB=1;
+		minA=minB=-1;
+		lowfreqA=lowfreqB=1;
 		for(int i=0; i <= counter; i++) {
-			if(T[i].parent == -1 && T[i].freq > 0 && T[i].freq < lowfreqA) {
+			if(T[i].parent == -1 && T[i].freq < lowfreqA) {
 				lowfreqA=T[i].freq;
 				minA=i;
 			}
 		}
 		for(int i=0; i <= counter; i++) {
-			if(T[i].parent == -1 && T[i].freq > 0 && i != minA && T[i].freq < lowfreqB) {
+			if(T[i].parent == -1 && i != minA && T[i].freq < lowfreqB) {
 				lowfreqB=T[i].freq;
 				minB=i;
 			}

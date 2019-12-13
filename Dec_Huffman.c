@@ -41,16 +41,18 @@ int main(int argc, char** argv)
 	buildTree(Tree,treesize);
 	puts("Arbre reconstruit...\n");
 
-	/* Code regeneration */
-	unsigned char* DecodeTable[treesize];
-	for(int i=0; i < treesize; i++)
-		DecodeTable[i]=NULL; //Otherwise free() causes segfault
-	//Generates the code for each character by traversing the tree
-	if(deCodeGen(Tree,DecodeTable,treesize)) //0 on success, 1 in case of failed realloc
-		return 5; //Error message printed by codeGen
-	puts("Codes régénérés...\n");
-	//Print the code array if -c option used
+	/* Code regeneration with -c option */
 	if(optByte & (1<<2)) {
+		unsigned char* DecodeTable[treesize];
+		for(int i=0; i < treesize; i++) {
+			DecodeTable[i]=NULL; //Otherwise free() causes segfault
+		}
+		//Generates the code for each character by traversing the tree
+		if(deCodeGen(Tree,DecodeTable,treesize)) { //0 on success, 1 in case of failed realloc
+			return 5; //Error message printed by codeGen
+		}
+		puts("Codes régénérés...\n");
+		//Print the code array
 		for(size_t i=0; i < treesize; i++) {
 			if(Tree[i].symbol != 0) {
 				printf("%ld. %c\t%s\n", i, Tree[i].symbol, DecodeTable[i]);
