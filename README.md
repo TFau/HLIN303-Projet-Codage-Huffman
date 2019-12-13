@@ -140,7 +140,7 @@ Le programme de compression est lancé par le script Python, avec en argument le
 Le compresseur lit le fichier et compte le nombre d'occurrences de chaque caractère; à partir de cette information se
 calculent le nombre de caractères distincts et le nombre total de caractères dans le fichier.
 
-Pour n caractères distincts, le programme crée un tableau de 2n-1 cases est créé. Ce tableau représentera l'arbre de Huffman: chaque caractère y est inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa valeur numérique, son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
+Pour n caractères distincts, le programme crée un tableau de 2n-1 cases qui représentera l'arbre de Huffman: chaque caractère y est inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa valeur numérique, son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
 
 A partir de ces caractères-feuilles, un algorithme génère l'arbre de Huffman, liant à chaque itération les deux noeuds de plus basses fréquences à un noeud parent dont la fréquence est la somme de celles de ces enfants. Une fois remplie, un second algorithme génère le code de chaque caractère en remontant de sa feuille jusqu'à la racine. Ces codes sont stockés dans un
 second tableau.
