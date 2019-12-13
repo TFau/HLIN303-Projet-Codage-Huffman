@@ -58,6 +58,9 @@ int main(int argc, char** argv)
 				printf("%ld. %c\t%s\n", i, Tree[i].symbol, DecodeTable[i]);
 			}
 		}
+		for(int i=0; i < treesize; i++) {
+			free(DecodeTable[i]);
+		}
 		puts("");
 	}
 	else puts("Utilisez l'option -c pour afficher les caractères et leurs codes respectifs.\n");
@@ -77,8 +80,6 @@ int main(int argc, char** argv)
 
 	fclose(huff);
 	fclose(huffwrite);
-	for(int i=0; i < treesize; i++)
-		free(DecodeTable[i]);
 	free(filename);
 
 	puts("Message décodé...\n");
