@@ -5,8 +5,10 @@ clean: cls
 
 #########
 
-SOURCE = Com_Functions.h Com_Functions.c Com_Huffman.c Dec_Functions.h Dec_Functions.c Dec_Huffman.c \
-Arch_python.py Arch_python_func.py README.md makefile
+PROG = Cmpr_Huffman Decmpr_Huffman README.md makefile
+SOURCE = Com_Functions.h Com_Functions.c Com_Huffman.c \
+Dec_Functions.h Dec_Functions.c Dec_Huffman.c \
+Arch_python.py Arch_python_func.py
 
 #########
 
@@ -32,8 +34,8 @@ Decmpr_Huffman : Dec_Functions.o Dec_Huffman.o
 
 #########
 
-Archive_Huffman : $(SOURCE) Cmpr_Huffman Decmpr_Huffman
-	tar -zcvf Huffman_Archiver.tar.gz $(SOURCE) Cmpr_Huffman Decmpr_Huffman
+Archive_Huffman : $(SOURCE) $(PROG)
+	tar -zcvf Huffman_Archiver.tar.gz $(SOURCE) $(PROG)
 
 #########
 
