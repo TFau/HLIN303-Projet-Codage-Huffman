@@ -184,17 +184,16 @@ char* newFile(char* oldFilename)
 
 int decodeMSG(unsigned char* carrier, struct node* T, int* fill, int* pos)
 {
-	int traversal;
 	while(*fill < CHAR_BIT) {
 		if(T[*pos].symbol > 0) {
 			return T[*pos].symbol;
 		}
 		else {
 			if(*carrier & (1<<(CHAR_BIT-1-*fill))) {
-				(*pos)=traversal=T[*pos].child_right;
+				(*pos)=T[*pos].child_right;
 			}
 			else {
-				(*pos)=traversal=T[*pos].child_left;
+				(*pos)=T[*pos].child_left;
 			}
 			(*fill)++;
 		}
