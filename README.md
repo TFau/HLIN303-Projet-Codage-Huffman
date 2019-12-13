@@ -37,26 +37,18 @@ Le programme est lancé par le script 'Arch_python.py'. Un utilisateur peut dire
 avec un fichier en paramètre, mais cet usage est déprécié, et ne permet pas d'accéder aux options du programme ou à la
 fonctionnalité d'archivage.
 
-Le script vérifie la validité des arguments passés à la ligne de commande. Il identifie avant toute chose le fichier ou dossier qui doit être traité. C'est l'objet de la fonction arg_parse, qui renvoie le fichier ou dossier à compresser.
-
-Le script vérifie ensuite les potentielles options avec la fonction option_parse, qui signale une erreur et interrompt le
-programme si elle lit une option non reconnue, ou renvoie un entier encodant les options sur 4 bits.
+Le script vérifie la validité des arguments et des options passés à la ligne de commande et arrête le programme s'il identifie une erreur à ce stade.
 
 Deux cas de figures se présentent ensuite:
 
 CAS 1. Si l'utilisateur a lancé le programme avec un fichier en argument, il faut soit le compresser, soit le décompresser. Le script utilise la structure de traitement des exceptions pour identifier la procédure à suivre: le fichier est ouvert et
 lu en mode texte; si la lecture provoque une erreur, le fichier contient du code binaire, donc il est encodé et doit être décompressé. Sinon c'est un fichier texte que l'utilisateur veut compresser. Le script lance alors le compresseur ou le décompresseur.
 
-CAS 2. Si l'utilisateur a passé un dossier en argument, il faut faire appel à la fonction d'archivage, traversal. Celle-ci
-récupère tous les fichiers du dossier et de ses sous-dossiers et les concatène dans un fichier, en les séparant d'une ligne
-contenant leur nom et leur chemin d'accès d'origine. Le script lance ensuite le compresseur avec le fichier concaténé comme
-argument.
+CAS 2. Si l'utilisateur a passé un dossier en argument, le programme demande à l'utilisateur de spécifier l'extension des fichiers qu'il veut archiver. Les fichiers munis de cette extension sont alors concaténés dans un fichier d'archivage, avec comme séparateurs une ligne contenant le nom et le chemin d'accès d'origine du fichier précédent. Si l'option -r a été sélectionnée, les fichiers sont ensuite supprimés. Le script lance ensuite le compresseur avec le fichier d'archivage comme argument.
 
-Une fois le fichier compressé, l'utilisateur peut arrêter le programme ou procéder immédiatement à la décompression. La
-décision est prise dans le cadre de la fonction user_input.
+Une fois le fichier compressé, le script laisse à l'utilisateur le choix d'arrêter le programme ou de procéder immédiatement à la décompression.
 
-Une fois le fichier décompressé, le script vérifie si le fichier est le résultat d'une concaténation. Si ce n'est pas le cas,
-il n'y a rien à faire et le programme se termine. Sinon, la fonction genesis reconstitue chaque fichier d'origine et les
+Lorsque le fichier est décompressé, le script vérifie si le fichier est le résultat d'une concaténation. Si ce n'est pas le cas, il n'y a rien à faire et le programme se termine. Sinon, le script reconstitue chaque fichier d'origine et les
 replace dans l'arborescence de dossiers, celle-ci étant recréée si nécessaire.
 
 ###############
@@ -93,7 +85,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
 
 arg_parse(arg_list)
 
-La fonction vérifie que seul un fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté.
+La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté.
 
 user_help()
 
@@ -146,9 +138,7 @@ Le programme de compression est lancé par le script Python, avec en argument le
 Le compresseur lit le fichier et compte le nombre d'occurrences de chaque caractère; à partir de cette information se
 calculent le nombre de caractères distincts et le nombre total de caractères dans le fichier.
 
-Pour n caractères distincts, un tableau de 2n-1 cases est créé. Ce tableau représentera l'arbre de Huffman: chaque caractère
-y est inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa
-valeur numérique, son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
+Pour n caractères distincts, le programme crée un tableau de 2n-1 cases est créé. Ce tableau représentera l'arbre de Huffman: chaque caractère y est inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa valeur numérique, son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
 
 A partir de ces caractères-feuilles, un algorithme génère l'arbre de Huffman, liant à chaque itération les deux noeuds de plus basses fréquences à un noeud parent dont la fréquence est la somme de celles de ces enfants. Une fois remplie, un second algorithme génère le code de chaque caractère en remontant de sa feuille jusqu'à la racine. Ces codes sont stockés dans un
 second tableau.
@@ -159,7 +149,7 @@ Commence alors la phase de compression proprement dite, dans un nouveau fichier.
 
 Avant l'encodage du fichier sont encodés: un entier sur 4 octets contenant le nombre total de caractères dans le texte, un entier sur un octet contenant le nombre de caractères distincts, puis l'arbre lui-même, sous la forme d'un bit par noeud et feuille, et pour chaque feuille les CHAR_BIT bits du caractère associé.
 
-Après encodage de l'index, le contenu du fichier est encodé. Le programme récupère le code de chaque caractère lu dans le fichier d'origine et retranscrit ce code bit par bit sur l'octet porteur. Lorsque tous les caractères ont été lus et encodés, le programme se termine.
+Après encodage de l'index, le contenu du fichier est encodé. Le compresseur récupère le code de chaque caractère lu dans le fichier d'origine et retranscrit ce code bit par bit sur l'octet porteur. Lorsque tous les caractères ont été lus et encodés, le programme se termine.
 
 ###############
 
