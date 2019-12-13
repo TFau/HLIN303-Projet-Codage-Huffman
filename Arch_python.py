@@ -20,13 +20,14 @@ if os.path.isfile(file_to_proc):
 			for line in fil:
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
-		if os.system("./Decmpr_Huffman "+file_to_proc+" "+str(optionCode)): #Returns >0 in case of error
+		if os.system("./Decmpr_Huffman \""+file_to_proc+"\" "+str(optionCode)): #Returns >0 in case of error; escape "" for bash
 			sys.exit("Echec de la décompression.")
 		if optionCode & (1<<1):
 			os.remove(file_to_proc)
 	else:	#The file is plain text--encode it
+		print(file_to_proc)
 		newfile="ENCODED_"+file_to_proc
-		if os.system("./Cmpr_Huffman "+file_to_proc+" "+str(optionCode)):
+		if os.system("./Cmpr_Huffman \""+file_to_proc+"\" "+str(optionCode)):
 			sys.exit("Echec de la compression.")
 		if optionCode & (1<<0):
 			newfile=user_rename(newfile,0)
@@ -64,7 +65,7 @@ elif "newfile" in locals():
 else:
 	concat_file="DECODED_"+file_to_proc
 #Check if the file is made from concatenated files
-if "&!FILE&!" in os.popen("tail -n 1 "+concat_file).read(8): #Check for separator characters in the first 8 bytes of the file's last line:
+if "&!FILE&!" in os.popen("tail -n 1 \""+concat_file+"\"").read(8): #Check for separator characters in the first 8 bytes of the file's last line:
 	genesis(concat_file)
 elif optionCode & (1<<0):
 	concat_file=user_rename(concat_file,1)

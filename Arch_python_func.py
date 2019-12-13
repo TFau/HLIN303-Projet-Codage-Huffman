@@ -143,7 +143,7 @@ def user_input(string,optCode) :
 		print("Lancez le programme avec le fichier encodé en paramètre pour le décompresser.")
 		sys.exit(0)
 	else:
-		if os.system("./Decmpr_Huffman "+string+" "+str(optCode)):
+		if os.system("./Decmpr_Huffman \""+string+"\" "+str(optCode)):
 			sys.exit("Echec de la décompression.")
 		if optCode & (1<<1):
 			os.remove(string)
