@@ -6,7 +6,7 @@ clean: cls
 #########
 
 PROG = Arch_python.py Arch_python_func.py Cmpr_Huffman \
-Decmpr_Huffman makefile
+Decmpr_Huffman makefile README_HLIN303.txt
 SOURCE = Com_Functions.h Com_Functions.c Com_Huffman.c \
 Dec_Functions.h Dec_Functions.c Dec_Huffman.c
 
