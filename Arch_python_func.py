@@ -18,10 +18,14 @@ def arg_parse(arg_list) :
 
 def user_help() :
 	#Triple quotes for printing on multiple lines
-	print("""Programme de compression et d'archivage de fichiers texte par codage de Huffman.
-Syntaxe: Arch_python.py [options] [fichier ou dossier] [options]
+	print("""\n\033[91mProgramme de compression et d'archivage de fichiers texte par codage de Huffman.\033[0m\n
+\033[91mSyntaxe:\033[0m Arch_python.py [\033[3moptions\033[0m]... [\033[3mfichier ou dossier\033[0m] [\033[3moptions\033[0m]...
+Doivent être présents dans le même dossier que le script: \033[92mArch_python_func.py\033[0m,
+\033[92mCmpr_Huffman\033[0m et \033[92mDecmpr_Huffman\033[0m. Si ces deux derniers n'ont pas été compilés et
+que vous avez accès aux fichiers sources, exécutez les commandes 'make com' et
+'make dec'.
 L'exécution directe du compresseur ou du décompresseur est dépréciée.\n
-Options disponibles. Tapez 'c' pour sortir de l'aide et continuer le programme,
+\033[91mOptions disponibles\033[0m. Tapez 'c' pour sortir de l'aide et continuer le programme,
 ou 'q' pour fermer le programme.\n""")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")
@@ -33,7 +37,7 @@ ou 'q' pour fermer le programme.\n""")
 	également supprimé.""")
 	print("\033[1m-c\033[0m\tAfficher les caractères distincts du fichier et leurs codes respectifs.")
 	print("""\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier. Dans le cas d'une archive,
-	affiche le contenu du fichier de concaténation.\n""")
+	affiche le contenu du fichier de concaténation.""")
 	while True:
 		cont=input()
 		if cont == 'c':
