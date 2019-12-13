@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import os, sys
+from subprocess import run
 from Arch_python_func import arg_parse, option_parse, user_choice, traversal, user_rename, user_input, folder_remove, genesis
 
 
@@ -20,15 +21,12 @@ if os.path.isfile(file_to_proc):
 			for line in fil:
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
-		if os.system("./Decmpr_Huffman \""+file_to_proc+"\" "+str(optionCode)): #Returns >0 in case of error; escape "" for bash
-			sys.exit("Echec de la décompression.")
+		run([os.getcwd()+"/Decmpr_Huffman", file_to_proc, str(optionCode)])
 		if optionCode & (1<<1):
 			os.remove(file_to_proc)
 	else:	#The file is plain text--encode it
-		print(file_to_proc)
 		newfile="ENCODED_"+file_to_proc
-		if os.system("./Cmpr_Huffman \""+file_to_proc+"\" "+str(optionCode)):
-			sys.exit("Echec de la compression.")
+		run([os.getcwd()+"/Cmpr_Huffman", file_to_proc, str(optionCode)])
 		if optionCode & (1<<0):
 			newfile=user_rename(newfile,0)
 		if optionCode & (1<<1):
@@ -47,8 +45,7 @@ else:
 		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers d'extension '"+ext_proc+"' ou "
 		"uniquement des fichiers d'extension '"+ext_proc+"' vides.")
 	#Call encoder
-	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
-		sys.exit("Echec de la compression.")
+	run([os.getcwd()+"/Cmpr_Huffman", A_file_to_proc, str(optionCode)])
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	if optionCode & (1<<0):
 		E_file_to_proc=user_rename(E_file_to_proc,0)
@@ -65,7 +62,7 @@ elif "newfile" in locals():
 else:
 	concat_file="DECODED_"+file_to_proc
 #Check if the file is made from concatenated files
-if "&!FILE&!" in os.popen("tail -n 1 \""+concat_file+"\"").read(8): #Check for separator characters in the first 8 bytes of the file's last line:
+if "&!FILE&!" in os.popen("tail -n 1 \""+concat_file+"\"").read(8): #Check for separator characters in the first 8 bytes of the file's last line
 	genesis(concat_file)
 elif optionCode & (1<<0):
 	concat_file=user_rename(concat_file,1)

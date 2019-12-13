@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-import os, re, shutil, sys
+import os, sys
+from re import search
+from shutil import move
+from subprocess import run
 
 
 def arg_parse(arg_list) :
@@ -143,8 +146,7 @@ def user_input(string,optCode) :
 		print("Lancez le programme avec le fichier encodé en paramètre pour le décompresser.")
 		sys.exit(0)
 	else:
-		if os.system("./Decmpr_Huffman \""+string+"\" "+str(optCode)):
-			sys.exit("Echec de la décompression.")
+		run([os.getcwd()+"/Decmpr_Huffman", string, str(optCode)])
 		if optCode & (1<<1):
 			os.remove(string)
 
@@ -166,7 +168,7 @@ def genesis(bigfile) :
 		for line in file:
 			#The newfile will be "split off" with its original name when a separator is read
 			if "&!FILE&!" in line:
-				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
+				file_and_path=search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
 				newfile.close()
 				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator, "b" required for seek method
 					eraser.seek(-1, os.SEEK_END)
@@ -180,7 +182,7 @@ def genesis(bigfile) :
 					if not os.path.exists(string):
 						os.mkdir(string,0o755)
 				if not os.path.exists(string+"/"+file_and_path.group(1)): #For shutil.move, which raises an error if the file already exists
-					shutil.move(file_and_path.group(1),string)
+					move(file_and_path.group(1),string)
 				else:
 					os.remove(file_and_path.group(1))
 				newfile=open("Huff_Temp_Name.txt", "w")	#Newfile reopened to write the next original file
