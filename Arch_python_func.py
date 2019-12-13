@@ -5,6 +5,9 @@ import os, re, shutil, sys
 
 
 def arg_parse(arg_list) :
+	for a in arg_list:
+		if a == "--help":
+			user_help()
 	arg=[a for a in arg_list if os.path.exists(a) and a != arg_list[0]]
 	if len(arg) < 1:
 		sys.exit("Erreur: veuillez indiquer en paramètre du programme un fichier ou dossier existant.") #Written to stderr
@@ -14,9 +17,14 @@ def arg_parse(arg_list) :
 		return arg[0]
 
 def user_help() :
-	print("Options disponibles. Tapez 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.\n")
+	#Triple quotes for printing on multiple lines
+	print("""Programme de compression et d'archivage de fichiers texte par codage de Huffman.
+Syntaxe: Arch_python.py [options] [fichier ou dossier] [options]
+L'exécution directe du compresseur ou du décompresseur est dépréciée.\n
+Options disponibles. Tapez 'c' pour sortir de l'aide et continuer le programme,
+ou 'q' pour fermer le programme.\n""")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
-	d'une archive ne seront pas renommés à la décompression.""")		#Triple quotes for printing on multiple lines
+	d'une archive ne seront pas renommés à la décompression.""")
 	print("""\033[1m-r\033[0m\tSupprimer le fichier passé en argument, ou supprimer les fichiers copiés
 	de l'arborescence du dossier passé en argument. Si l'arborescence du
 	dossier a été entièrement vidé, la supprime également. Si le programme
@@ -36,40 +44,33 @@ def user_help() :
 			print("Tapez 'c' pour sortir de l'aide et continuer le programme, ou 'q' pour fermer le programme.")
 
 def option_parse(opt_list) :
-	valid_opt=['c', 'n', 'p', 'r']
-	param=[] #Selected options list
 	optionByte=0
-	for opt in opt_list:
+	for opt in opt_list: #Removing while iterating is fine here
 		if opt == "--help":
-			user_help()
+			opt_list.remove("--help")
+	for opt in opt_list:
 		firstchar=opt.find('-')
 		if firstchar == 0 and len(opt) > 1:	#'-' is the first character of the string
-			if opt[1] == '-' and opt != "--help":
-				sys.exit("Erreur: option non reconnue. Utilisez --help pour afficher les options disponibles.")
-			elif opt[1] != '-':
-				for i in opt:
-					if i != '-' and i in valid_opt and i not in param:
-						param.append(i)
-					elif i != '-' and i not in valid_opt:
-						sys.exit("Erreur: option non reconnue. Utilisez --help pour afficher les options disponibles.")
+			for i in opt[1:]: #Read after '-'
+				if i == 'n':	#New name
+					optionByte|=(1<<0)
+				elif i == 'r':	#Delete file/folder
+					optionByte|=(1<<1)
+				elif i == 'c':	#Print codes
+					optionByte|=(1<<2)
+				elif i == 'p':	#Print text
+					optionByte|=(1<<3)
+				else:
+					sys.exit("Erreur: option non reconnue. Utilisez --help pour afficher les options disponibles.")
 		else:
 			sys.exit("Erreur: caractères non reconnus. Utilisez --help pour afficher les options disponibles.")
-	for initial in param:
-		if initial == 'n':	#New name
-			optionByte|=(1<<0)
-		if initial == 'r': #Delete file/folder
-			optionByte|=(1<<1)
-		if initial == 'c':	#Print codes
-			optionByte|=(1<<2)
-		if initial == 'p':	#Print text
-			optionByte|=(1<<3)
 	return optionByte
 
 def user_choice() :
 	while True:
-		ext=input("Entrez l'extension des fichiers que vous-voulez archiver:\n")
+		ext=input("Entrez l'extension des fichiers que vous souhaitez archiver:\n")
 		if ext == "":
-			print("L'extension ne peut être vide. Entrez l'extension des fichiers que vous-voulez archiver.")
+			print("L'extension ne peut être vide.")
 		else:
 			break
 	if ext[0] != '.':
