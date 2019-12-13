@@ -5,10 +5,10 @@ clean: cls
 
 #########
 
-PROG = Cmpr_Huffman Decmpr_Huffman README.md makefile
+PROG = Arch_python.py Arch_python_func.py Cmpr_Huffman \
+Decmpr_Huffman README.md makefile
 SOURCE = Com_Functions.h Com_Functions.c Com_Huffman.c \
-Dec_Functions.h Dec_Functions.c Dec_Huffman.c \
-Arch_python.py Arch_python_func.py
+Dec_Functions.h Dec_Functions.c Dec_Huffman.c
 
 #########
 
