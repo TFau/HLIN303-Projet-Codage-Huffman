@@ -28,12 +28,14 @@ unsigned char* extractCode(struct node*, int); //Also in Com_Functions.h
 
 int deCodeGen(struct node*, unsigned char**, int); //Not the same as Com_Functions.h codeGen
 
+void setCodeLen(int*, unsigned char**, int);
+
 char* newFile(char*); //Prefixes file name with "DECODED_"
 
-int codeCheck(unsigned char*, int, unsigned char**, int);
+int codeCheck(unsigned char*, int, unsigned char**, int*, int);
 
-int decodeMSG(unsigned char*, int*, unsigned char*, int*, unsigned char**, int);
+int decodeMSG(unsigned char*, int*, unsigned char*, int*, unsigned char**, int*, int);
 
-int decMSGmain(FILE*, FILE*, unsigned char**, struct node*, unsigned char*, unsigned char, int*, int, int);
+int decMSGmain(FILE*, FILE*, unsigned char**, int*, struct node*, unsigned char*, unsigned char, int*, int, int);
 
 #endif

@@ -48,6 +48,8 @@ int main(int argc, char** argv)
 	//Generates the code for each character by traversing the tree
 	if(deCodeGen(Tree,DecodeTable,treesize)) //0 on success, 1 in case of failed realloc
 		return 5; //Error message printed by codeGen
+	int CodeLen[treesize];	//Auxiliary table with code lengths: ~5% faster decoding times
+	setCodeLen(CodeLen,DecodeTable,treesize);
 	puts("Codes régénérés...\n");
 	//Print the code array if -c option used
 	if(optByte & (1<<2)) {
@@ -68,7 +70,7 @@ int main(int argc, char** argv)
 		return 6;
 	}
 	//CarrierByte and fill are NOT reset; start from last written bit of current carrier byte
-	if(decMSGmain(huff,huffwrite,DecodeTable,Tree,&CarrierByte,optByte,&fill,treesize,sum)) //0 on success, 1 or more in case of failure
+	if(decMSGmain(huff,huffwrite,DecodeTable,CodeLen,Tree,&CarrierByte,optByte,&fill,treesize,sum)) //0 on success, 1 or more in case of failure
 		return 7; //Error message printed by decMSGmain
 	if(optByte & (1<<3))
 		puts("");

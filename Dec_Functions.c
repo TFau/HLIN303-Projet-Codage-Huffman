@@ -174,6 +174,15 @@ int deCodeGen(struct node* T, unsigned char** Table, int size)
 	return 0;
 }
 
+void setCodeLen(int* T, unsigned char** Table, int size)
+{
+	for(int i=0; i < size; i++) {
+		if(Table[i]) {
+			T[i]=strlen(Table[i]);
+		}
+	}
+}
+
 char* newFile(char* oldFilename)
 {
 	char* new_name=malloc((strlen(oldFilename)+9)*sizeof(char));
@@ -182,25 +191,27 @@ char* newFile(char* oldFilename)
 	return strcat(new_name,oldFilename);
 }
 
-int codeCheck(unsigned char* T, int pos, unsigned char** DT, int size)
+int codeCheck(unsigned char* T, int pos, unsigned char** DT, int* DT_L, int size)
 {
 	int j, length;
 	for(int i=0; i < size; i++) {
 		j=0;
 		if(DT[i]) {		//Not a NULL pointer
-			length=strlen(DT[i]);
-			while(j < pos && j < length && T[j] == DT[i][j]) {
-				j++;
-			}
-			if(j == length) {
-				return i;
+			length=DT_L[i];
+			if(pos == length) {		//~30% efficiency gain!
+				while(j < pos && j < length && T[j] == DT[i][j]) {
+					j++;
+				}
+				if(j == length) {
+					return i;
+				}
 			}
 		}
 	}
 	return -1;
 }
 
-int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, unsigned char** Dec_T, int size)
+int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, unsigned char** DecT, int* DecTLen, int size)
 {
 	//No code_read variable: no advance knowledge of the length of the code
 	int character;
@@ -214,7 +225,7 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 		(*pos)++;
 		(*fill)++;
 		//Checks codetable after every added bit
-		character=codeCheck(T,*pos,Dec_T,size);
+		character=codeCheck(T,*pos,DecT,DecTLen,size);
 		//Returns character linked to code if it exists
 		if(character >= 0) {
 			return character;
@@ -224,13 +235,13 @@ int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, uns
 	return -1;
 }
 
-int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, unsigned char Opt, int* fill, int size, int total_char)
+int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, int* TableLen, struct node* T, unsigned char* carrier, unsigned char Opt, int* fill, int size, int total_char)
 {
 	int counter=0, temp_pos=0, char_found=-1;
 	unsigned char buftemp[UCHAR_MAX+1];
 	while(counter++ < total_char) {
 		while(char_found == -1) {
-			char_found=decodeMSG(carrier,fill,buftemp,&temp_pos,Table,size);
+			char_found=decodeMSG(carrier,fill,buftemp,&temp_pos,Table,TableLen,size);
 			if(*fill == CHAR_BIT) {
 				if(readChar(reader,carrier,fill)) {
 					return 2;
