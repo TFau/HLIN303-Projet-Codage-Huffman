@@ -143,7 +143,7 @@ def user_input(string,optCode) :
 		print("Lancez le programme avec le fichier encodé en paramètre pour le décompresser.")
 		sys.exit(0)
 	else:
-		subprocess.run([os.getcwd()+"/Decmpr_Huffman", string, str(optCode)])
+		subprocess.run([os.getcwd()+"/Decmpr_Huffman",string,str(optCode)],check=True)
 		if optCode & (1<<1):
 			os.remove(string)
 
@@ -165,9 +165,9 @@ def genesis(bigfile) :
 		for line in file:
 			#The newfile will be "split off" with its original name when a separator is read
 			if "&!FILE&!" in line:
-				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!", line)
+				file_and_path=re.search("&!FILE&!(.+)&!ADR&!(.+)&!SEP&!",line)
 				newfile.close()
-				with open("Huff_Temp_Name.txt", "rb+") as eraser:	#Remove the newline added before the separator, "b" required for seek method
+				with open("Huff_Temp_Name.txt","rb+") as eraser:	#Remove the newline added before the separator, "b" required for seek method
 					eraser.seek(-1, os.SEEK_END)
 					eraser.truncate()
 				os.rename("Huff_Temp_Name.txt",file_and_path.group(1))
@@ -182,7 +182,7 @@ def genesis(bigfile) :
 					shutil.move(file_and_path.group(1),string)
 				else:
 					os.remove(file_and_path.group(1))
-				newfile=open("Huff_Temp_Name.txt", "w")	#Newfile reopened to write the next original file
+				newfile=open("Huff_Temp_Name.txt","w")	#Newfile reopened to write the next original file
 			else:
 				newfile.write(line)
 	newfile.close()

@@ -20,12 +20,12 @@ if os.path.isfile(file_to_proc):
 			for line in fil:
 				pass
 	except UnicodeDecodeError:	#The file is a binary file--decode it
-		subprocess.run([os.getcwd()+"/Decmpr_Huffman", file_to_proc, str(optionCode)])
+		subprocess.run([os.getcwd()+"/Decmpr_Huffman",file_to_proc,str(optionCode)],check=True)
 		if optionCode & (1<<1):
 			os.remove(file_to_proc)
 	else:	#The file is plain text--encode it
 		newfile="ENCODED_"+file_to_proc
-		subprocess.run([os.getcwd()+"/Cmpr_Huffman", file_to_proc, str(optionCode)])
+		subprocess.run([os.getcwd()+"/Cmpr_Huffman",file_to_proc,str(optionCode)],check=True)
 		if optionCode & (1<<0):
 			newfile=user_rename(newfile,0)
 		if optionCode & (1<<1):
@@ -44,7 +44,7 @@ else:
 		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers d'extension '"+ext_proc+"' ou "
 		"uniquement des fichiers d'extension '"+ext_proc+"' vides.")
 	#Call encoder
-	subprocess.run([os.getcwd()+"/Cmpr_Huffman", A_file_to_proc, str(optionCode)])
+	subprocess.run([os.getcwd()+"/Cmpr_Huffman",A_file_to_proc,str(optionCode)],check=True)
 	E_file_to_proc="ENCODED_"+A_file_to_proc
 	if optionCode & (1<<0):
 		E_file_to_proc=user_rename(E_file_to_proc,0)
