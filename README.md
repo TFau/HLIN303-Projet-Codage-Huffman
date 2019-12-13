@@ -83,19 +83,19 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
 
  3. Les fonctions
  
- #Modules importés: os, re, shutil, sys
+ #Modules importés: os, re, shutil, subprocess, sys
 
 arg_parse(arg_list)
 
-La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté.
+La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté. Affiche l'aide si l'option --help a été sélectionnée.
 
 user_help()
 
-Sous-fonction de option_parse. Affiche les options disponibles.
+Sous-fonction de arg_parse. Affiche une aide sommaire et les options disponibles.
 
 option_parse(opt_list)
 
-La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. option_parse appelle user_help si l'utilisateur en a fait la demande. A chaque option correspond un des bits de poids faibles d'un entier. Ceux-ci sont mis à 1 si l'option correspondante a été sélectionnée, et l'entier ainsi encodé est renvoyé.
+La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. Aux 4 options disponibles correspondent les 4 bits de poids faible d'un entier. Un bit est mis à 1 si l'option correspondante a été sélectionnée, et après encodage l'entier est renvoyé.
 
 text_check(file)
 
@@ -124,7 +124,7 @@ Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossi
 
 genesis(bigfile)
 
-La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant le(s) dossier(s) du chemin d'accès s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
+La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne avec re.search. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant le(s) dossier(s) du chemin d'accès s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
 
 
 
@@ -149,9 +149,9 @@ Si l'option -c a été sélectionné à l'exécution du script Python, les carac
 
 Commence alors la phase de compression proprement dite, dans un nouveau fichier. L'encodage se fait bit par bit sur un octet, qui est écrit dans le fichier lorsque ses CHAR_BIT (défini par l'implémentation, mais typiquement 8) bits ont été fixés. L'écriture reprend ensuite sur le même octet.
 
-Avant l'encodage du fichier sont encodés: un entier sur 4 octets contenant le nombre total de caractères dans le texte, un entier sur un octet contenant le nombre de caractères distincts, puis l'arbre lui-même, sous la forme d'un bit par noeud et feuille, et pour chaque feuille les CHAR_BIT bits du caractère associé.
+Avant l'encodage du fichier sont encodés: un entier sur 4 octets contenant le nombre total de caractères dans le texte, un entier sur 1 octet contenant le nombre de caractères distincts, puis l'arbre lui-même, sous la forme d'un bit par noeud et feuille, et pour chaque feuille les CHAR_BIT bits du caractère associé.
 
-Après encodage de l'index, le contenu du fichier est encodé. Le compresseur récupère le code de chaque caractère lu dans le fichier d'origine et retranscrit ce code bit par bit sur l'octet porteur. Lorsque tous les caractères ont été lus et encodés, le programme se termine.
+Après encodage de l'index, le contenu du fichier est encodé. Le compresseur récupère le code de chaque caractère lu dans le fichier d'origine et le retranscrit par la méthode décrite plus haut dans un nouveau fichier. Lorsque tous les caractères ont été lus et encodés, le programme se termine.
 
 ###############
 
@@ -160,8 +160,7 @@ Après encodage de l'index, le contenu du fichier est encodé. Le compresseur r�
 
 int freqCalc(int* T, char* textfile, unsigned char Opt)
 
-La fonction ouvre le fichier indiqué par textfile en lecture. A la lecture d'un caractère, la valeur de la case du tableau
-d'occurrences T correspondant au caractère est incrémenté. Si l'option -p a été sélectionnée, affiche le caractère lu sur stdout.
+La fonction ouvre le fichier textfile en lecture. A la lecture d'un caractère, la valeur de la case du tableau d'occurrences T correspondant au caractère est incrémenté. Si l'option -p a été sélectionnée, affiche le caractère lu sur stdout.
 
 int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 
@@ -182,7 +181,7 @@ dans une case vide de T à partir de l'indice correspondant au nombre de caract�
 
 unsigned char* extractCode(struct node* T, int i)
 
-Sous-fonction de codeGen. Une chaîne de caractères vide est créée. A partir de la feuille i de l'arbre stocké dans T, l'algorithme remonte jusqu'à la racine. A chaque déplacement d'un noeud x vers un noeud y, si x est l'enfant gauche de y le caractère '0' est ajouté à la chaîne, si x est l'enfant droit le caractère '1' est ajouté. Lorsque la racine a été atteinte, la chaîne est réalloué dans une chaîne de taille adaptée et renvoyée. Attribue le code 1 par défaut si la feuille est racine, dans le cas où le fichier ne contient qu'un caractère distinct.
+Sous-fonction de codeGen. Une chaîne de caractères vide est créée. A partir de la feuille i de l'arbre stocké dans T, l'algorithme remonte jusqu'à la racine. A chaque déplacement d'un enfant vers un parent, si l'enfant était à gauche le caractère '0' est ajouté à la chaîne, sinon le caractère '1' est ajouté. Lorsque la racine a été atteinte, la chaîne est réallouée dans une chaîne de taille adaptée et renvoyée. Attribue le code 1 par défaut si la feuille est racine, dans le cas où le fichier ne contient qu'un caractère distinct.
 
 int codeGen(struct node* T, unsigned char** Table, int unique_char)
 
@@ -210,7 +209,7 @@ Fonction d'écriture appelée par encodeIDX et encodeMSG. L'octet carrier est é
 
 int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
 
-Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur un octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Les noeuds sont encodés sur un bit par la fonction encode: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les CHAR_BIT bits du caractère correspondant par appel à la fonction encodeCh. Lorsque fill=CHAR_BIT, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
+Fonction d'encodage de l'index. Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, puis le nombre de caractères distincts sur 1 octet. Un tableau auxiliaire est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Les noeuds sont encodés sur un bit par la fonction encode: 0 pour un noeud interne, 1 pour une feuille. Après le bit d'une feuille sont encodés les CHAR_BIT bits du caractère correspondant par appel à la fonction encodeCh. Lorsque fill=CHAR_BIT, l'octet carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
 
 int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
 
@@ -227,13 +226,13 @@ Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader,
 
 Le programme de decompression est lancé par le script Python, soit à la suite de la compression si l'utilisateur le choisit, soit à la lecture d'un fichier binaire passé en argument.
 
-Le décompresseur ouvre le fichier encodé en lecture binaire et lit tout d'abord l'entier sur 4 octets qui indique le nombre total de caractères, et l'entier sur un octet indiquant le nombre de caractères distincts. Ces informations lui permettent de recréer un tableau représentant l'arbre de Huffman du texte encodé.
+Le décompresseur ouvre le fichier encodé en lecture binaire et lit tout d'abord l'entier sur 4 octets qui indique le nombre total de caractères, et l'entier sur 1 octet indiquant le nombre de caractères distincts. Ces informations lui permettent de recréer un tableau représentant l'arbre de Huffman du texte encodé.
 
 L'index est décodé et les caractères récupérés sont mis à leur place dans le tableau. Sachant que l'arbre a été encodé en commençant par la racine et en procédant dans un ordre particulier (cf. partie II), le décompresseur reconstruit alors l'arbre en reconstituant les liens parents-enfants d'origine.
 
 Après avoir reconstitué l'arbre, si l'option -c a été sélectionné, le décompresseur régénère les codes pour les afficher.
 
-Le programme s'attaque alors à la décompression du message. L'octet porteur reçoit l'octet lu à partir du fichier encodé, et les bits de l'octet sont retranscrits un par un dans une chaîne de caractère. Cette chaîne est comparée à toutes les chaines de code du tableau de codes. Comme le codage de Huffman est un codage préfixe, dès que le programme trouve une correspondance il écrit alors le caractère décodé dans le fichier décompressé.
+Le programme s'attaque alors à la décompression du message. L'octet porteur reçoit l'octet lu à partir du fichier encodé, et les bits du porteur sont lus et utilisés pour parcourir l'arbre à partir de sa racine. Lorsque le parcours abouti à une feuille, le caractère associé est alors écrit dans le fichier décodé.
 
 Lorsque le décompresseur a décodé un nombre de caractères égal au nombre total de caractères indiqué par l'index, le programme s'arrête.
 
@@ -284,7 +283,7 @@ La fonction rajoute le préfixe "DECODED_" à oldFilename et renvoie la chaîne 
 
 int decodeMSG(unsigned char* carrier, struct node* T, int* fill, int* pos)
 
-Sous-fonction de decMSGmain. Lis les bits de carrier tant que fill est inférieur à CHAR_BIT et parcourt l'arbre de Huffman stocké dans T en fonction des bits lus, en utilisant pos comme indice. Si une feuille est rencontrée, le caractère associé est renvoyé, sinon la fonction retourne -1.
+Sous-fonction de decMSGmain. Lis les bits de carrier tant que fill est inférieur à CHAR_BIT et parcourt l'arbre de Huffman stocké dans T en fonction des bits lus, en utilisant pos comme indice. Si une feuille est rencontrée avant la fin de la lecture de carrier, le caractère associé est renvoyé, sinon la fonction retourne -1.
 
 int decMSGmain(FILE* reader, FILE* writer, struct node* Tree, unsigned char* carrier, unsigned char Opt, int* fill, int total_char)
 
