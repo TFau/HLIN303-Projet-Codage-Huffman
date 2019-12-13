@@ -6,6 +6,8 @@ Compilation Décompresseur: commande 'make dec'
 
 Exécution du programme: ./Arch_python.py 'fichier ou dossier'
 
+Option --help pour quelques informations supplémentaires.
+
 #####################
 
 
@@ -58,7 +60,7 @@ replace dans l'arborescence de dossiers, celle-ci étant recréée si nécessair
  
  --help
 
-Afficher les options disponibles.
+Afficher un bref résumé du programme et les options disponibles.
 
 -n
 
