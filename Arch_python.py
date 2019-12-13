@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import os, sys
-from Arch_python_func import arg_parse, option_parse, traversal, user_rename, user_input, folder_remove, genesis
+from Arch_python_func import arg_parse, option_parse, user_choice, traversal, user_rename, user_input, folder_remove, genesis
 
 
 #Program launch parameter and option check
@@ -36,13 +36,15 @@ if os.path.isfile(file_to_proc):
 
 #The program's parameter is a directory
 else:
+	ext_proc=user_choice()
 	A_file_to_proc="Arch_"+file_to_proc+".huf"
 	open(A_file_to_proc,"a").close()#Create concatenation file
 	os.chmod(A_file_to_proc,0o755) #Octal notation using 0o
-	traversal(file_to_proc,A_file_to_proc,optionCode)
+	traversal(file_to_proc,A_file_to_proc,ext_proc,optionCode)
 	if os.stat(A_file_to_proc).st_size == 0: #Final check
 		os.remove(A_file_to_proc)
-		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers .txt, ou uniquement des fichiers .txt vides.")
+		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers d'extension '"+ext_proc+"' ou "
+		"uniquement des fichiers d'extension '"+ext_proc+"' vides.")
 	#Call encoder
 	if os.system("./Cmpr_Huffman "+A_file_to_proc+" "+str(optionCode)):
 		sys.exit("Echec de la compression.")

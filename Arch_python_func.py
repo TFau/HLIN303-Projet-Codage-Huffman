@@ -65,7 +65,18 @@ def option_parse(opt_list) :
 			optionByte|=(1<<3)
 	return optionByte
 
-def text_check(file) :
+def user_choice() :
+	while True:
+		ext=input("Entrez l'extension des fichiers que vous-voulez archiver:\n")
+		if ext == "":
+			print("L'extension ne peut être vide. Entrez l'extension des fichiers que vous-voulez archiver.")
+		else:
+			break
+	if ext[0] != '.':
+		ext="."+ext
+	return ext
+
+def text_check(file,ext) :
 	try:
 		with open(file, "r") as test:
 			for line in test:
@@ -79,19 +90,19 @@ def text_check(file) :
 			else:
 				break
 		if cont in ('n', 'N'):
-			print("Veuillez modifier l'extension .txt du ou des fichiers binaires contenus dans vos dossiers.")
+			print("Veuillez modifier l'extension '"+ext+"' du ou des fichiers binaires contenus dans vos dossiers.")
 			sys.exit(0)
 		else:
 			return 1
 	else:
 		return 0
 
-def traversal(srcdir,destfile,optCode) :
+def traversal(srcdir,destfile,ext,optCode) :
 	for dirpath, subdirs, files in os.walk(srcdir): #Traverses directory tree automatically!
 		for f in files:
-			if f.endswith(".txt"):
+			if f.endswith(ext):
 				full_f=os.path.join(dirpath,f)
-				if not text_check(full_f) and os.stat(full_f).st_size != 0: #Check if the file is actually in plain text and not empty
+				if not text_check(full_f,ext) and os.stat(full_f).st_size != 0: #Check if the file is actually in plain text and not empty
 					os.chmod(full_f,0o755)
 					with open(destfile,"a") as catfile: #Append mode
 						with open(full_f,"r") as tempfile:
