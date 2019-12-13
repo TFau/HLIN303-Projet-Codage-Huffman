@@ -163,7 +163,7 @@ unsigned char* extractCode(struct node* T, int i)
 int deCodeGen(struct node* T, unsigned char** Table, int size)
 {
 	for(int i=0; i < size; i++) {	//Leaves throughout tree, unlike in encoder tree
-		if(T[i].symbol != 0) {
+		if(T[i].symbol) {
 			Table[i]=extractCode(T,i);
 			if(!Table[i]) {
 				fputs("Erreur: mémoire insuffisante.\n", stderr);
@@ -185,7 +185,7 @@ char* newFile(char* oldFilename)
 int decodeMSG(unsigned char* carrier, struct node* T, int* fill, int* pos)
 {
 	while(*fill < CHAR_BIT) {
-		if(T[*pos].symbol > 0) {
+		if(T[*pos].symbol) {
 			return T[*pos].symbol;
 		}
 		else {

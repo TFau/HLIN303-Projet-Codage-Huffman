@@ -41,7 +41,7 @@ int freqCalc(int* T, char* textfile, unsigned char Opt)
 void distinctCalc(int* T, int* unique_char, int* total_char)
 {
 	for(int i=0; i <= UCHAR_MAX; i++) {
-		if(T[i] != 0) {
+		if(T[i]) {
 			(*unique_char)++;
 			*total_char+=T[i];
 		}
@@ -63,7 +63,7 @@ void freqTree(struct node* T, int* Table, int total_char)
 {
 	int j=0;
 	for(int i=0; i <= UCHAR_MAX; i++) {
-		if(Table[i] != 0) {
+		if(Table[i]) {
 			T[j].symbol=(unsigned char)i;
 			T[j].freq=(double)Table[i]/total_char;
 			j++;
