@@ -25,8 +25,7 @@ Doivent être présents dans le même dossier que le script: \033[92mArch_python
 que vous avez accès aux fichiers sources, exécutez les commandes 'make com' et
 'make dec'.
 L'exécution directe du compresseur ou du décompresseur est dépréciée.\n
-\033[91mOptions disponibles\033[0m. Tapez 'c' pour sortir de l'aide et continuer le programme,
-ou 'q' pour fermer le programme.\n""")
+\033[91mOptions disponibles.\033[0m""")
 	print("""\033[1m-n\033[0m\tRenommer le fichier compressé et/ou décompressé. Les fichiers issus
 	d'une archive ne seront pas renommés à la décompression.""")
 	print("""\033[1m-r\033[0m\tSupprimer le fichier passé en argument, ou supprimer les fichiers copiés
@@ -37,7 +36,8 @@ ou 'q' pour fermer le programme.\n""")
 	également supprimé.""")
 	print("\033[1m-c\033[0m\tAfficher les caractères distincts du fichier et leurs codes respectifs.")
 	print("""\033[1m-p\033[0m\tAfficher le contenu (non encodé) du fichier. Dans le cas d'une archive,
-	affiche le contenu du fichier de concaténation.""")
+	affiche le contenu du fichier d'archivage.\n""")
+	print("Tapez 'c' pour continuer le programme, ou 'q' pour le quitter.")
 	while True:
 		cont=input()
 		if cont == 'c':
@@ -154,7 +154,7 @@ def folder_remove(srcdir) :
 	elif not os.listdir(srcdir):
 		os.rmdir(srcdir)
 		return True
-	elif all([folder_remove(os.path.join(srcdir,d)) for d in os.listdir(srcdir)]):
+	elif all([folder_remove(os.path.join(srcdir,d)) for d in os.listdir(srcdir)]): #Recursive list comprehension
 		os.rmdir(srcdir)
 		return True
 	else:
