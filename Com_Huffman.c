@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 	free(filename);
 
 	printf("Message codé...\n%d bits.\n%.3f bits par caractère.\n\n", bits, (float)bits/sum);
-	printf("Total: %d bits.\n", index_b+bits);
+	printf("Total: %d bits, soit %d octets.\n", index_b+bits, (index_b+bits)/8);
 	printf("Réduction taille: %.3f%\n\n", 100.0-(float)(index_b+bits)/(sum*8)*100);
 	puts("Compression terminée avec succès.\n#################################");
 
