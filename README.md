@@ -239,7 +239,7 @@ Le décompresseur ouvre le fichier encodé en lecture binaire et lit tout d'abor
 
 L'index est décodé et les caractères récupérés sont mis à leur place dans le tableau. Sachant que l'arbre a été encodé en commençant par la racine et en procédant dans un ordre particulier (cf. partie II), le décompresseur reconstruit alors l'arbre en reconstituant les liens parents-enfants d'origine.
 
-Après avoir reconstitué l'arbre, le décompresseur régénère les codes. Si l'option -c a été sélectionné à l'exécution du script Python, les caractères et leurs codes respectifs sont affichés.
+Après avoir reconstitué l'arbre, si l'option -c a été sélectionné, le décompresseur régénère les codes pour les afficher.
 
 Le programme s'attaque alors à la décompression du message. L'octet porteur reçoit l'octet lu à partir du fichier encodé, et les bits de l'octet sont retranscrits un par un dans une chaîne de caractère. Cette chaîne est comparée à toutes les chaines de code du tableau de codes. Comme le codage de Huffman est un codage préfixe, dès que le programme trouve une correspondance il écrit alors le caractère décodé dans le fichier décompressé.
 
@@ -284,23 +284,19 @@ Sous-fonction de codeGen. Identique à la fonction extractCode du compresseur.
 
 int deCodeGen(struct node* T, unsigned char** Table, int size)
 
-Fonction de génération des codes pour chaque caractère de T, avec un nombre d'appels à extractCode égal à size de T (légère différence avec la fonction codeGen du compresseur). Les codes sont stockés dans Table.
+Fonction de génération des codes pour chaque caractère de T, avec un nombre d'appels à extractCode égal à size de T (légère différence avec la fonction codeGen du compresseur). Les codes sont stockés dans Table. N'est appelée qu'avec l'option -c.
 
 char* newFile(char* oldFilename)
 
 La fonction rajoute le préfixe "DECODED_" à oldFilename et renvoie la chaîne résultante.
 
-int codeCheck(unsigned char* T, int pos, unsigned char** DT, int size)
+int decodeMSG(unsigned char* carrier, struct node* T, int* fill, int* pos)
 
-Sous-fonction de decodeMSG. Compare la chaîne T à toutes les chaînes du tableau de codes DT. Si une correspondance est trouvée, renvoie l'indice du code de DT, sinon renvoie -1.
+Sous-fonction de decMSGmain. Lis les bits de carrier tant que fill est inférieur à CHAR_BIT et parcourt l'arbre de Huffman stocké dans T en fonction des bits lus, en utilisant pos comme indice. Si une feuille est rencontrée, le caractère associé est renvoyé, sinon la fonction retourne -1.
 
-int decodeMSG(unsigned char* carrier, int* fill, unsigned char* T, int* pos, unsigned char** Dec_T, int size)
+int decMSGmain(FILE* reader, FILE* writer, struct node* Tree, unsigned char* carrier, unsigned char Opt, int* fill, int total_char)
 
-Sous-fonction de decMSGmain. Stocke les bits lus sur l'octet carrier dans la chaîne de caractères T. A chaque bit lu et convertit, appelle la fonction codeCheck pour effectuer la comparaison entre T et les chaînes de code de Dec_T. Renvoie la valeur renvoyée par codeCheck.
-
-int decMSGmain(FILE* reader, FILE* writer, unsigned char** Table, struct node* T, unsigned char* carrier, unsigned char Opt, int* fill, int size, int total_char)
-
-Fonction de décodage du message. A la lecture d'un caractère sur le flux reader, appelle la fonction decodeMSG pour convertir les bits de l'octet carrier en chaîne de caractère et comparer celle-ci aux codes de Table. Lorsque decodeMSG renvoie une valeur positive, la fonction écrit le caractère de T correspondant à cette valeur sur le flux writer. Si l'option -p a été sélectionnée, affiche aussi le caractère retrouvé sur stdout.
+Fonction de décodage du message. A la lecture d'un caractère sur le flux reader, appelle la fonction decodeMSG en lui passant l'octer carrier pour parcourir l'arbre de Huffman stocké dans Tree et retrouver les caractères encodés. Lorsque tous les bits de carrier ont été lu, appelle readChar pour récuperer un nouvel octet de reader. Lorsque decodeMSG renvoie une valeur positive, la fonction l'écrit sur le flux writer. Si l'option -p a été sélectionnée, le caractère est également affiché sur stdout.
 
 
 
