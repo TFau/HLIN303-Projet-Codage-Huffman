@@ -110,7 +110,7 @@ def user_choice() :
 # Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de 
 # gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le 
 # fichier ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité 
-# d'interrompre le programme. Le fichier d'archivage en cours sera déconcaténé.
+# d'interrompre le programme. Dans ce cas, le fichier d'archivage en cours sera déconcaténé.
 # @param file Fichier à vérifier.
 # @param ext Extension des fichiers à traiter.
 # @param opt Stockage bit à bit des options sélectionnés par l'utilisateur.
@@ -144,8 +144,8 @@ def text_check(file,ext,opt) :
 # chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé.
 # @param srcdir Répertoire racine de la recherche.
 # @param destfile Fichier de concaténation.
-# @ext Extension des fichiers à traiter.
-# @optCode Stockage bit à bit des options sélectionnés par l'utilisateur.
+# @param ext Extension des fichiers à traiter.
+# @param optCode Stockage bit à bit des options sélectionnés par l'utilisateur.
 def traversal(srcdir,destfile,ext,optCode) :
 	for dirpath, subdirs, files in os.walk(srcdir): #Traverses directory tree automatically!
 		for f in files:
