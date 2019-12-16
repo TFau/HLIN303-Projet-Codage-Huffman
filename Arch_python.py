@@ -45,11 +45,7 @@ else:
 	optionCode=traversal(file_to_proc,A_file_to_proc,ext_proc,optionCode)
 	if optionCode & (1<<4):
 		print("Annulation de l'archivage...")
-		subprocess.run([os.getcwd()+"/Cmpr_Huffman",A_file_to_proc,str(optionCode)],check=True)
-		os.remove(A_file_to_proc)
-		subprocess.run([os.getcwd()+"/Decmpr_Huffman","ENCODED_"+A_file_to_proc,str(optionCode)],check=True)
-		os.remove("ENCODED_"+A_file_to_proc)
-		genesis("DECODED_ENCODED_"+A_file_to_proc)
+		genesis(A_file_to_proc)
 		sys.exit(0)
 	if os.stat(A_file_to_proc).st_size == 0: #Final check
 		os.remove(A_file_to_proc)

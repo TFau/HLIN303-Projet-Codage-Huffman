@@ -31,10 +31,8 @@ int main(int argc, char** argv)
 	int sum, nonzero_count;
 	if(readStart(huff,&sum,&nonzero_count)) //Returns 0 on success, 1 in case of failure
 		return 3; //Error message printed in readStart
-	if(!(optByte & (1<<4))) {	//Do not print when compressing/decompressing concatenation file when archiving interrupted
-		puts("Décodage...");
-		printf("%d caractères.\n%d caractères distincts.\n\n", sum, nonzero_count);
-	}
+	puts("Décodage...");
+	printf("%d caractères.\n%d caractères distincts.\n\n", sum, nonzero_count);
 	int treesize=2*nonzero_count-1;
 	struct node Tree[treesize];
 	initTree(Tree,treesize); //Tree initialization (no frequencies)
@@ -47,8 +45,7 @@ int main(int argc, char** argv)
 		return 4; //Error message printed by decIDXmain
 	//Rebuild tree
 	buildTree(Tree,treesize);
-	if(!(optByte & (1<<4)))
-		puts("Arbre reconstruit...\n");
+	puts("Arbre reconstruit...\n");
 
 	/* Code regeneration with -c option */
 	if(optByte & (1<<2)) {
@@ -60,8 +57,7 @@ int main(int argc, char** argv)
 		if(deCodeGen(Tree,DecodeTable,treesize)) { //0 on success, 1 in case of failed realloc
 			return 5; //Error message printed by codeGen
 		}
-		if(!(optByte & (1<<4)))
-			puts("Codes régénérés...\n");
+		puts("Codes régénérés...\n");
 		//Print the code array
 		for(size_t i=0; i < treesize; i++) {
 			if(Tree[i].symbol != 0) {
@@ -73,7 +69,7 @@ int main(int argc, char** argv)
 		}
 		puts("");
 	}
-	else if(!(optByte & (1<<4)))
+	else
 		puts("Utilisez l'option -c pour afficher les caractères et leurs codes respectifs.\n");
 
 	/* Decode message */
@@ -93,10 +89,8 @@ int main(int argc, char** argv)
 	fclose(huffwrite);
 	free(filename);
 
-	if(!(optByte & (1<<4))) {
-		puts("Message décodé...\n");
-		puts("Décompression terminée avec succès.\n###################################");
-	}
+	puts("Message décodé...\n");
+	puts("Décompression terminée avec succès.\n###################################");
 
 	return 0;
 }

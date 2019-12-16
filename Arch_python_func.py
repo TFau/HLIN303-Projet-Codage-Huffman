@@ -110,7 +110,7 @@ def user_choice() :
 # Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de 
 # gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le 
 # fichier ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité 
-# d'interrompre le programme.
+# d'interrompre le programme. Le fichier d'archivage en cours sera déconcaténé.
 # @param file Fichier à vérifier.
 # @param ext Extension des fichiers à traiter.
 # @param opt Stockage bit à bit des options sélectionnés par l'utilisateur.
@@ -164,6 +164,7 @@ def traversal(srcdir,destfile,ext,optCode) :
 				elif interrupt == 2:
 					optCode|=(1<<4)	#Cancel archiving signal
 					return optCode
+	return optCode
 
 
 ##Fonction de renommage de fichier

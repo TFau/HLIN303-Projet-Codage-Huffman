@@ -48,9 +48,7 @@ int freqCalc(int* T, char* textfile, unsigned char Opt)
 		if(Opt & (1<<3)) {
 			puts("");
 		}
-		if(!(Opt & (1<<4))) {
-			puts("Fichier lu.");
-		}
+		puts("Fichier lu.");
 	}
 	fclose(huff);
 	return 0;
