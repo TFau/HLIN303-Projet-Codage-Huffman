@@ -1,3 +1,9 @@
+/*!
+ * \file Dec_Functions.h
+ * \brief En-tête des fonctions du programme de compression
+ * \author Troy Fau
+ */
+
 #ifndef DEC_FUNCTIONS_SET
 #define DEC_FUNCTIONS_SET
 

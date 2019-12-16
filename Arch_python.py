@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
+## Programme principal de l'archiveur/interface utilisateur
+# @file Arch_python.py
+# @author Troy Fau
+
 import os, subprocess, sys
 from Arch_python_func import arg_parse, option_parse, user_choice, traversal, user_rename, user_input, folder_remove, genesis
 
@@ -38,7 +42,15 @@ else:
 	A_file_to_proc="Arch_"+file_to_proc+".huf"
 	open(A_file_to_proc,"a").close()#Create concatenation file
 	os.chmod(A_file_to_proc,0o755) #Octal notation using 0o
-	traversal(file_to_proc,A_file_to_proc,ext_proc,optionCode)
+	optionCode=traversal(file_to_proc,A_file_to_proc,ext_proc,optionCode)
+	if optionCode & (1<<4):
+		print("Annulation de l'archivage...")
+		subprocess.run([os.getcwd()+"/Cmpr_Huffman",A_file_to_proc,str(optionCode)],check=True)
+		os.remove(A_file_to_proc)
+		subprocess.run([os.getcwd()+"/Decmpr_Huffman","ENCODED_"+A_file_to_proc,str(optionCode)],check=True)
+		os.remove("ENCODED_"+A_file_to_proc)
+		genesis("DECODED_ENCODED_"+A_file_to_proc)
+		sys.exit(0)
 	if os.stat(A_file_to_proc).st_size == 0: #Final check
 		os.remove(A_file_to_proc)
 		sys.exit("Erreur: le dossier passé en argument ne contient pas de fichiers d'extension '"+ext_proc+"' ou "

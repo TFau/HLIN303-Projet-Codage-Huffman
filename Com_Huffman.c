@@ -1,7 +1,12 @@
+/*!
+ * \file Com_Huffman.c
+ * \brief Programme principal du compresseur Huffman
+ * \author Troy Fau
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <limits.h>
 
 #include "Com_Functions.h"
@@ -25,18 +30,21 @@ int main(int argc, char** argv)
 	//Distinct character count and total character count
 	int nonzero_count=0, sum=0;
 	distinctCalc(ProcTable,&nonzero_count,&sum);
-	printf("%d caractères: %d bits.\n%d caractères distincts.\n\n", sum, sum*8, nonzero_count);
+	if(!(optByte & (1<<4))) //Do not print when compressing/decompressing concatenation file when archiving interrupted
+		printf("%d caractères: %d bits.\n%d caractères distincts.\n\n", sum, sum*8, nonzero_count);
 
 	/* Tree construction */
 	int treesize=2*nonzero_count-1;
-	printf("%d noeuds dans l'arbre.\n", treesize);
+	if(!(optByte & (1<<4)))
+		printf("%d noeuds dans l'arbre.\n", treesize);
 	//Tree node array. Max possible size 511 (2*256 - 1).
 	struct node Tree[treesize];
 	initTree(Tree,treesize); //Tree initialization with base values
 	freqTree(Tree,ProcTable,sum); //Set character frequencies
 	int counter=nonzero_count-1;
 	buildTree(Tree,counter); //Linking tree nodes via lowest frequencies
-	puts("Arbre initialisé...\nArbre construit...\n");
+	if(!(optByte & (1<<4)))
+		puts("Arbre initialisé...\nArbre construit...\n");
 
 	/* Code generation */
 	unsigned char* CodeTable[UCHAR_MAX+1];	//To position characters at index values equal to their numerical values, for easier message encoding later
@@ -45,7 +53,8 @@ int main(int argc, char** argv)
 	//Generates the code for each character by traversing the tree
 	if(codeGen(Tree,CodeTable,nonzero_count)) //0 on success, 1 in case of failed realloc
 		return 3; //Error message printed by codeGen
-	puts("Codes générés...\n");
+	if(!(optByte & (1<<4)))
+		puts("Codes générés...\n");
 	//Print the code array if -c option used
 	if(optByte & (1<<2)) {
 		counter=0; //Reuse
@@ -57,7 +66,8 @@ int main(int argc, char** argv)
 		}
 		puts("");
 	}
-	else puts("Utilisez l'option -c pour afficher les caractères et leurs codes respectifs.\n");
+	else if(!(optByte & (1<<4)))
+		puts("Utilisez l'option -c pour afficher les caractères et leurs codes respectifs.\n");
 
 	//////////////////
 	/* Compression */
@@ -88,7 +98,8 @@ int main(int argc, char** argv)
 	if(fill)
 		bits+=fill;
 	int index_b=bits;
-	printf("Arbre codé...\n%d bits.\n\n", bits);
+	if(!(optByte & (1<<4)))
+		printf("Arbre codé...\n%d bits.\n\n", bits);
 
 	/* Encode the message */
 	FILE* huff=fopen(argv[1], "r");
@@ -110,10 +121,12 @@ int main(int argc, char** argv)
 		free(CodeTable[i]);
 	free(filename);
 
-	printf("Message codé...\n%d bits.\n%.3f bits par caractère.\n\n", bits, (float)bits/sum);
-	printf("Total: %d bits, soit %d octets.\n", index_b+bits, (index_b+bits)/8);
-	printf("Réduction taille: %.3f%\n\n", 100.0-(float)(index_b+bits)/(sum*8)*100);
-	puts("Compression terminée avec succès.\n#################################");
+	if(!(optByte & (1<<4))) {
+		printf("Message codé...\n%d bits.\n%.3f bits par caractère.\n\n", bits, (float)bits/sum);
+		printf("Total: %d bits, soit %d octets.\n", index_b+bits, (index_b+bits)/8);
+		printf("Réduction taille: %.3f%\n\n", 100.0-(float)(index_b+bits)/(sum*8)*100);
+		puts("Compression terminée avec succès.\n#################################");
+	}
 
 	return 0;
 }

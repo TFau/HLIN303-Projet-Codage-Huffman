@@ -1,3 +1,9 @@
+/*!
+ * \file Com_Functions.h
+ * \brief En-tête des fonctions du programme de compression
+ * \author Troy Fau
+ */
+
 #ifndef COM_FUNCTIONS_SET
 #define COM_FUNCTIONS_SET
 

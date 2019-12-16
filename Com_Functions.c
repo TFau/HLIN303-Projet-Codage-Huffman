@@ -1,11 +1,27 @@
+/*!
+ * \file Com_Functions.c
+ * \brief Fonctions du programme de compression
+ * \author Troy Fau
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <limits.h>
 
 #include "Com_Functions.h"
 
+
+/*! 
+* \brief Fonction de lecture du fichier texte comptant le nombre d'occurrences de chaque caractère
+*
+* La fonction ouvre le fichier textfile en lecture. A la lecture d'un caractère, la valeur de la case du
+* tableau d'occurrences T correspondant au caractère est incrémenté. Si l'option -p a été sélectionnée,
+* affiche le caractère lu sur stdout.
+* \param[in] T: tableau stockant les occurrences des caractères.
+* \param[in] textfile: nom du fichier à lire.
+* \param[in] Opt: byte d'options.
+*/
 int freqCalc(int* T, char* textfile, unsigned char Opt)
 {
 	for(int i=0; i <= UCHAR_MAX; i++)
@@ -32,12 +48,21 @@ int freqCalc(int* T, char* textfile, unsigned char Opt)
 		if(Opt & (1<<3)) {
 			puts("");
 		}
-		puts("Fichier lu.");
+		if(!(Opt & (1<<4))) {
+			puts("Fichier lu.");
+		}
 	}
 	fclose(huff);
 	return 0;
 }
 
+/*!
+* \brief Fonction de comptage du nombre total de caractères et du nombre de caractères distincts
+*
+* \param[in] T: tableau stockant les occurrences des caractères.
+* \param[in] unique_char: variable du main stockant le nombre de caractères distincts.
+* \param[in] total_char: variable du main stockant le nombre total de caractères.
+*/
 void distinctCalc(int* T, int* unique_char, int* total_char)
 {
 	for(int i=0; i <= UCHAR_MAX; i++) {
@@ -48,6 +73,12 @@ void distinctCalc(int* T, int* unique_char, int* total_char)
 	}
 }
 
+/*!
+* \brief Fonction d'initialisation du tableau pour le stockage de l'arbre à des valeurs par défaut
+*
+* \param[in] T: tableau de type struct node, structure dont les attributs permettent de stocker les paramètres de l'arbre.
+* \param[in] size: taille du tableau T.
+*/
 void initTree(struct node* T, int size)
 {
 	for(int i=0; i < size; i++) {
@@ -59,6 +90,13 @@ void initTree(struct node* T, int size)
 	}
 }
 
+/*!
+* \brief Fonction de calcul des fréquences d'apparition des caractères
+*
+* \param[in] T: tableau stockant l'arbre.
+* \param[in] Table: tableau stockant les occurrences des caractères.
+* \param[in] total_char: nombre total de caractères.
+*/
 void freqTree(struct node* T, int* Table, int total_char)
 {
 	int j=0;
@@ -71,6 +109,18 @@ void freqTree(struct node* T, int* Table, int total_char)
 	}
 }
 
+/*!
+* \brief Fonction de construction de l'arbre de Huffman
+*
+* L'algorithme parcourt les noeuds existants. Les deux noeuds de plus basses
+* fréquences sont liés à un parent, placé dans une case vide de T à partir de l'indice
+* correspondant au nombre de caractères distincts. La fréquence du parent est la somme
+* des fréquences de ces deux enfants. Chaque nouvelle itération prendra en compte le 
+* nouveau noeud ainsi créé. Lorsqu'on ne trouve plus deux noeuds n'ayant pas de parent, 
+* l'algorithme s'arrête.
+* \param[in] T: tableau stockant l'arbre.
+* \param[in] counter: variable de comptage.
+*/
 void buildTree(struct node* T, int counter)
 {
 	int minA, minB;
@@ -102,6 +152,19 @@ void buildTree(struct node* T, int counter)
 	while(minA != -1 && minB != -1);
 }
 
+/*!
+* \brief Fonction de génération de code pour une feuille
+*
+* Sous-fonction de codeGen. Une chaîne de caractères vide est créée. A partir de la 
+* feuille i de l'arbre stocké dans T, l'algorithme remonte jusqu'à la racine. A chaque 
+* déplacement d'un enfant vers un parent, si l'enfant était à gauche le caractère '0' 
+* est ajouté à la chaîne, sinon le caractère '1' est ajouté. Lorsque la racine a été 
+* atteinte, la chaîne est réallouée dans une chaîne de taille adaptée et renvoyée. Attribue 
+* le code 1 par défaut si la feuille est racine, dans le cas où le fichier ne contient 
+* qu'un caractère distinct.
+* \param[in] T: tableau stockant l'arbre.
+* \param[in] i: indice du tableau correspondant au caractère dont on génère le code.
+*/
 unsigned char* extractCode(struct node* T, int i)
 {
 	int j, k;
@@ -137,6 +200,15 @@ unsigned char* extractCode(struct node* T, int i)
 	return codeOpt;	//NULL pointer if realloc failed
 }
 
+/*!
+* \brief Fonction de génération des codes
+*
+* Fonction de génération des codes pour chaque caractère de T, avec un nombre d'appels 
+* à extractCode égal à unique_char.
+* \param[in] T: tableau stockant l'arbre.
+* \param[in] Table: tableau de chaînes de caractères stockant les codes.
+* \param[in] unique_char: nombre de caractères distincts.
+*/
 int codeGen(struct node* T, unsigned char** Table, int unique_char)
 {
 	int counter=0;
@@ -151,6 +223,11 @@ int codeGen(struct node* T, unsigned char** Table, int unique_char)
 	return 0;
 }
 
+/*!
+* \brief Fonction de baptême du fichier compressé
+*
+* \param[in] oldFilename: nom du fichier d'origine.
+*/
 char* newFile(char* oldFilename)
 {
 	char* new_name=malloc((strlen(oldFilename)+9)*sizeof(char));
@@ -159,6 +236,18 @@ char* newFile(char* oldFilename)
 	return strcat(new_name,oldFilename);
 }
 
+/*!
+* \brief Fonction de test de noeud
+*
+* Sous-fonction de encodeIDX. Teste la valeur du noeud n dans T en la 
+* comparant à toutes les autres valeurs positives. Si cette valeur est 
+* la plus petite de T, n est le noeud le plus à gauche au niveau de 
+* profondeur actuel de l'arbre dans encodeIDX, et la fonction renvoie vrai. 
+* Sinon la fonction renvoie faux.
+* \param[in] T: tableau auxiliaire stockant des valeurs constamment incrémentées pour chaque enfant d'un noeud traité.
+* \param[in] size: taille de T.
+* \param[in] n: noeud à tester, correspondant à un indice de T.
+*/
 bool leftmost(int* T, int size, int n)
 {
 	int testval=T[n];
@@ -171,6 +260,17 @@ bool leftmost(int* T, int size, int n)
 	return true;
 }
 
+/*!
+* \brief Fonction d'encodage
+*
+* Sous-fonction de encodeIDX et encodeMSG. Lit la chaîne de caractères du code et encode 
+* l'octet porteur en fonction du caractère lu. L'encodage s'arrête lorsque carrier est 
+* rempli ou lorsqu'il n'y a plus de code à écrire.
+* \param[in] carrier: variable du main stockant les bits encodés à écrire.
+* \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \param[in] code: code à encoder.
+* \param[in] code_read: variable du main stockant la quantité de code déjà écrit.
+*/
 void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_read)
 {
 	int size=strlen(code)-*code_read;	//Code to write, without null terminator
@@ -188,6 +288,14 @@ void encode(unsigned char* carrier, int* fill, unsigned char* code, int* code_re
 	}
 }
 
+/*!
+* \brief Fonction d'encodage des caractères de l'index
+*
+* \param[in] carrier: variable du main stockant les bits encodés à écrire.
+* \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \param[in] symbol: caractère à encoder.
+* \param[in] code_read: variable du main stockant la quantité de code déjà écrit.
+*/
 void encodeCh(unsigned char* carrier, int* fill, unsigned char* symbol, int* code_read)
 {
 	while(*code_read < CHAR_BIT && *fill < CHAR_BIT) {	//To the end of the symbol byte or to the end of the carrier byte
@@ -202,6 +310,16 @@ void encodeCh(unsigned char* carrier, int* fill, unsigned char* symbol, int* cod
 	}
 }
 
+/*!
+* \brief Fonction d'écriture sur le fichier compressé
+*
+* Sous-fonction de encodeIDX et encodeMSG. L'octet carrier est écrit sur le 
+* flux writer, fill est remis à zero et bits est incrémenté de CHAR_BIT.
+* \param[in] writer: flux d'écriture.
+* \param[in] carrier: variable du main stockant les bits encodés à écrire.
+* \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \param[in] bits: variable du main stockant le nombre total de bits écrits.
+*/
 int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
 	fputc(*carrier,writer);
@@ -214,6 +332,27 @@ int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 	return 0;
 }
 
+/*!
+* \brief Fonction d'encodage de l'index
+*
+* Envoie tout d'abord le nombre total de caractères sur un entier de 4 octets, 
+* puis le nombre de caractères distincts sur 1 octet. Un tableau auxiliaire 
+* est créé à l'usage de la fonction leftmost, avec toutes ses valeurs initialisées 
+* à -1 sauf la racine de Tr à 0. L'algorithme part de la racine et encode les 
+* noeuds de l'arbre par niveau de profondeur, et de gauche à droite. Les noeuds sont 
+* encodés sur un bit par la fonction encode: 0 pour un noeud interne, 1 pour une 
+* feuille. Après le bit d'une feuille sont encodés les CHAR_BIT bits du caractère 
+* correspondant par appel à la fonction encodeCh. Lorsque fill=CHAR_BIT, l'octet 
+* carrier est rempli et la fonction appelle writeChar pour écrire sur le flux writer.
+* \param[in] writer: flux d'écriture sur le fichier compressé.
+* \param[in] Tr: tableau stockant l'arbre.
+* \param[in] size: taille de l'arbre.
+* \param[in] carrier: variable du main stockant les bits encodés à écrire.
+* \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \param[in] bits: variable du main stockant le nombre total de bits écrits.
+* \param[in] unique_char: nombre de caractères distincts.
+* \param[in] total_char: nombre total de caractères.
+*/
 int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
 {
 	int code_read=0;
@@ -294,6 +433,17 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 	return 0;
 }
 
+/*!
+* \brief Fonction d'encodage du message
+*
+* \param[in] writer: flux d'écriture sur le fichier compressé.
+* \param[in] reader: flux de lecture du fichier d'origine.
+* \param[in] Table: tableau de chaînes de caractères stockant les codes.
+* \param[in] carrier: variable du main stockant les bits encodés à écrire.
+* \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \param[in] bits: variable du main stockant le nombre total de bits écrits.
+* \param[in] total_char: nombre total de caractères.
+*/
 int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
 {
 	int counter=0, code_read=0;
