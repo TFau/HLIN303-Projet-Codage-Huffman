@@ -1,10 +1,28 @@
 /*!
- * \file Dec_Huffman.c
- * \brief Programme principal du décompresseur Huffman
- *
- * Description détaillée du fonctionnement du programme dans l'onglet "Pages associées", HLIN303-Projet-Codage-Huffman section III.1.
- * \author Troy Fau
- */
+* \file Dec_Huffman.c
+* \brief Programme principal du décompresseur Huffman
+*
+* Le programme de decompression est lancé par le script Python, soit à la suite de la compression si l'utilisateur 
+* le choisit, soit à la lecture d'un fichier binaire passé en argument.
+*
+* Le décompresseur ouvre le fichier encodé en lecture binaire et lit tout d'abord l'entier sur 4 octets qui indique 
+* le nombre total de caractères, et l'entier sur 1 octet indiquant le nombre de caractères distincts. Ces informations 
+* lui permettent de recréer un tableau représentant l'arbre de Huffman du texte encodé.
+*
+* L'index est décodé et les caractères récupérés sont mis à leur place dans le tableau. Sachant que l'arbre a été 
+* encodé en commençant par la racine et en procédant dans un ordre particulier (cf. partie II), le décompresseur 
+* reconstruit alors l'arbre en reconstituant les liens parents-enfants d'origine.
+*
+* Après avoir reconstitué l'arbre, si l'option -c a été sélectionné, le décompresseur régénère les codes pour les afficher.
+*
+* Le programme s'attaque alors à la décompression du message. L'octet porteur reçoit l'octet lu à partir du fichier 
+* encodé, et les bits du porteur sont lus et utilisés pour parcourir l'arbre à partir de sa racine. Lorsque le parcours 
+* abouti à une feuille, le caractère associé est alors écrit dans le fichier décodé.
+*
+* Lorsque le décompresseur a décodé un nombre de caractères égal au nombre total de caractères indiqué par l'index, le 
+* programme s'arrête.
+* \author Troy Fau
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

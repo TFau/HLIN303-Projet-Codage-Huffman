@@ -3,13 +3,37 @@
 
 ## Programme principal de l'archiveur/interface utilisateur
 #
-# Vérifie le fichier ou dossier et les options potentielles passé à la ligne de commande.
-# Vérifie dans le cas d'un fichier s'il doit être compressé ou décompressé, et lance le programme correspondant.
-# Dans le cas d'un dossier, procède à la concaténation des fichiers munis de l'extension recherchée dans un fichier d'archivage, et
-# lance le compresseur, puis le décompresseur si l'utilisateur le choisit.
-# Après décompression, vérifie si le fichier est une archive, auquel cas est lancée la fonction de déconcaténation et de restauration
-# d'arborescence.
-# Plus de détails dans l'onglet "Pages associées", HLIN303-Projet-Codage-Huffman section I.1.
+# Le programme est lancé par le script 'Arch_python.py'. Un utilisateur peut directement 
+# lancer Cmpr_Huffman ou Decmpr_Huffman avec un fichier en paramètre, mais cet usage est 
+# déprécié, et ne permet pas d'accéder aux options du programme ou à la fonctionnalité 
+# d'archivage.
+#
+# Le script vérifie la validité des arguments et des options passés à la ligne de commande 
+# et arrête le programme s'il identifie une erreur à ce stade.
+#
+# Deux cas de figures se présentent ensuite:
+#
+# CAS 1. Si l'utilisateur a lancé le programme avec un fichier en argument, il faut soit 
+# le compresser, soit le décompresser. Le script utilise la structure de traitement des 
+# exceptions pour identifier la procédure à suivre: le fichier est ouvert et lu en mode 
+# texte; si la lecture provoque une erreur, le fichier contient du code binaire, donc il est 
+# encodé et doit être décompressé. Sinon c'est un fichier texte que l'utilisateur veut 
+# compresser. Le script lance alors le compresseur ou le décompresseur.
+#
+# CAS 2. Si l'utilisateur a passé un dossier en argument, le programme demande à l'utilisateur 
+# de spécifier l'extension des fichiers qu'il veut archiver. Les fichiers munis de cette 
+# extension sont alors concaténés dans un fichier d'archivage, avec comme séparateurs une ligne 
+# contenant le nom et le chemin d'accès d'origine du fichier précédent. Si l'option -r a été 
+# sélectionnée, les fichiers sont ensuite supprimés. Le script lance ensuite le compresseur 
+# avec le fichier d'archivage comme argument.
+#
+# Une fois le fichier compressé, le script laisse à l'utilisateur le choix d'arrêter le 
+# programme ou de procéder immédiatement à la décompression.
+#
+# Lorsque le fichier est décompressé, le script vérifie si le fichier est le résultat 
+# d'une concaténation. Si ce n'est pas le cas, il n'y a rien à faire et le programme se 
+# termine. Sinon, le script reconstitue chaque fichier d'origine et les replace dans 
+# l'arborescence de dossiers, celle-ci étant recréée si nécessaire.
 #
 # @file Arch_python.py
 # @author Troy Fau
