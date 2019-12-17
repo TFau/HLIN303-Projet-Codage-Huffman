@@ -162,7 +162,7 @@ int freqCalc(int* T, char* textfile, unsigned char Opt)
 
 La fonction ouvre le fichier textfile en lecture. A la lecture d'un caractère, la valeur de la case du tableau d'occurrences T correspondant au caractère est incrémenté. Si l'option -p a été sélectionnée, affiche le caractère lu sur stdout.
 
-int distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
+void distinctCalc(int* T, char* textfile, int* unique_char, int* total_char)
 
 La fonction calcule à partir de T le nombre total de caractères, stocké dans total_char, et le nombre de caractères distincts, stocké dans unique_char.
 
