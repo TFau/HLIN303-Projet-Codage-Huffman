@@ -101,12 +101,12 @@ text_check(file)
 
 Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le fichier ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité d'interrompre le programme.
 
-traversal(srcdir,destfile)
+traversal(srcdir,destfile,optCode)
 
 La fonction utilise os.walk(srcdir) pour obtenir tous les chemins d'accès, sous-dossiers et fichiers de l'arborescence de
 dossiers ayant srcdir comme racine. Tous les fichiers munis de l'extension ".txt" sont alors vérifiés par text_check; si ce
 sont bien des fichiers texte leur contenu est copié dans destfile, avec rajout d'une ligne séparatrice spéciale contenant le
-nom d'origine du fichier et son chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé.
+nom d'origine du fichier et son chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé. Si text_check renvoie une valeur signalant l'interruption du programme par l'utilisateur, traversal modifie optCode et le renvoie pour signaler cette interruption au programme principal.
 
 user_rename(old_name,intgr)
 
