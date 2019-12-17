@@ -85,7 +85,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
  
  #Modules importés: os, re, shutil, subprocess, sys
 
-arg_parse(arg_list)
+arg_parse()
 
 La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté. Affiche l'aide si l'option --help a été sélectionnée.
 
@@ -98,6 +98,7 @@ option_parse(opt_list)
 La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. Aux 4 options disponibles correspondent les 4 bits de poids faible d'un entier. Un bit est mis à 1 si l'option correspondante a été sélectionnée, et après encodage l'entier est renvoyé.
 
 user_choice()
+
 La fonction demande à l'utilisateur de saisir l'extension des fichiers texte qu'il veut archiver à partir d'une arborescence de dossier. Rajoute un '.' au début de la chaîne saisie si le caractère n'est pas présent.
 
 text_check(file,ext)
