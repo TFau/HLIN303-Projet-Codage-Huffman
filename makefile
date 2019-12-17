@@ -9,7 +9,7 @@ SOURCE = Com_Functions.h Com_Functions.c Com_Huffman.c \
 Dec_Functions.h Dec_Functions.c Dec_Huffman.c
 PROG = Arch_python.py Arch_python_func.py Cmpr_Huffman \
 Decmpr_Huffman makefile
-README = README_HLIN303.txt Program_doc_github.md
+README = DoxyDoc README_HLIN303.txt
 
 #########
 
