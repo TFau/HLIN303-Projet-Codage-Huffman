@@ -21,6 +21,8 @@
 * \param[in] T: tableau stockant les occurrences des caractères.
 * \param[in] textfile: nom du fichier à lire.
 * \param[in] Opt: byte d'options.
+* \return 0 si la fonction a bien lu le fichier, 1 si le fichier n'a pas pu être ouvert, 2 si une
+* erreur survient durant la lecture.
 */
 int freqCalc(int* T, char* textfile, unsigned char Opt)
 {
@@ -162,6 +164,7 @@ void buildTree(struct node* T, int counter)
 * qu'un caractère distinct.
 * \param[in] T: tableau stockant l'arbre.
 * \param[in] i: indice du tableau correspondant au caractère dont on génère le code.
+* \return La chaîne de caractère du code correspondant au caractère i.
 */
 unsigned char* extractCode(struct node* T, int i)
 {
@@ -206,6 +209,8 @@ unsigned char* extractCode(struct node* T, int i)
 * \param[in] T: tableau stockant l'arbre.
 * \param[in] Table: tableau de chaînes de caractères stockant les codes.
 * \param[in] unique_char: nombre de caractères distincts.
+* \return 0 si la génération des codes a fonctionné correctement, 1 si une erreur
+* d'allocation mémoire est survenue.
 */
 int codeGen(struct node* T, unsigned char** Table, int unique_char)
 {
@@ -225,6 +230,7 @@ int codeGen(struct node* T, unsigned char** Table, int unique_char)
 * \brief Fonction de baptême du fichier compressé
 *
 * \param[in] oldFilename: nom du fichier d'origine.
+* \return Le nouveau nom du fichier.
 */
 char* newFile(char* oldFilename)
 {
@@ -245,6 +251,7 @@ char* newFile(char* oldFilename)
 * \param[in] T: tableau auxiliaire stockant des valeurs constamment incrémentées pour chaque enfant d'un noeud traité.
 * \param[in] size: taille de T.
 * \param[in] n: noeud à tester, correspondant à un indice de T.
+* \return Vrai si la valeur à l'indice n est la plus petite valeur positive ou nulle du tableau, faux sinon.
 */
 bool leftmost(int* T, int size, int n)
 {
@@ -317,6 +324,7 @@ void encodeCh(unsigned char* carrier, int* fill, unsigned char* symbol, int* cod
 * \param[in] carrier: variable du main stockant les bits encodés à écrire.
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
 * \param[in] bits: variable du main stockant le nombre total de bits écrits.
+* \return 0 si l'écriture s'est déroulée correctement, 1 sinon.
 */
 int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 {
@@ -350,6 +358,7 @@ int writeChar(FILE* writer, unsigned char* carrier, int* fill, int* bits)
 * \param[in] bits: variable du main stockant le nombre total de bits écrits.
 * \param[in] unique_char: nombre de caractères distincts.
 * \param[in] total_char: nombre total de caractères.
+* \return 0 si l'écriture s'est déroulée correctement, 1, 2, 3 ou 4 sinon.
 */
 int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, int* fill, int* bits, int unique_char, int total_char)
 {
@@ -441,6 +450,7 @@ int encodeIDX(FILE* writer, struct node* Tr, int size, unsigned char* carrier, i
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
 * \param[in] bits: variable du main stockant le nombre total de bits écrits.
 * \param[in] total_char: nombre total de caractères.
+* \return 0 si l'écriture s'est déroulée correctement, 1 ou 2 sinon.
 */
 int encodeMSG(FILE* writer, FILE* reader, unsigned char** Table, unsigned char* carrier, int* fill, int* bits, int total_char)
 {

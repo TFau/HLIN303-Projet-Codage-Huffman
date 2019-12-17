@@ -19,6 +19,7 @@
 * \param[in] reader: flux de lecture.
 * \param[in] total_char: variable du main stockant le nombre total de caractères.
 * \param[in] unique_char: variable du main stockant le nombre de caractères distincts.
+* \return 0 si la lecture s'est déroulée correctement, 1 ou 2 sinon.
 */
 int readStart(FILE* reader, int* total_char, int* unique_char)
 {
@@ -59,6 +60,7 @@ void initTree(struct node* T, int size)
 * Sous-fonction de decIDXmain.
 * \param[in] carrier: variable du main stockant les bits encodés à écrire.
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \return Un entier non signé sur un octet de valeur 0 ou 1.
 */
 unsigned char decodeSingle(unsigned char* carrier, int* fill)
 {
@@ -80,6 +82,7 @@ unsigned char decodeSingle(unsigned char* carrier, int* fill)
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
 * \param[in] T_byte: variable du main stockant le caractère décodé.
 * \param[in] code_read: variable du main stockant la quantité de code déjà lu.
+* \return Un entier sur un octet non signé correspondant au caractère associé à une feuille.
 */
 unsigned char decodeIDX(unsigned char* carrier, int* fill, unsigned char* T_byte, int* code_read)
 {
@@ -104,6 +107,7 @@ unsigned char decodeIDX(unsigned char* carrier, int* fill, unsigned char* T_byte
 * \param[in] reader: flux de lecture.
 * \param[in] carrier: variable du main stockant les bits encodés à décoder.
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
+* \return 0 si la lecture s'est déroulée correctement, 1 sinon.
 */
 int readChar(FILE* reader, unsigned char* carrier, int* fill)
 {
@@ -130,6 +134,7 @@ int readChar(FILE* reader, unsigned char* carrier, int* fill)
 * \param[in] carrier: variable du main stockant les bits encodés à décoder.
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
 * \param[in] size: taille de l'arbre.
+* \return 0 si la lecture s'est déroulée correctement, 1, 2 ou 3 sinon.
 */
 int decIDXmain(FILE* reader, struct node* T, unsigned char* carrier, int* fill, int size)
 {
@@ -212,6 +217,7 @@ void buildTree(struct node* T, int size)
 * qu'un caractère distinct.
 * \param[in] T: tableau stockant l'arbre.
 * \param[in] i: indice du tableau correspondant au caractère dont on génère le code.
+* \return La chaîne de caractère du code correspondant au caractère i.
 */
 unsigned char* extractCode(struct node* T, int i)
 {
@@ -255,6 +261,8 @@ unsigned char* extractCode(struct node* T, int i)
 * \param[in] T: tableau stockant l'arbre.
 * \param[in] Table: tableau de chaînes de caractères stockant les codes.
 * \param[in] size: taille de l'arbre.
+* \return 0 si la génération des codes a fonctionné correctement, 1 si une erreur
+* d'allocation mémoire est survenue.
 */
 int deCodeGen(struct node* T, unsigned char** Table, int size)
 {
@@ -274,6 +282,7 @@ int deCodeGen(struct node* T, unsigned char** Table, int size)
 * \brief Fonction de baptême du fichier décompressé
 *
 * \param[in] oldFilename: nom du fichier d'origine.
+* \return Le nouveau nom du fichier.
 */
 char* newFile(char* oldFilename)
 {
@@ -294,6 +303,8 @@ char* newFile(char* oldFilename)
 * \param[in] T: tableau stockant l'arbre.
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
 * \param[in] pos: variable du main stockant la position dans l'arbre entre itérations de la fonction.
+* \return Si une feuille de l'arbre de Huffman a été atteinte par le parcours de la fonction,
+* renvoie le caractère associé à cette feuille, sinon renvoie -1.
 */
 int decodeMSG(unsigned char* carrier, struct node* T, int* fill, int* pos)
 {
@@ -330,6 +341,7 @@ int decodeMSG(unsigned char* carrier, struct node* T, int* fill, int* pos)
 * \param[in] Opt: octet encodant les options sélectionnés par l'utilisateur.
 * \param[in] fill: variable du main stockant le taux de remplissage de carrier.
 * \param[in] total_char: nombre total de caractères.
+* \return 0 si la lecture s'est déroulée correctement, 1 ou 2 sinon.
 */
 int decMSGmain(FILE* reader, FILE* writer, struct node* Tree, unsigned char* carrier, unsigned char Opt, int* fill, int total_char)
 {
@@ -339,7 +351,7 @@ int decMSGmain(FILE* reader, FILE* writer, struct node* Tree, unsigned char* car
 			char_found=decodeMSG(carrier,Tree,fill,&temp_pos);
 			if(*fill == CHAR_BIT) {
 				if(readChar(reader,carrier,fill)) {
-					return 2;
+					return 1;
 				}
 			}
 		}
@@ -349,7 +361,7 @@ int decMSGmain(FILE* reader, FILE* writer, struct node* Tree, unsigned char* car
 		}
 		if(ferror(writer)) {
 			fputs("Erreur durant l'écriture.\n", stderr);
-			return 3;
+			return 2;
 		}
 		temp_pos=0;
 		char_found=-1;
