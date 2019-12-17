@@ -9,6 +9,7 @@
 # lance le compresseur, puis le décompresseur si l'utilisateur le choisit.
 # Après décompression, vérifie si le fichier est une archive, auquel cas est lancée la fonction de déconcaténation et de restauration
 # d'arborescence.
+# Plus de détails dans l'onglet "Pages associées", HLIN303-Projet-Codage-Huffman section I.1.
 #
 # @file Arch_python.py
 # @author Troy Fau

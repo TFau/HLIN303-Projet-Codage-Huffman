@@ -1,6 +1,8 @@
 /*!
  * \file Dec_Huffman.c
  * \brief Programme principal du décompresseur Huffman
+ *
+ * Description détaillée du fonctionnement du programme dans l'onglet "Pages associées", HLIN303-Projet-Codage-Huffman section III.1.
  * \author Troy Fau
  */
 
