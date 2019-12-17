@@ -85,7 +85,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
  
  #Modules importés: os, re, shutil, subprocess, sys
 
-Arch_python_func.arg_parse(arg_list)
+arg_parse(arg_list)
 
 La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté. Affiche l'aide si l'option --help a été sélectionnée.
 
