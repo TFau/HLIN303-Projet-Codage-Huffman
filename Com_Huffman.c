@@ -1,10 +1,34 @@
 /*!
- * \file Com_Huffman.c
- * \brief Programme principal du compresseur Huffman
- *
- * Description détaillée du fonctionnement du programme dans l'onglet "Pages associées", HLIN303-Projet-Codage-Huffman section II.1.
- * \author Troy Fau
- */
+* \file Com_Huffman.c
+* \brief Programme principal du compresseur Huffman
+*
+*Le compresseur lit le fichier et compte le nombre d'occurrences de chaque caractère; à partir de cette information se calculent le 
+*nombre de caractères distincts et le nombre total de caractères dans le fichier.
+*
+*Pour n caractères distincts, le programme crée un tableau de 2n-1 cases qui représentera l'arbre de Huffman: chaque caractère y est 
+*inséré comme feuille, sous la forme d'une variable de type struct dont les attributs identifient le caractère par sa valeur numérique, 
+*son parent, et sa fréquence dans le texte, ratio du nombre d'occurrences sur le nombre total de caractères.
+*
+*A partir de ces caractères-feuilles, un algorithme génère l'arbre de Huffman, liant à chaque itération les deux noeuds de plus basses 
+*fréquences à un noeud parent dont la fréquence est la somme de celles de ces enfants. Une fois remplie, un second algorithme génère 
+*le code de chaque caractère en remontant de sa feuille jusqu'à la racine. Ces codes sont stockés dans un
+*second tableau.
+*
+*Si l'option -c a été sélectionné à l'exécution du script Python, les caractères et leurs codes respectifs sont affichés.
+*
+*Commence alors la phase de compression proprement dite, dans un nouveau fichier. L'encodage se fait bit par bit sur un octet, qui est 
+*écrit dans le fichier lorsque ses CHAR_BIT (défini par l'implémentation, mais typiquement 8) bits ont été fixés. L'écriture reprend 
+*ensuite sur le même octet.
+*
+*Avant l'encodage du fichier sont encodés: un entier sur 4 octets contenant le nombre total de caractères dans le texte, un entier sur 1 
+*octet contenant le nombre de caractères distincts, puis l'arbre lui-même, sous la forme d'un bit par noeud et feuille, et pour chaque 
+*feuille les CHAR_BIT bits du caractère associé.
+*
+*Après encodage de l'index, le contenu du fichier est encodé. Le compresseur récupère le code de chaque caractère lu dans le fichier 
+*d'origine et le retranscrit par la méthode décrite plus haut dans un nouveau fichier. Lorsque tous les caractères ont été lus et 
+*encodés, le programme se termine.
+* \author Troy Fau
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
