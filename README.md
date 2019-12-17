@@ -97,9 +97,9 @@ option_parse(opt_list)
 
 La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. Aux 4 options disponibles correspondent les 4 bits de poids faible d'un entier. Un bit est mis à 1 si l'option correspondante a été sélectionnée, et après encodage l'entier est renvoyé.
 
-text_check(file)
+text_check(file,ext)
 
-Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le fichier ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité d'interrompre le programme.
+Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le fichier d'extension ext ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité d'interrompre le programme.
 
 traversal(srcdir,destfile,optCode)
 
