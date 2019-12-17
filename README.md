@@ -97,38 +97,51 @@ Sous-fonction de arg_parse. Affiche une aide sommaire et les options disponibles
 option_parse()
 
 Paramètres: opt_list
+
 La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. Aux 4 options disponibles correspondent les 4 bits de poids faible d'un entier. Un bit est mis à 1 si l'option correspondante a été sélectionnée, et après encodage l'entier est renvoyé.
 
 user_choice()
 
 La fonction demande à l'utilisateur de saisir l'extension des fichiers texte qu'il veut archiver à partir d'une arborescence de dossier. Rajoute un '.' au début de la chaîne saisie si le caractère n'est pas présent.
 
-text_check( file, ext )
+text_check()
+
+Paramètres: file, ext 
 
 Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le fichier d'extension ext ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité d'interrompre le programme.
 
-traversal(srcdir,destfile,optCode)
+traversal()
+
+Paramètres: srcdir, destfile, optCode
 
 La fonction utilise os.walk(srcdir) pour obtenir tous les chemins d'accès, sous-dossiers et fichiers de l'arborescence de
 dossiers ayant srcdir comme racine. Tous les fichiers munis de l'extension ".txt" sont alors vérifiés par text_check; si ce
 sont bien des fichiers texte leur contenu est copié dans destfile, avec rajout d'une ligne séparatrice spéciale contenant le
 nom d'origine du fichier et son chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé. Si text_check renvoie une valeur signalant l'interruption du programme par l'utilisateur, traversal modifie optCode et le renvoie pour signaler cette interruption au programme principal.
 
-user_rename(old_name,intgr)
+user_rename()
+
+Paramètres: old_name, intgr
 
 Si l'utilisateur a sélectionné l'option -n, cette fonction lui propose de renommer le fichier compressé (si intgr=0) ou
 décompressé (si intgr=1). Un nom vide ou déjà existant n'est pas accepté, un nom valide est renvoyé.
 
-user_input(string,optCode)
+user_input()
+
+Paramètres: string, optCode
 
 Demande à l'utilisateur s'il veut décompresser le fichier. Si l'utilisateur répond par la négative, le programme est arrêté.
 Sinon la fonction lance le décompresseur avec string et optCode passés en arguments.
 
-folder_remove(srcdir)
+folder_remove()
+
+Paramètres: srcdir
 
 Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossier passé en argument sont supprimés par la fonction traversal. Au terme de cette phase, la fonction folder_remove vérifie récursivement si le dossier et ses sous-dossiers sont vides, et si c'est le cas, les supprime.
 
-genesis(bigfile)
+genesis()
+
+Paramètres: bigfile
 
 La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne avec re.search. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant le(s) dossier(s) du chemin d'accès s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
 
