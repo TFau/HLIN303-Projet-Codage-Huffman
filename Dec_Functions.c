@@ -152,7 +152,7 @@ int decIDXmain(FILE* reader, struct node* T, unsigned char* carrier, int* fill, 
 				return 2;
 			}
 		}
-		if(node && !(node & (node-1))) { //Power of two (i.e single bit) check
+		if(node & 1) {	//Leaf: read next 8 bits for the associated character
 			while(code_read < CHAR_BIT) {
 				T[counter].symbol=decodeIDX(carrier,fill,&character,&code_read);
 				if(*fill == CHAR_BIT) {
