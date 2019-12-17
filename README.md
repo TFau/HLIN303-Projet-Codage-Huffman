@@ -1,4 +1,4 @@
-# HLIN303-Projet-Codage-Huffman
+# HLIN303 Projet Codage Huffman
 
 Compilation Compresseur: commande 'make com'
 
@@ -11,16 +11,16 @@ Option --help pour quelques informations supplémentaires.
 #####################
 
 
-I.    INTERFACE & ARCHIVEUR PYTHON
+### I.    INTERFACE & ARCHIVEUR PYTHON
   1. Fonctionnement du programme
   2. Les options
   3. Les fonctions
   
-II.   COMPRESSEUR C
+### II.   COMPRESSEUR C
   1. Fonctionnement du programme
   2. Les fonctions
 
-III.  DECOMPRESSEUR C
+### III.  DECOMPRESSEUR C
   1. Fonctionnement du programme
   2. Les fonctions
 
@@ -88,6 +88,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
 arg_parse()
 
 Paramètres: arg_list
+
 La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté. Affiche l'aide si l'option --help a été sélectionnée.
 
 user_help()
