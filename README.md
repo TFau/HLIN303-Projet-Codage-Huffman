@@ -85,44 +85,44 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
  
  #Modules importés: os, re, shutil, subprocess, sys
 
-def arg_parse(arg_list)
+Arch_python_func.arg_parse(arg_list)
 
 La fonction vérifie qu'un et un seul fichier ou dossier existant dans le dossier courant est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon une erreur est signalée et le programme arrêté. Affiche l'aide si l'option --help a été sélectionnée.
 
-def user_help()
+user_help()
 
 Sous-fonction de arg_parse. Affiche une aide sommaire et les options disponibles.
 
-def option_parse(opt_list)
+option_parse(opt_list)
 
 La fonction traite opt_list pour récupérer les options et vérifier leur validité; une option invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. Aux 4 options disponibles correspondent les 4 bits de poids faible d'un entier. Un bit est mis à 1 si l'option correspondante a été sélectionnée, et après encodage l'entier est renvoyé.
 
-def text_check(file,ext)
+text_check(file,ext)
 
 Sous-fonction de traversal. Vérifie que file est bien un fichier texte en utilisant la structure de gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le fichier d'extension ext ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité d'interrompre le programme.
 
-def traversal(srcdir,destfile,optCode)
+traversal(srcdir,destfile,optCode)
 
 La fonction utilise os.walk(srcdir) pour obtenir tous les chemins d'accès, sous-dossiers et fichiers de l'arborescence de
 dossiers ayant srcdir comme racine. Tous les fichiers munis de l'extension ".txt" sont alors vérifiés par text_check; si ce
 sont bien des fichiers texte leur contenu est copié dans destfile, avec rajout d'une ligne séparatrice spéciale contenant le
 nom d'origine du fichier et son chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé. Si text_check renvoie une valeur signalant l'interruption du programme par l'utilisateur, traversal modifie optCode et le renvoie pour signaler cette interruption au programme principal.
 
-def user_rename(old_name,intgr)
+user_rename(old_name,intgr)
 
 Si l'utilisateur a sélectionné l'option -n, cette fonction lui propose de renommer le fichier compressé (si intgr=0) ou
 décompressé (si intgr=1). Un nom vide ou déjà existant n'est pas accepté, un nom valide est renvoyé.
 
-def user_input(string,optCode)
+user_input(string,optCode)
 
 Demande à l'utilisateur s'il veut décompresser le fichier. Si l'utilisateur répond par la négative, le programme est arrêté.
 Sinon la fonction lance le décompresseur avec string et optCode passés en arguments.
 
-def folder_remove(srcdir)
+folder_remove(srcdir)
 
 Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossier passé en argument sont supprimés par la fonction traversal. Au terme de cette phase, la fonction folder_remove vérifie récursivement si le dossier et ses sous-dossiers sont vides, et si c'est le cas, les supprime.
 
-def genesis(bigfile)
+genesis(bigfile)
 
 La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à la lecture d'une ligne contenant les caractères séparateurs inscrits lors de l'archivage. Le nom d'origine du fichier ainsi que son chemin d'accès sont alors extraits de cette ligne avec re.search. Le fichier temporaire reprend son nom d'origine et la fonction le replace dans son dossier d'origine, en recréant le(s) dossier(s) du chemin d'accès s'ils n'existent pas. Un nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci est terminée, il est supprimé.
 
