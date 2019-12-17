@@ -33,7 +33,7 @@ III.  DECOMPRESSEUR C
 #Fonctions importées de Arch_python_func.py
 
 
- 1. Fonctionnement du programme
+ #### 1. Fonctionnement du programme
 
 Le programme est lancé par le script 'Arch_python.py'. Un utilisateur peut directement lancer Cmpr_Huffman ou Decmpr_Huffman
 avec un fichier en paramètre, mais cet usage est déprécié, et ne permet pas d'accéder aux options du programme ou à la
@@ -56,7 +56,7 @@ replace dans l'arborescence de dossiers, celle-ci étant recréée si nécessair
 ###############
 
 
- 2. Les options
+ #### 2. Les options
  
  --help
 
@@ -81,7 +81,7 @@ Afficher le contenu (non encodé) du fichier. Dans le cas d'une archive, affiche
 ###############
 
 
- 3. Les fonctions
+ #### 3. Les fonctions
  
  #Modules importés: os, re, shutil, subprocess, sys
 
@@ -133,7 +133,7 @@ La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à 
 #Fichiers sources: Com_Functions.h, Com_Functions.c, Com_Huffman.c
 
 
- 1. Fonctionnement du programme
+ #### 1. Fonctionnement du programme
 
 Le programme de compression est lancé par le script Python, avec en argument le fichier à traiter et l'entier codant les options.
 
@@ -156,7 +156,7 @@ Après encodage de l'index, le contenu du fichier est encodé. Le compresseur r�
 ###############
 
 
- 2. Les fonctions
+ #### 2. Les fonctions
 
 int freqCalc(int* T, char* textfile, unsigned char Opt)
 
@@ -222,7 +222,7 @@ Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader,
 #Fichiers sources: Dec_Functions.h, Dec_Functions.c, Dec_Huffman.c
 
 
- 1. Fonctionnement du programme
+ #### 1. Fonctionnement du programme
 
 Le programme de decompression est lancé par le script Python, soit à la suite de la compression si l'utilisateur le choisit, soit à la lecture d'un fichier binaire passé en argument.
 
@@ -239,7 +239,7 @@ Lorsque le décompresseur a décodé un nombre de caractères égal au nombre to
 ###############
 
 
- 2. Les fonctions
+ #### 2. Les fonctions
  
 int readStart(FILE* reader, int* total_char, int* unique_char)
  
