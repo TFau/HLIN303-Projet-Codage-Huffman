@@ -114,7 +114,7 @@ def user_choice() :
 # @param file Fichier à vérifier.
 # @param ext Extension des fichiers à traiter.
 # @param opt Stockage bit à bit des options sélectionnés par l'utilisateur.
-def text_check(file,ext,opt) :
+def text_check(file,ext) :
 	try:
 		with open(file, "r") as test:
 			for line in test:
@@ -151,7 +151,7 @@ def traversal(srcdir,destfile,ext,optCode) :
 		for f in files:
 			if f.endswith(ext):
 				full_f=os.path.join(dirpath,f)
-				interrupt=text_check(full_f,ext,optCode)
+				interrupt=text_check(full_f,ext)
 				if not interrupt and os.stat(full_f).st_size != 0: #Check if the file is actually in plain text and not empty
 					os.chmod(full_f,0o755)
 					with open(destfile,"a") as catfile: #Append mode
