@@ -13,7 +13,8 @@ import os, re, shutil, subprocess, sys
 # est présent dans arg_list. Si c'est le cas, la chaîne correspondante est renvoyée, sinon 
 # une erreur est signalée et le programme arrêté. Affiche l'aide si l'option --help a été 
 # sélectionnée.
-# @param arg_list La liste des arguments passés à la ligne de commande amputée du programme lui-même.
+# @param[in] arg_list La liste des arguments passés à la ligne de commande amputée du programme lui-même.
+# @return Le nom du fichier ou dossier à traiter.
 def arg_parse(arg_list) :
 	for a in arg_list:
 		if a == "--help":
@@ -66,7 +67,8 @@ L'exécution directe du compresseur ou du décompresseur est dépréciée.\n
 # invalide ou des caractères sauvages déclenchent une erreur et l'arrêt prématuré du programme. 
 # Aux 4 options disponibles correspondent les 4 bits de poids faible d'un entier. Un bit est 
 # mis à 1 si l'option correspondante a été sélectionnée, et après encodage l'entier est renvoyé.
-# @param opt_list La liste des arguments passés à la ligne de commande amputée du programme et du fichier ou dossier à traiter.
+# @param[in] opt_list La liste des arguments passés à la ligne de commande amputée du programme et du fichier ou dossier à traiter.
+# @return L'entier stockant les options.
 def option_parse(opt_list) :
 	optionByte=0
 	for opt in opt_list: #Removing while iterating is fine here
@@ -94,6 +96,7 @@ def option_parse(opt_list) :
 #
 # Demande à l'utilisateur de saisir l'extension des fichiers texte qu'il veut archiver à partir 
 # d'une arborescence de dossier.
+# @return L'extension à rechercher.
 def user_choice() :
 	while True:
 		ext=input("Entrez l'extension des fichiers que vous souhaitez archiver:\n")
@@ -111,9 +114,11 @@ def user_choice() :
 # gestion des exceptions. Si file contient du code binaire, la fonction signale à l'utilisateur que le 
 # fichier ne sera pas concaténé dans le fichier destiné à la compression et offre la possibilité 
 # d'interrompre le programme. Dans ce cas, le fichier d'archivage en cours sera déconcaténé.
-# @param file Fichier à vérifier.
-# @param ext Extension des fichiers à traiter.
-# @param opt Stockage bit à bit des options sélectionnés par l'utilisateur.
+# @param[in] file Fichier à vérifier.
+# @param[in] ext Extension des fichiers à traiter.
+# @param[in] opt Stockage bit à bit des options sélectionnés par l'utilisateur.
+# @return 0 si le fichier est bien un fichier texte, 1 si le fichier est un binaire mais que l'utilisateur
+# veut continuer le programme en ne copiant pas ce fichier, 2 si l'utilisateur chosit d'arrêter le programme.
 def text_check(file,ext) :
 	try:
 		with open(file, "r") as test:
@@ -142,10 +147,12 @@ def text_check(file,ext) :
 # sont alors vérifiés par text_check; si ce sont bien des fichiers texte leur contenu est copié dans 
 # destfile, avec rajout d'une ligne séparatrice spéciale contenant le nom d'origine du fichier et son 
 # chemin d'accès. Si l'option -r a été sélectionnée, le fichier d'origine est supprimé.
-# @param srcdir Répertoire racine de la recherche.
-# @param destfile Fichier de concaténation.
-# @param ext Extension des fichiers à traiter.
-# @param optCode Stockage bit à bit des options sélectionnés par l'utilisateur.
+# @param[in] srcdir Répertoire racine de la recherche.
+# @param[in] destfile Fichier de concaténation.
+# @param[in] ext Extension des fichiers à traiter.
+# @param[in,out] optCode Stockage bit à bit des options sélectionnés par l'utilisateur.
+# @return L'entier optCode stockant les options, potentiellement modifié si l'utilisateur a choisit
+# d'arrêter le programme.
 def traversal(srcdir,destfile,ext,optCode) :
 	for dirpath, subdirs, files in os.walk(srcdir): #Traverses directory tree automatically!
 		for f in files:
@@ -172,8 +179,9 @@ def traversal(srcdir,destfile,ext,optCode) :
 # Si l'utilisateur a sélectionné l'option -n, cette fonction lui propose de renommer le fichier compressé 
 # (si intgr=0) ou décompressé (si intgr=1). Un nom vide ou déjà existant n'est pas accepté, un nom valide 
 # est renvoyé.
-# @param old_name Nom du fichier à renommer.
-# @param intgr Indique s'il s'agit d'un fichier compressé ou décompressé.
+# @param[in] old_name Nom du fichier à renommer.
+# @param[in] intgr Indique s'il s'agit d'un fichier compressé ou décompressé.
+# @return Le nouveau nom du fichier.
 def user_rename(old_name,intgr) :
 	while True:
 		if intgr == 0:
@@ -193,8 +201,8 @@ def user_rename(old_name,intgr) :
 #
 # Demande à l'utilisateur s'il veut décompresser le fichier. Si l'utilisateur répond par la négative, le 
 # programme est arrêté. Sinon la fonction lance le décompresseur avec string et optCode passés en arguments.
-# @param string Nom du fichier.
-# @param optCode Stockage bit à bit des options sélectionnés par l'utilisateur. 
+# @param[in] string Nom du fichier.
+# @param[in] optCode Stockage bit à bit des options sélectionnés par l'utilisateur. 
 def user_input(string,optCode) :
 	while True:
 		cont=input("Voulez-vous décompresser le fichier? y/n\n")
@@ -215,7 +223,9 @@ def user_input(string,optCode) :
 # Avec l'option -r, tous les fichiers copiés à partir de l'arborescence du dossier passé en argument sont 
 # supprimés par la fonction traversal. Au terme de cette phase, la fonction folder_remove vérifie récursivement 
 # si le dossier et ses sous-dossiers sont vides, et si c'est le cas, les supprime.
-# @param srcdir Répertoire racine de la recherche.
+# @param[in] srcdir Répertoire racine de la recherche.
+# @return Un booléen: vrai si l'élément est un dossier vide ou dont tous les sous-dossiers vérifiés
+# récursivement sont vides, faux sinon.
 def folder_remove(srcdir) :
 	if os.path.isfile(srcdir):
 		return False
@@ -236,7 +246,7 @@ def folder_remove(srcdir) :
 # le replace dans son dossier d'origine, en recréant le(s) dossier(s) du chemin d'accès s'ils n'existent pas. Un 
 # nouveau fichier temporaire est ouvert et la fonction reprend la lecture de bigfile. Lorsque la lecture de celui-ci 
 # est terminée, il est supprimé.
-# @param bigfile Fichier d'archive décompressé à déconcaténer.
+# @param[in] bigfile Fichier d'archive décompressé à déconcaténer.
 def genesis(bigfile) :
 	newfile=open("Huff_Temp_Name.txt", "w")	#New file to write the first original file
 	with open(bigfile, "r+") as file:
