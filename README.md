@@ -26,7 +26,7 @@ III.  DECOMPRESSEUR C
 
 
 
-#####################ARCHIVEUR: ARCH_PYTHON.PY#####################
+###### ARCHIVEUR: ARCH_PYTHON.PY ######
 
 #Modules importés: os, sys
 
@@ -128,7 +128,7 @@ La fonction ouvre un fichier temporaire et copie le contenu de bigfile jusqu'à 
 
 
 
-#####################COMPRESSEUR: CMPR_HUFFMAN#####################
+###### COMPRESSEUR: CMPR_HUFFMAN ######
 
 #Fichiers sources: Com_Functions.h, Com_Functions.c, Com_Huffman.c
 
@@ -217,7 +217,7 @@ Fonction d'encodage du message. A la lecture d'un caractère sur le flux reader,
 
 
 
-#####################DECOMPRESSEUR: DECMPR_HUFFMAN#####################
+###### DECOMPRESSEUR: DECMPR_HUFFMAN ######
 
 #Fichiers sources: Dec_Functions.h, Dec_Functions.c, Dec_Huffman.c
 
